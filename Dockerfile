@@ -1,22 +1,29 @@
-FROM node:lts-alpine
+# FROM  node:alpine
 
-# install simple http server for serving static content
-RUN npm install -g http-server
+# USER root
+# RUN npm install -g @quasar/cli && \
+#     npm install -g @vue/cli && \
+#     npm install -g @vue/cli-init
 
-# make the 'app' folder the current working directory
+# RUN mkdir /home/node/app
+
+# # VOLUME [ "/home/node/app" ]
+# WORKDIR /home/node/app
+
+# CMD /bin/sh
+
+# develop stage
+FROM node:13.14-alpine as develop-stage
 WORKDIR /app
-
-# copy both 'package.json' and 'package-lock.json' (if available)
 COPY package*.json ./
-
-# install project dependencies
-RUN npm install
-
-# copy project files and folders to the current working directory (i.e. 'app' folder)
+RUN yarn global add @quasar/cli
 COPY . .
-
-# build app for production with minification
-RUN npm run build
-
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+# build stage
+FROM develop-stage as build-stage
+RUN yarn
+RUN quasar build
+# production stage
+FROM nginx:1.17.5-alpine as production-stage
+COPY --from=build-stage /app/dist/spa /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
