@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          HUNA Quasar App
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
@@ -57,7 +57,7 @@ const linksData = [
     link: 'https://quasar.dev'
   },
   {
-    title: 'Github',
+    title: 'Github teste',
     caption: 'github.com/quasarframework',
     icon: 'code',
     link: 'https://github.com/quasarframework'

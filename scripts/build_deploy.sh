@@ -1,0 +1,12 @@
+#!/bin/bash
+yarn quasar build
+mkdir .deploy && cd .deploy
+git clone --branch deploy_dev https://github.com/hugoofilipe/huna-site.git
+cd huna-site/
+git rm -rf *
+git checkout deploy_dev
+cp -r ../../dist/spa/* .
+git add --all
+git commit -m "first quasar deploy"
+    git push
+cd ../.. && rm -rf .deploy
