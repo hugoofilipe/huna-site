@@ -7,6 +7,6 @@ git rm -rf *
 git checkout deploy_dev
 cp -r ../../dist/spa/* .
 git add --all
-git commit -m "first quasar deploy"
+git commit -m "Deploy project from \"npm run build\" system "
     git push
 cd ../.. && rm -rf .deploy

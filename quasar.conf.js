@@ -20,12 +20,13 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v1.quasar.dev/quasar-cli/boot-files
     boot: [
-
+      'i18n'
     ],
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
       'app.sass'
+      // 'quasar.variables.sass'
     ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
@@ -37,7 +38,6 @@ module.exports = function (/* ctx */) {
       // 'themify',
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
-
       'roboto-font', // optional, you are not bound to it
       'material-icons' // optional, you are not bound to it
     ],
@@ -92,8 +92,12 @@ module.exports = function (/* ctx */) {
       // (like functional components as one of the examples),
       // you can manually specify Quasar components/directives to be available everywhere:
       //
-      // components: [],
       // directives: [],
+      // components: [
+      //   'QCarousel',
+      //   'QCarouselSlide',
+      //   'QCarouselControl'
+      // ],
 
       // Quasar plugins
       plugins: []
@@ -101,7 +105,8 @@ module.exports = function (/* ctx */) {
 
     // animations: 'all', // --- includes all animations
     // https://v1.quasar.dev/options/animations
-    animations: [],
+    animations:
+      'all',
 
     // https://v1.quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
@@ -118,7 +123,7 @@ module.exports = function (/* ctx */) {
         description: 'huna website',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ffffff',
+        background_color: '#fff',
         theme_color: '#027be3',
         icons: [
           {

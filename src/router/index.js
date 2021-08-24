@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueCarousel from 'vue-carousel'
 
 import routes from './routes'
 
 Vue.use(VueRouter)
+Vue.use(VueCarousel)
 
 /*
  * If not building with SSR mode, you can
