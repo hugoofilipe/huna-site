@@ -5,6 +5,7 @@
     <banner />
     <fieldsOfBusiness />
     <serviceBanner />
+    <contactForm />
     <footerMain />
   </q-page>
 </template>
@@ -15,6 +16,7 @@ import roadmap from 'src/components/RoadMap.vue'
 import banner from 'src/components/Banner.vue'
 import fieldsOfBusiness from 'src/components/FieldsOfBusiness.vue'
 import serviceBanner from 'src/components/ServiceBanner.vue'
+import contactForm from 'src/components/ContactForm.vue'
 import footerMain from 'src/components/Footer.vue'
 
 export default {
@@ -25,6 +27,7 @@ export default {
     banner,
     fieldsOfBusiness,
     serviceBanner,
+    contactForm,
     footerMain
   }
 }

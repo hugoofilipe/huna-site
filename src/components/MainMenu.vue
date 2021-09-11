@@ -1,9 +1,8 @@
 <template>
     <div>
         <q-header class=" bg-black"  elevated reveal>
-            <q-toolbar class="q-px-lg q-my-md menu ">
+            <q-toolbar class="lt-md q-my-lg menu_mobile">
               <q-btn
-                  class="lt-sm"
                   flat
                   dense
                   round
@@ -11,6 +10,16 @@
                   aria-label="Menu"
                   @click="leftDrawerOpen = !leftDrawerOpen"
               />
+              <q-avatar
+                square
+                size=100px
+                class="q-px-sm"
+              >
+                <img src="images/huna.svg">
+              </q-avatar>
+            </q-toolbar>
+
+            <q-toolbar class="gt-sm q-px-lg q-my-md menu ">
               <q-avatar
                 square
                 size=100px
@@ -52,24 +61,84 @@
         </q-header>
 
         <q-drawer
-        v-model="leftDrawerOpen"
-
-        bordered
-        content-class="bg-grey-1"
+          v-model="leftDrawerOpen"
+          content-class="bg-black"
+          :width="300"
         >
-            <q-list>
-            <q-item-label
-                header
-                class="text-grey-8"
-            >
-                Essential Links
-            </q-item-label>
-            <EssentialLink
-                v-for="link in essentialLinks"
-                :key="link.title"
-                v-bind="link"
-            />
-            </q-list>
+          <q-avatar
+                square
+                size=100px
+                class="q-px-sm text-center q-ma-lg"
+              >
+                <img src="images/huna.svg">
+              </q-avatar>
+          <q-list padding style="color:white">
+            <q-item clickable v-ripple class="text-h5">
+              <q-item-section>
+                {{$t('services')}}
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable v-ripple class="text-h5">
+              <q-item-section>
+                {{$t('portfolio')}}
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable v-ripple class="text-h5">
+              <q-item-section>
+                {{$t('prices')}}
+              </q-item-section>
+            </q-item>
+          </q-list>
+
+          <!-- Bottom -->
+          <q-list
+            class="fixed-bottom"
+          >
+            <div class="row">
+              <q-btn
+                flat
+                clickable
+                v-ripple
+                :to="{ name:'request'}"
+                class="col-12 btn-goldenCustom text-white"
+              >
+                {{ $t('letsTalk') }}
+              </q-btn>
+
+              <q-btn
+                :label="languageKeyNow"
+                class="col-6 q-tab q-tab--no-caps"
+                exact
+                flat
+                color="white"
+              >
+                <q-menu>
+                  <q-list
+                    v-for="item in langOptions" :key="item.value" >
+                    <q-item
+                      clickable
+                      v-close-popup
+                      class="text-weight-medium"
+                      style="font-size:20px"
+                    >
+                    <q-item-section @click="changeLang(item)">
+                        {{ item.label }}
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
+              <q-btn
+                flat
+                color="white"
+                class="col-6"
+                @click="$q.dark.toggle()"
+                :icon="$q.dark.isActive ? 'nights_stay' : 'wb_sunny'"
+              />
+            </div>
+          </q-list>
         </q-drawer>
     </div>
 </template>
@@ -79,58 +148,14 @@
     padding: 0px 10%
     span
       font-size: 20px
+  .menu_mobile
+    span
+      font-size: 20px
 </style>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github teste',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
 export default {
   name: 'MainMenu',
-  components: { EssentialLink },
   methods: {
     changeLang (item) {
       this.lang = item.value
@@ -140,7 +165,6 @@ export default {
   data () {
     return {
       leftDrawerOpen: false,
-      essentialLinks: linksData,
       lang: this.$i18n.locale,
       languageKeyNow: 'PT',
       langOptions: [

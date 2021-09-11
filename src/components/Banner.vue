@@ -2,7 +2,7 @@
   <div class="bg-banner banner">
 
     <div class="column justify-center ">
-        <h1 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('bannerTitle1')}}</h1>
+        <h2 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('bannerTitle1')}}</h2>
         <hr class="col banner-hr">
     </div>
 

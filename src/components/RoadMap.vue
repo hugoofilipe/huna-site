@@ -2,7 +2,7 @@
   <div class="bg-greenCustom roadmap">
 
     <div class="row justify-center">
-      <h1 class="col-8 text-center text-weight-medium text-white" >{{$t('roadmapTitle1')}}</h1>
+      <h2 class="col-11 col-sm-10  col-md-8 text-center text-weight-medium text-white" >{{$t('roadmapTitle1')}}</h2>
     </div>
 
      <q-parallax
@@ -11,13 +11,13 @@
         :speed="1"
       >
       <div class="row justify-around section">
-        <div class="col-3">
+        <div class="col-10 col-md-3">
           <q-img style="width:87px" src='icons/computer.png' />
           <h2 class="text-weight-medium text-white">{{$t('roadmapTitle2')}}</h2>
           <p class="text-white">{{$t('roadmapText2')}}</p>
           <p class="text-white"> {{$t('readMore')}}</p>
         </div>
-        <div class="col-4"></div>
+        <div class="col-4 gt-sm"></div>
       </div>
      </q-parallax>
 
@@ -29,7 +29,7 @@
       :speed="1"
     >
       <div class="row justify-around section" style="">
-        <div class="col-3">
+        <div class="col-10 col-md-3">
           <q-img style="width:87px" src='icons/store.png' />
           <h2 class="text-weight-medium text-white">{{$t('roadmapTitle3')}}</h2>
           <p class="text-white">{{$t('roadmapText3')}}</p>
@@ -50,10 +50,10 @@
     <q-space/>
 
     <div class="row justify-around section">
-      <div class="col-6">
+      <div class="col-10 col-md-6">
         <q-img src='images/relaxe.png' />
       </div>
-      <div class="col-3">
+      <div class="col-10 col-md-3">
         <q-img style="width:87px" src='icons/world.png' />
         <h2 class="text-weight-medium text-white">{{$t('roadmapTitle5')}}</h2>
         <p class="text-white">{{$t('roadmapText5')}}</p>

@@ -2,7 +2,7 @@
     <div class="bg-greenCustom serviceBanner ">
         <div class="q-ma-xl q-pa-xl bg-serviceBanner">
           <div class="column justify-center q-pa-xl">
-            <h1 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('serviceBannertitle1')}}</h1>
+            <h2 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('serviceBannertitle1')}}</h2>
             <hr class="col hr">
             <h4 class="col text-center text-grey-4" style="margin:13px">{{$t('serviceBannersubtitle1')}}</h4>
           </div>

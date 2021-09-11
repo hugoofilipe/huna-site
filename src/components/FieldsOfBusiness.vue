@@ -13,7 +13,7 @@
         class=" fieldsOfBusiness bg_hover_third"
         >
         <div class="column justify-center q-py-xl">
-            <h1 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('fieldsOfBusinessTitle1')}}</h1>
+            <h2 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('fieldsOfBusinessTitle1')}}</h2>
             <hr class="col hr">
             <h4 class="col text-center text-grey-5" style="margin:13px">{{$t('fieldsOfBusinessSubTitle1')}}</h4>
         </div>
