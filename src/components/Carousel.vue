@@ -240,7 +240,6 @@
   .reduce-size
     @media (max-width: $breakpoint-sm-max)
       font-size:50px !important
-
 </style>
 <script>
 
@@ -249,7 +248,7 @@ export default {
     return {
       slide: 'slide1',
       windowHeight: (window.innerHeight + 30) + 'px',
-      autoplay: false,
+      autoplay: true,
       lorem: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque voluptatem totam, architecto cupiditate officia rerum, error dignissimos praesentium libero ab nemo provident incidunt ducimus iusto perferendis porro earum. Totam, numquam?'
     }
   }

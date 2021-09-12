@@ -1,20 +1,20 @@
 <template>
     <div class="footer">
-        <div class="background">
+        <div class="background gt-sm">
             <div class="container">
                 <div class="trapezio_left"></div>
                 <div class="trapezio_right"></div>
             </div>
         </div>
         <div class="row items-end content">
-            <div class="col-3">
+            <div class="col-12 col-md-3">
                 <img style="width:70%;padding: 20px; float: right" src="images/huna.svg">
             </div>
-            <div class="col-3">
+            <div class="gt-md col-3">
             </div>
-            <div class="col-6">
+            <div class="col-11 col-md-6">
                 <div class="row" style="margin-bottom: 34px;">
-                    <div class="col-4" >
+                    <div class="col-12 col-md-4" >
                         <h4>Contactos</h4>
                         <div class="text-h6">
                             <p>
@@ -35,22 +35,22 @@
                             </p>
                         </div>
                     </div>
-                    <div class="col-4" >
+                    <div class="col-12 col-md-4" >
                         <h4>Serviços</h4>
                         <h4>Portfólio</h4>
                         <h4>Preços</h4>
                         <h4>Area Reservada</h4>
                     </div>
-                    <div class="col-4" >
+                    <div class="col-12 col-md-4" >
                         <q-btn no-caps class="btn-goldenCustom2 flat push dense text-weight-bold" padding="15px 30px" text-color="white" :label="$t('letsTalk')" />
                         <p class="text-h6" >Deixe tudo conosco, nós criamos e desenvolvemos para si e para a sua empresa.</p>
                     </div>
                 </div>
                 <div class="row" >
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
                         <p class="text-h6" >Politicas de privacidade | Cookies | RGPD</p>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
                         <p class="text-h6" >HUNA &reg; 2018 | Todos os direitos reservados</p>
                     </div>
                 </div>

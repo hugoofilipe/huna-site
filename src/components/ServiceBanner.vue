@@ -9,7 +9,7 @@
 
           <div class="row justify-around section items-center">
               <!-- Coluna da esquerda -->
-              <div class="col-3">
+              <div class="col-12 col-md-3">
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===1?service_img=0:service_img=1' >
                   <q-card-section class="flex">
                     <q-img class="q-mr-md" style="width:42px" src='icons/house.png' />
@@ -93,7 +93,7 @@
               </div>
 
               <!-- Coluna da direita -->
-              <div class="col-3 q-px-md">
+              <div class="col-12 col-md-3 q-px-md">
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===5?service_img=0:service_img=5' >
                   <q-card-section class="flex">
                     <q-img class="q-mr-md" style="width:42px" src='icons/search.png' />
@@ -165,6 +165,12 @@
       cursor: pointer
     .q-img
       width: 60%
+  .bg-serviceBanner
+    @media (max-width: $breakpoint-sm-max)
+      margin: auto
+      padding: 27px 0px
+      h2, h4
+        color:#000  !important
 
 </style>
 
