@@ -3,10 +3,11 @@
     <carousel />
     <roadmap style="margin-top: -25px;"/>
     <banner />
-    <fieldsOfBusiness />
-    <serviceBanner />
-    <contactForm />
-    <footerMain />
+    <fields-of-business />
+    <service-banner />
+    <prices-table />
+    <contact-form />
+    <footer-main />
   </q-page>
 </template>
 
@@ -16,6 +17,7 @@ import roadmap from 'src/components/RoadMap.vue'
 import banner from 'src/components/Banner.vue'
 import fieldsOfBusiness from 'src/components/FieldsOfBusiness.vue'
 import serviceBanner from 'src/components/ServiceBanner.vue'
+import pricesTable from 'src/components/PricesTable.vue'
 import contactForm from 'src/components/ContactForm.vue'
 import footerMain from 'src/components/Footer.vue'
 
@@ -27,6 +29,7 @@ export default {
     banner,
     fieldsOfBusiness,
     serviceBanner,
+    pricesTable,
     contactForm,
     footerMain
   }
