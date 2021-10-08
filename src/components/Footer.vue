@@ -82,7 +82,7 @@
         width: 67%
         color: grey
         clip-path: polygon(0 0, 100% 0%, 100% 100%, 19% 100%)
-        background: #D6D6D6
+        background: #eeeeee
         height: 330px
         margin-left: -10%
         margin-top: 70px
