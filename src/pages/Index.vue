@@ -6,7 +6,7 @@
     <fields-of-business />
     <service-banner />
     <prices-table />
-    <contact-form />
+    <contact-form  id="contacto"/>
     <footer-main />
   </q-page>
 </template>

@@ -31,9 +31,16 @@
               <div>
                 <q-btn no-caps :label="$t('services')" />
                 <q-btn no-caps :label="$t('portfolio')" />
-                <q-btn no-caps :label="$t('prices')" />
-                <q-btn no-caps class="btn-goldenCustom" text-clor="white" rounded :label="$t('letsTalk')" />
-
+                <q-btn no-caps type="a" href="#prices" :label="$t('prices')" />
+                <q-btn
+                  no-caps
+                  class="btn-goldenCustom btn-rounded"
+                  type="a"
+                  href="#contacto"
+                  text-color="white"
+                  rounded
+                  :label="$t('letsTalk')"
+                />
                 <q-btn :label="languageKeyNow">
                   <q-menu>
                     <q-list
@@ -86,7 +93,10 @@
             </q-item>
 
             <q-item clickable v-ripple class="text-h5">
-              <q-item-section>
+              <q-item-section
+                              type="a"
+                href="#contacto"
+>
                 {{$t('prices')}}
               </q-item-section>
             </q-item>
@@ -101,11 +111,11 @@
                 flat
                 clickable
                 v-ripple
-                :to="{ name:'request'}"
+                type="a"
+                href="#contacto"
+                :label="$t('letsTalk')"
                 class="col-12 btn-goldenCustom text-white"
-              >
-                {{ $t('letsTalk') }}
-              </q-btn>
+              />
 
               <q-btn
                 :label="languageKeyNow"

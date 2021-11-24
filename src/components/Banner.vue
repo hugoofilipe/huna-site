@@ -1,11 +1,9 @@
 <template>
   <div class="bg-banner banner">
-
     <div class="column justify-center ">
         <h2 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('bannerTitle1')}}</h2>
         <hr class="col banner-hr">
     </div>
-
     <div class="q-pa-lg row justify-center section">
         <div class="col-11 col-md-4 text-center">
             <img style="width:65%" src="images/huna.svg">
@@ -13,11 +11,17 @@
         <div class="col-10 col-md-3 column items-center">
             <p class="text-white"> {{$t('bannerText1')}}</p>
             <div class="col q-pa-md q-gutter-sm self-end">
-                <q-btn no-caps class="btn-greenCustom flat push dense text-weight-bold" padding="15px 30px" text-color="white" :label="$t('letsTalk')" />
+                <q-btn
+                  o-caps
+                  class="btn-greenCustom flat push dense text-weight-bold"
+                  padding="15px 30px"
+                  text-color="white"
+                  :label="$t('letsTalk')"
+                  type="a" href="#contacto"
+                />
             </div>
         </div>
     </div>
-
   </div>
 </template>
 

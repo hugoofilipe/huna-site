@@ -1,5 +1,6 @@
 <template>
-    <div class="bg-greenCustom q-pa-lg row justify-center section">
+    <div
+      class="bg-greenCustom q-pa-lg row justify-center section">
         <div class="col-11 col-md-5 text-center q-ma-md q-pa-md">
           <div class="row">
             <h4 class="text-weight-medium text-white" >Envie uma mensagem</h4>
@@ -41,25 +42,41 @@
                 <q-btn type="a" no-caps class="btn-goldenCustom flat push dense text-h5 text-weight-bold q-px-sm"  text-color="black" label="Messenger" href="https://www.messenger.com/t/huna.pt" target="_blank" />
               </div>
             </div>
-            <div class="col-12 col-md-4" >
-                <h4>Contactos</h4>
-                <div class="text-h6">
-                    <p>
-                        <q-icon name="img:icons/envelope.svg" />
-                        geral@huna.pt
-                    </p>
-                    <p>
-                        <q-icon name="img:icons/phone.svg" />
-                        913314803
-                    </p>
-                    <p>
-                        <q-icon name="img:icons/clock.svg" />
-                        Seg-Dom: 9:00 às 20:00
-                    </p>
-                    <p>
-                        <q-icon name="img:icons/globe.svg" />
-                        Lisboa, Portugal
-                    </p>
+            <div class="col-12 col-md-7 row q-px-md q-pt-xl justify-center items-center" >
+                <div class="text-h6 col-5">
+                  <h4>Contactos</h4>
+                  <p>
+                      <q-icon class="q-ma-xs" name="img:icons/envelope.svg" />
+                      geral@huna.pt
+                  </p>
+                  <p>
+                      <q-icon class="q-ma-xs" name="img:icons/phone.svg" />
+                      913314803
+                  </p>
+                  <p>
+                      <q-icon class="q-ma-xs" name="img:icons/clock.svg" />
+                      Seg-Dom: 9:00 às 20:00
+                  </p>
+                  <p>
+                      <q-icon class="q-ma-xs" name="img:icons/globe.svg" />
+                      Lisboa, Portugal
+                  </p>
+                  <p class="q-pt-md" style="filter: opacity(0.5)">
+                    <q-btn type="a" href="https://www.facebook.com/Huna.pt/" target="_blank" dense >
+                        <q-icon name="fab fa-facebook" color="#00704A" size="30px" style="color: #00704A"/>
+                    </q-btn>
+                    <q-btn type="a" href="https://www.instagram.com/huna.pt/" target="_blank" dense>
+                        <q-icon name="fab fa-instagram" color="#00704A" size="30px" style="color: #00704A"/>
+                    </q-btn>
+                  </p>
+              </div>
+                <div class="col-7">
+                  <q-img
+                    width="100%"
+                    class="q-ma-md"
+                    style="filter: opacity(0.5)"
+                    src="images/huna.svg"
+                  />
                 </div>
             </div>
         </div>
@@ -69,6 +86,16 @@
 <style lang="sass">
   .bg-gray
     background: #eeeeee
+  .section
+      padding: 100px 0px
+      @media (max-width: $breakpoint-sm-max)
+        padding: 0px 0px 100px 0px
+      p
+        font-size: 19px
+  .q-field__label
+    font-size: 19px
+  .q-btn__wrapper::before
+    box-shadow: none
 </style>
 
 <script>

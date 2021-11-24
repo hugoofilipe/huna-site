@@ -12,7 +12,7 @@
       :height="windowHeight"
       ref="carousel"
       :autoplay="autoplay"
-      class="text-white shadow-10"
+      class=" shadow-10"
       style="background: black; border-radius:0 0 30px 30px; box-shadow: rgb(0 0 0 / 20%) 0px 1px 8px, rgb(0 0 0 / 56%) 0px 3px 12px 0px; "
     >
       <!-- Slide 1 -->
@@ -40,8 +40,8 @@
               <p class="col-12 col-md-8 text-h6">{{$t('slide1Subtitle1')}}</p>
             </div>
             <div class="q-pa-md q-gutter-sm gt-sm">
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('prices')" />
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('contacts')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" :label="$t('prices')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" type="a" href="#contacto" :label="$t('contacts')" />
             </div>
           </div>
           <div class="col-6 gt-sm">
@@ -75,8 +75,8 @@
               <p class="col-12 col-md-8 text-h6">{{$t('slide2Subtitle1')}}</p>
             </div>
             <div class="q-pa-md q-gutter-sm gt-sm">
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('prices')" />
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('contacts')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" :label="$t('prices')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" type="a" href="#contacto" :label="$t('contacts')" />
             </div>
           </div>
           <div class="col-6 gt-sm">
@@ -111,8 +111,8 @@
               <p class="col-12 col-md-8 text-h6">{{$t('slide3Subtitle1')}}</p>
             </div>
             <div class="q-pa-md q-gutter-sm gt-sm">
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('prices')" />
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('contacts')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" :label="$t('prices')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" type="a" href="#contacto" :label="$t('contacts')" />
             </div>
           </div>
           <div class="col-6 gt-sm">
@@ -146,8 +146,8 @@
               <p class="col-12 col-md-8 text-h6">{{$t('slide4Subtitle1')}}</p>
             </div>
             <div class="q-pa-md q-gutter-sm gt-sm">
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('prices')" />
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('contacts')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" :label="$t('prices')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" type="a" href="#contacto" :label="$t('contacts')" />
             </div>
           </div>
           <div class="col-6 gt-sm">
@@ -181,8 +181,8 @@
               <p class="col-12 col-md-8 text-h6">{{$t('slide5Subtitle1')}}</p>
             </div>
             <div class="q-pa-md q-gutter-sm gt-sm">
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('prices')" />
-              <q-btn no-caps rounded class="btn-goldenCustom text-h6" text-color="white" :label="$t('contacts')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" :label="$t('prices')" />
+              <q-btn no-caps rounded class="btn-goldenCustom btn-rounded text-h6" text-color="white" type="a" href="#contacto" :label="$t('contacts')" />
             </div>
           </div>
           <div class="col-6 gt-sm">
@@ -193,8 +193,14 @@
 
       <template v-slot:control>
         <div class="gt-sm q-carousel__control absolute q-gutter-xs absolute-bottom-right" style="bottom: 5%;left: 5%">
-          <q-icon name="facebook" color="white" size="30px" />
-          <q-icon name="share" color="white" size="30px" />
+          <div class=" q-pt-sm" >
+              <q-btn type="a" href="https://www.facebook.com/Huna.pt/" target="_blank" >
+                  <q-icon name="fab fa-facebook" color="white" size="30px" style="color: #eeeeee"/>
+              </q-btn>
+              <q-btn type="a" href="https://www.instagram.com/huna.pt/" target="_blank" dense>
+                  <q-icon name="fab fa-instagram" color="white" size="30px" style="color: #eeeeee"/>
+              </q-btn>
+          </div>
         </div>
 
         <q-carousel-control
