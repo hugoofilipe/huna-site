@@ -10,27 +10,31 @@
                   aria-label="Menu"
                   @click="leftDrawerOpen = !leftDrawerOpen"
               />
-              <q-avatar
-                square
-                size=100px
-                class="q-px-sm"
-              >
-                <img src="images/huna.svg">
-              </q-avatar>
+              <router-link to="#welcome">
+                <q-avatar
+                  square
+                  size=100px
+                  class="q-px-sm"
+                >
+                  <img src="images/huna.svg">
+                </q-avatar>
+              </router-link>
             </q-toolbar>
 
             <q-toolbar class="gt-sm q-px-lg q-my-md menu ">
-              <q-avatar
-                square
-                size=100px
-              >
-                <img src="images/huna.svg">
-              </q-avatar>
-
+              <router-link to="#welcome">
+                <q-avatar
+                  square
+                  size=100px
+                >
+                  <img src="images/huna.svg"
+                >
+                </q-avatar>
+              </router-link>
               <q-space />
               <div>
-                <q-btn no-caps :label="$t('services')" />
-                <q-btn no-caps :label="$t('portfolio')" />
+                <q-btn no-caps type="a" href="#how" :label="$t('how')" />
+                <q-btn no-caps type="a" href="#services" :label="$t('services')" />
                 <q-btn no-caps type="a" href="#prices" :label="$t('prices')" />
                 <q-btn
                   no-caps
@@ -72,32 +76,37 @@
           content-class="bg-black"
           :width="300"
         >
-          <q-avatar
-                square
-                size=100px
-                class="q-px-sm text-center q-ma-lg"
-              >
-                <img src="images/huna.svg">
-              </q-avatar>
+          <router-link to="#welcome">
+            <q-avatar
+              square
+              size=100px
+              class="q-px-sm text-center q-ma-lg"
+            >
+              <img src="images/huna.svg">
+            </q-avatar>
+          </router-link>
           <q-list padding style="color:white">
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                {{$t('services')}}
+                <router-link tag="btn" to="#how">
+                  {{$t('how')}}
+                </router-link>
               </q-item-section>
             </q-item>
 
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                {{$t('portfolio')}}
+                <router-link tag="btn" to="#services">
+                  {{$t('services')}}
+                </router-link>
               </q-item-section>
             </q-item>
 
             <q-item clickable v-ripple class="text-h5">
-              <q-item-section
-                              type="a"
-                href="#contacto"
->
-                {{$t('prices')}}
+              <q-item-section>
+                <router-link tag="btn" to="#prices">
+                  {{$t('prices')}}
+                </router-link>
               </q-item-section>
             </q-item>
           </q-list>

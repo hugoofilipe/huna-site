@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueCarousel from 'vue-carousel'
+import Carousel3d from 'vue-carousel-3d'
 
 import routes from './routes'
 
 Vue.use(VueRouter)
-Vue.use(VueCarousel)
+Vue.use(VueCarousel) // https://ssense.github.io/vue-carousel/examples/
+Vue.use(Carousel3d) // https://wlada.github.io/vue-carousel-3d/guide/
 
 /*
  * If not building with SSR mode, you can

@@ -2,7 +2,7 @@
   "name": "app",
   "version": "0.0.1",
   "description": "huna website",
-  "productName": "Quasar App",
+  "productName": "Huna Digital",
   "author": "hugo filipe",
   "private": true,
   "scripts": {
@@ -17,6 +17,7 @@
     "core-js": "^3.15.2",
     "quasar": "^1.0.0",
     "vue-carousel": "^0.18.0",
+    "vue-carousel-3d": "^1.0.1",
     "vue-i18n": "^8.0.0"
   },
   "devDependencies": {

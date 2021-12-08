@@ -1,6 +1,6 @@
 <template>
-  <div id="prices" class="bg-greenCustom section priceTable">
-      <div class="column justify-center q-py-xl">
+  <div class="bg-greenCustom section priceTable">
+      <div class="column justify-center">
         <h2 class="col text-center text-weight-medium text-white" style="margin-bottom:30px">{{$t('priceTableTitle1')}}</h2>
         <hr class="hr">
         <h4 class="col-2 text-center text-grey-5" style="margin:13px">{{$t('priceTableSubTitle1')}}</h4>
@@ -8,7 +8,7 @@
       <div class="row justify-center ">
 
           <!-- PRIMEIRA coluna -->
-          <div class="bg-gray col-10 col-sm-7 col-md-3 col-side q-my-xl">
+          <div class="bg-gray col-11 col-sm-7 col-md-3 col-side q-my-xl">
             <h3
               class="col text-weight-medium"
               style="margin-bottom: 13px"
@@ -80,11 +80,11 @@
           </div>
 
           <!-- SEGUNDA coluna -->
-          <div class="bg-white col-10 col-sm-7 col-md-3  col-side center">
+          <div class="bg-white col-11 col-sm-7 col-md-3  col-side center">
             <div class="column items-end">
               <q-btn
                 no-caps
-                class="btn-goldenCustom btn-rounded col-6"
+                class="btn-goldenCustom btn-rounded col-6 q-px-md popular"
                 text-color="black"
                 :label="$t('popular')"
               />
@@ -172,7 +172,7 @@
           </div>
 
           <!-- TERCEIRA coluna -->
-          <div class="bg-gray col-10 col-sm-7 col-md-3 col-side q-mt-xl">
+          <div class="bg-gray col-11 col-sm-7 col-md-3 col-side q-mt-xl">
             <h3
               class="col text-weight-medium"
               style="margin-bottom: 13px"
@@ -272,7 +272,6 @@
 
 <style lang="sass">
 .section.priceTable
-  padding: 120px 0px
   .hr
       width: 10%
   .col-side
@@ -284,11 +283,18 @@
       height: fit-content
       span
         font-size: 19px
+      @media (max-width: $breakpoint-sm-min)
+        padding: 3px 8% 28px 8%
   .col-side.center
       padding: 20px 4% 20px 4%
       margin-left: -2%
       margin-right: -2%
       z-index: 1
+      @media (max-width: $breakpoint-sm-min)
+        padding: 27px 8% 28px 8%
+  .popular
+    @media (min-width: $breakpoint-sm-max)
+      margin-right: -16%
 
 </style>
 

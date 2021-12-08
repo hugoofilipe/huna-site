@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-greenCustom serviceBanner ">
-        <div class="q-ma-xl q-pa-xl bg-serviceBanner mobile-hide">
+    <div class="bg-greenCustom serviceBanner-mobile ">
+        <div class="q-ma-xl q-pa-xl bg-serviceBanner-mobile">
           <div class="column justify-center q-pa-xl">
             <h2 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('serviceBannertitle1')}}</h2>
             <hr class="col hr">
@@ -19,6 +19,11 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerLocationText')}}</p>
                   </q-card-section>
+
+                    <div v-show = "service_img == 1" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-black text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerLocationTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerLocationInfo1')}}</p>
+                    </div>
                 </q-card>
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===2?service_img=0:service_img=2' >
@@ -30,6 +35,11 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerBrandingText')}}</p>
                   </q-card-section>
+
+                    <div v-show = "service_img == 2" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerBrandingTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerBrandingInfo1')}}</p>
+                    </div>
                 </q-card>
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===3?service_img=0:service_img=3' >
@@ -41,6 +51,11 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerSocialMediaText')}}</p>
                   </q-card-section>
+
+                    <div v-show = "service_img == 3" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerSocialMediaTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerSocialMediaInfo1')}}</p>
+                    </div>
                 </q-card>
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===4?service_img=0:service_img=4' >
@@ -52,48 +67,13 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerTechnologyText')}}</p>
                   </q-card-section>
+
+                    <div v-show = "service_img == 4" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerTechnologyTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerTechnologyInfo1')}}</p>
+                    </div>
                 </q-card>
-              </div>
 
-              <!-- conteudo escrito -->
-              <div v-show = "service_img == 0" class="col-4 q-px-md text-center">
-                <img style="width:90%" src="images/huna.svg">
-              </div>
-              <div v-show = "service_img == 1" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerLocationTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerLocationInfo1')}}</p>
-              </div>
-              <div v-show = "service_img == 2" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerBrandingTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerBrandingInfo1')}}</p>
-              </div>
-              <div v-show = "service_img == 3" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerSocialMediaTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerSocialMediaInfo1')}}</p>
-              </div>
-              <div v-show = "service_img == 4" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerTechnologyTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerTechnologyInfo1')}}</p>
-              </div>
-              <div v-show = "service_img == 5" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerSeoTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerSeoInfo1')}}</p>
-              </div>
-              <div v-show = "service_img == 6" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerPwaTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerPwaInfo1')}}</p>
-              </div>
-              <div v-show = "service_img == 7" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerMonitoringTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerMonitoringInfo1')}}</p>
-              </div>
-              <div v-show = "service_img == 8" class="col-4 q-px-md text-center">
-                <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerResponsiveTitle')}}</div>
-                <p class="text-white text-justify text-h5 ">{{$t('serviceBannerResponsiveInfo1')}}</p>
-              </div>
-
-              <!-- Coluna da direita -->
-              <div class="col-12 col-md-3 q-px-md">
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===5?service_img=0:service_img=5' >
                   <q-card-section class="flex">
                     <q-img class="q-mr-md" style="width:42px" src='icons/search.png' />
@@ -103,6 +83,11 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerSeoText')}}</p>
                   </q-card-section>
+
+                    <div v-show = "service_img == 5" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerSeoTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerSeoInfo1')}}</p>
+                    </div>
                 </q-card>
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===6?service_img=0:service_img=6' >
@@ -114,6 +99,11 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerPwaText')}}</p>
                   </q-card-section>
+
+                    <div v-show = "service_img == 6" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerPwaTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerPwaInfo1')}}</p>
+                    </div>
                 </q-card>
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===7?service_img=0:service_img=7' >
@@ -125,6 +115,11 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerMonitoringText')}}</p>
                   </q-card-section>
+
+                    <div v-show = "service_img == 7" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerMonitoringTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerMonitoringInfo1')}}</p>
+                    </div>
                 </q-card>
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===8?service_img=0:service_img=8' >
@@ -136,17 +131,21 @@
                   <q-card-section>
                     <p class="text-h6 text-black">{{$t('serviceBannerResponsiveText')}}</p>
                   </q-card-section>
-                </q-card>
 
+                    <div v-show = "service_img == 8" class="col-4 q-px-md text-center">
+                        <!-- <div class="text-white text-h4 text-left text-weight-medium q-my-lg">{{$t('serviceBannerResponsiveTitle')}}</div> -->
+                        <p class="text-black text-justify text-h5 ">{{$t('serviceBannerResponsiveInfo1')}}</p>
+                    </div>
+                </q-card>
               </div>
+
           </div>
         </div>
-        <mobile class="mobile-only"/>
     </div>
 </template>
 
 <style lang="sass">
-  .serviceBanner
+  .serviceBanner-mobile
     padding: 100px 0px
     .hr
       width: 10%
@@ -166,7 +165,7 @@
       cursor: pointer
     .q-img
       width: 60%
-  .bg-serviceBanner
+  .bg-serviceBanner-mobile
     @media (max-width: $breakpoint-sm-max)
       margin: auto
       padding: 27px 0px
@@ -176,14 +175,8 @@
 </style>
 
 <script>
-import mobile from 'src/components/serviceBanner/mobile.vue'
-
 export default {
-
-  name: 'serviceBanner',
-  components: {
-    mobile
-  },
+  name: 'mobile',
   data () {
     return {
       service_img: 0

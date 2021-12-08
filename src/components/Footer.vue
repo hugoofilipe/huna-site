@@ -6,7 +6,7 @@
                 <div class="trapezio_right"></div>
             </div>
         </div>
-        <div class="row content">
+        <div class="row content mobile-hide">
             <div class="col-12 col-md-3 self-end">
                 <div class="column items-center">
                     <img style="width:60%;" class="q-ma-md" src="images/huna.svg">
@@ -20,7 +20,7 @@
                     </div>
                 </div>
             </div>
-            <div class="gt-md col-2">
+            <div class="gt-sm col-2">
             </div>
             <div class="col-11 col-md-6 self-end">
                 <div class="row" style="margin-bottom: 34px;">
@@ -46,10 +46,16 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-4" >
-                        <h4>Serviços</h4>
-                        <h4>Portfólio</h4>
-                        <h4>Preços</h4>
-                        <h4>Area reservada</h4>
+                        <router-link tag="btn" to="#how">
+                            <h4>{{$t('how')}}</h4>
+                        </router-link>
+                        <router-link tag="btn" to="#services">
+                            <h4>{{$t('services')}}</h4>
+                        </router-link>
+                        <router-link tag="btn" to="#prices">
+                            <h4>{{$t('prices')}}</h4>
+                        </router-link>
+                        <h4>Login</h4>
                     </div>
                     <div class="col-12 col-md-3" >
                         <q-btn
@@ -74,7 +80,48 @@
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="row content mobile-only">
+            <div class="bg-black col-12 col-md-3 self-end">
+                <div class="column items-center">
+                    <img style="width:60%;" class="q-my-lg" src="images/huna.svg">
+                    <!-- <div class=" q-pt-sm" >
+                        <q-btn type="a" href="https://www.facebook.com/Huna.pt/" target="_blank" >
+                            <q-icon name="fab fa-facebook" color="white" size="30px" style="color: #eeeeee"/>
+                        </q-btn>
+                        <q-btn type="a" href="https://www.instagram.com/huna.pt/" target="_blank" dense>
+                            <q-icon name="fab fa-instagram" color="white" size="30px" style="color: #eeeeee"/>
+                        </q-btn>
+                    </div> -->
+                </div>
+            </div>
+            <div class="gt-sm col-2">
+            </div>
+            <div class="bg-black text-white ">
+                <div class="row justify-center" style="margin-bottom: 34px;">
+                    <div class="col-10 text-center" >
+                        <q-btn
+                            no-caps
+                            class="btn-goldenCustom2 flat push dense text-weight-bold"
+                            padding="15px 30px"
+                            text-color="white"
+                            :label="$t('letsTalk')"
+                            type="a"
+                            href="#contacto"
+                        />
+                        <p class="text-h6" >Deixe tudo conosco, nós criamos e desenvolvemos para si e para a sua empresa.</p>
+                    </div>
+                </div>
+                <div class="row justify-center q-ma-sm" >
+                    <div class="col-10 text-center">
+                        <p class="text-h6" >Politicas de privacidade | Cookies | RGPD</p>
+                    </div>
+                    <div class="col-10 text-center">
+                        <p class="text-h6" >HUNA &reg; 2018 | Todos os direitos reservados</p>
+                    </div>
+                </div>
+            </div>
+        </div>    </div>
 </template>
 
 <style lang="sass">

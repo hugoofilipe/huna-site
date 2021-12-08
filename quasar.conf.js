@@ -118,8 +118,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Quasar App',
-        short_name: 'Quasar App',
+        name: 'Huna Digital',
+        short_name: 'Huna Digital',
         description: 'huna website',
         display: 'standalone',
         orientation: 'portrait',
