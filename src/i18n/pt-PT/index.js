@@ -109,5 +109,6 @@ export default {
   testemonialSix: '"Foi com a Huna.pt que avançamos para esse processo. Com muito profissionalismo e bastante estratégia o grande foco foi criar uma presença online, realização de marketing e publicidade digital, o que nos tem ajudado a aumentar de clientes todos os anos."',
   send: 'Enviado',
   sendMessage: 'Obrigado por nos ter contactado. No seguimento do pedido de contacto/esclarecimento iremos analisar e entrar em contacto consigo assim que possível. Qualquer dúvida ou questão urgente entre em contacto para o 913314803',
-  how: 'Como?'
+  how: 'Como?',
+  pleaseTypeMessage: 'Por favor preencha o campo'
 }

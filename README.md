@@ -21,10 +21,12 @@ Install:
     - $ docker-compose up --build
 
 Developing mode:
+-yarn
 -yarn quasar dev
 
 Deploy prod:
-- yarn quasar build
+- versionar (alterar em footer.vue)
+- npm run build
 - Fazer pull da branch em CPANEL
 
 Taks todo:
@@ -43,4 +45,7 @@ Other resources:
 - https://dev.to/mayank091193/personal-website-made-using-vue-js-and-quasar-framework-40bf
 - https://github.com/smolinari/quasar-docker#initializing-a-new-project
 - https://www.linkedin.com/pulse/site-da-comunidade-vuejs-de-bh-quasar-docker-figueiredo-gon%C3%A7alves/
+
+
+
 

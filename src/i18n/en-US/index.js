@@ -109,5 +109,6 @@ export default {
   testemonialSix: '"It was with Huna.pt that we moved towards this process. With a lot of professionalism and a lot of strategy, the main focus was on creating an online presence, carrying out marketing and digital advertising, which has helped us to increase our number of customers every year."',
   send: 'Send',
   sendMessage: 'Thank you for contacting us. Following the request for contact/clarification, we will analyze and get in touch with you as soon as possible. Any urgent questions, please contact 913314803',
-  how: 'How?'
+  how: 'How?',
+  pleaseTypeMessage: 'Please type something'
 }

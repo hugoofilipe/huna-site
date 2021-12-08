@@ -1,5 +1,5 @@
 #!/bin/bash
-yarn quasar build
+yarn quasar build #gera a pasta dist com o código compilado
 mkdir .deploy && cd .deploy
 git clone --branch deploy_dev https://github.com/hugoofilipe/huna-site.git
 cd huna-site/

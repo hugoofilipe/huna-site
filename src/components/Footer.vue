@@ -9,7 +9,15 @@
         <div class="row content mobile-hide">
             <div class="col-12 col-md-3 self-end">
                 <div class="column items-center">
-                    <img style="width:60%;" class="q-ma-md" src="images/huna.svg">
+                    <q-img style="width:60%;" class="q-ma-md" src="images/huna.svg">
+                        <q-tooltip
+                            anchor="top middle"
+                            transition-show="scale"
+                            transition-hide="scale"
+                        >
+                            Versão:{{version}}
+                        </q-tooltip>
+                    </q-img>
                     <div class=" q-pt-sm" >
                         <q-btn type="a" href="https://www.facebook.com/Huna.pt/" target="_blank" >
                             <q-icon name="fab fa-facebook" color="white" size="30px" style="color: #eeeeee"/>
@@ -178,7 +186,7 @@ export default {
   name: 'footer',
   data () {
     return {
-
+      version: 0.02
     }
   }
 }

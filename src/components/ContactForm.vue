@@ -4,10 +4,32 @@
         <div class="row">
           <h4 class="text-weight-medium text-white" >Envie uma mensagem</h4>
         </div>
-        <form @submit.prevent="submit"  @click="alert = true">
+        <form @submit.prevent.stop="submit">
           <div class="row justify-between q-my-sm">
-            <q-input standout="bg-gray text-white" clearable label-color="grey-6" v-model="name" bg-color="grey-3" label="Nome" class="col-6"/>
-            <q-input type="tel" mask="### ### ###" fill-mask="#" standout="bg-gray text-white" label-color="grey-6" v-model="tel" bg-color="grey-3" label="Telefone" class="q-ml-sm col-5"/>
+            <q-input
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || $t('pleaseTypeMessage')]"
+              standout="bg-gray text-white"
+              clearable
+              label-color="grey-6"
+              v-model="name"
+              bg-color="grey-3"
+              label="Nome *"
+              class="col-6"
+            />
+            <q-input
+              lazy-rules
+              :rules="[ val => val !== null && val !== '' || $t('pleaseTypeMessage')]"
+              type="tel"
+              mask="### ### ###"
+              fill-mask="#"
+              standout="bg-gray text-white"
+              label-color="grey-6"
+              v-model="tel"
+              bg-color="grey-3"
+              label="Telefone"
+              class="q-ml-sm col-5"
+            />
           </div>
           <div class="row justify-around full-width text-white" >
             <q-input type="email" standout="bg-gray text-white" clearable label-color="grey-6" v-model="mail" label="Email" bg-color="grey-3" class="q-ma-sm full-width text-white"/>
@@ -24,6 +46,7 @@
           <div class="row justify-around" >
             <q-btn type="submit" no-caps class="btn-goldenCustom flat push dense text-h5 text-weight-bold" padding="8px 100px" text-color="black" label="Enviar" />
           </div>
+          <!-- <q-toggle v-model="accept" label="I accept the license and terms" /> -->
         </form>
       </div>
       <div class="bg-gray col-10 col-md-4 q-ma-md q-pa-md">
@@ -42,7 +65,7 @@
           </div>
         </div>
         <div class="col-12 col-md-7 row q-px-md q-pt-xl justify-center items-center" >
-          <div class="text-h6 col-12 col-5">
+          <div class="text-h6 col-12 col-md-5">
             <h4>Contactos</h4>
             <p>
                 <q-icon class="q-ma-xs" name="img:icons/envelope.svg" />
@@ -126,23 +149,27 @@ export default {
       field: null,
       text: null,
       alert: false
+      // accept: false
     }
   },
   methods: {
     submit () {
-      console.log('Sending email...')
-      const mail = {
-        to: 'geral@huna.pt',
-        subject: 'Contact form from website HUNA',
-        name: this.name,
-        tel: this.tel,
-        mail: this.mail,
-        service: this.service,
-        field: this.field,
-        text: this.text
+      if (this.name !== null && this.tel !== null) {
+        console.log('Sending email...')
+        const mail = {
+          to: 'geral@huna.pt',
+          subject: 'Contact form from website HUNA',
+          name: this.name,
+          tel: this.tel,
+          mail: this.mail,
+          service: this.service,
+          field: this.field,
+          text: this.text
+        }
+        // Simple POST request with a JSON body using axios
+        axios.post('https://huna.pt/api/text-mail', mail)
+        this.alert = true
       }
-      // Simple POST request with a JSON body using axios
-      axios.post('https://huna.pt/api/text-mail', mail)
     }
   }
 }
