@@ -9,7 +9,7 @@
         <div class="row content mobile-hide">
             <div class="col-12 col-md-3 self-end">
                 <div class="column items-center">
-                    <q-img style="width:60%;" class="q-ma-md" src="images/huna.svg">
+                    <q-img style="width:60%;" class="q-ma-md" src="images/huna.svg" alt="Huna logo">
                         <q-tooltip
                             anchor="top middle"
                             transition-show="scale"
@@ -33,7 +33,7 @@
             <div class="col-11 col-md-6 self-end">
                 <div class="row" style="margin-bottom: 34px;">
                     <div class="col-12 col-md-4" >
-                        <h4>Contactos</h4>
+                        <h4>{{$t('contacts')}}</h4>
                         <div class="text-h6">
                             <p>
                                 <q-icon name="img:icons/envelope.svg" />
@@ -45,7 +45,7 @@
                             </p>
                             <p>
                                 <q-icon name="img:icons/clock.svg" />
-                                Seg-Dom: 9:00 às 20:00
+                                Seg-Sáb: 9:00 às 19:00
                             </p>
                             <p>
                                 <q-icon name="img:icons/globe.svg" />
@@ -75,7 +75,7 @@
                             type="a"
                             href="#contacto"
                         />
-                        <p class="text-h6" >Deixe tudo conosco, nós criamos e desenvolvemos para si e para a sua empresa.</p>
+                        <p class="text-h6" >{{$t('slide1Subtitle1')}}</p>
                     </div>
                 </div>
                 <div class="row" >
@@ -92,7 +92,7 @@
         <div class="row content mobile-only">
             <div class="bg-black col-12 col-md-3 self-end">
                 <div class="column items-center">
-                    <img style="width:60%;" class="q-my-lg" src="images/huna.svg">
+                    <img style="width:60%;" class="q-my-lg" src="images/huna.svg" alt="HUNA LOGO">
                     <!-- <div class=" q-pt-sm" >
                         <q-btn type="a" href="https://www.facebook.com/Huna.pt/" target="_blank" >
                             <q-icon name="fab fa-facebook" color="white" size="30px" style="color: #eeeeee"/>
@@ -117,7 +117,7 @@
                             type="a"
                             href="#contacto"
                         />
-                        <p class="text-h6" >Deixe tudo conosco, nós criamos e desenvolvemos para si e para a sua empresa.</p>
+                        <p class="text-h6" >{{$t('slide1Subtitle1')}}</p>
                     </div>
                 </div>
                 <div class="row justify-center q-ma-sm" >
@@ -186,7 +186,7 @@ export default {
   name: 'footer',
   data () {
     return {
-      version: 0.02
+      version: 0.08
     }
   }
 }

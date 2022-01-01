@@ -11,14 +11,16 @@
     "build": "sh ./scripts/build_deploy.sh"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.12.2",
     "@vue/composition-api": "^1.0.2",
     "axios": "^0.22.0",
     "core-js": "^3.15.2",
     "quasar": "^1.0.0",
     "vue-carousel": "^0.18.0",
     "vue-carousel-3d": "^1.0.1",
-    "vue-i18n": "^8.0.0"
+    "vue-gtag": "^1.16.1",
+    "vue-i18n": "^8.0.0",
+    "workbox-webpack-plugin": "^6.4.2"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",

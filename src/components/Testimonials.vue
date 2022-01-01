@@ -6,7 +6,7 @@
         <h4 class="col-2 text-center text-grey-5" style="margin:13px">{{$t('testemonialSubTitle1')}}</h4>
       </div>
       <div class="row q-my-xl gt-sm" >
-          <img  src="icons/message.png" class="center">
+          <img  src="icons/message.png" class="center" alt="Message icon">
 
           <div style="position: relative;float: right;z-index: 1000; "></div>
           <carousel-3d
@@ -17,8 +17,7 @@
             perspective=0
             scalling=200
             display=3
-            autoplay=true
-            autoplayTimeout=3000
+            controlsVisible=true
           >
             <slide
               :index="0"
@@ -140,11 +139,31 @@
                 <p>Account Manager</p>
               </div>
             </slide>
+            <slide
+              :index="6"
+              class="bg-grey-2 col-10 col-sm-7 col-md-3  col-side column justify-center "
+            >
+              <div class="col-2 text-center q-pb-lg vertical-middle">
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+              </div>
+              <div class=" q-px-xl text-justify">
+                <p> {{$t('testemonialSeven')}}</p>
+              </div>
+              <hr class="hr small">
+              <div class="col-1 text-center">
+                <h4 style="margin:0px">Vilma André</h4>
+                <p>Sales Assistent / Botaca</p>
+              </div>
+            </slide>
           </carousel-3d>
       </div>
 
       <div class="row q-ma-md lt-md">
-          <img  src="icons/message.png" class="center">
+          <img src="icons/message.png" alt="Message icon" class="center">
 
           <div style="position: relative;float: right;z-index: 1000; "></div>
           <carousel-3d
@@ -276,6 +295,26 @@
               <div class="col-1 text-center">
                 <h4 style="margin:0px">VetCaxias</h4>
                 <p>CEO</p>
+              </div>
+            </slide>
+            <slide
+              :index="6"
+              class="bg-grey-2 col-10 col-sm-7 col-md-3  col-side column justify-center "
+            >
+              <div class="col-2 text-center q-pb-lg vertical-middle">
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+                  <q-icon name="star" size="40px" style="color: orange"/>
+              </div>
+              <div class=" q-px-xl text-justify">
+                <p> {{$t('testemonialSeven')}}</p>
+              </div>
+              <hr class="hr small">
+              <div class="col-1 text-center">
+                <h4 style="margin:0px">Vilma André</h4>
+                <p>Sales Assistent / Botaca</p>
               </div>
             </slide>
           </carousel-3d>

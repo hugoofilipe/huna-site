@@ -100,7 +100,7 @@ module.exports = function (/* ctx */) {
       // ],
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Meta']
     },
 
     // animations: 'all', // --- includes all animations
@@ -120,34 +120,19 @@ module.exports = function (/* ctx */) {
       manifest: {
         name: 'Huna Digital',
         short_name: 'Huna Digital',
-        description: 'huna website',
+        description: 'Produção de produtos digitais',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#fff',
-        theme_color: '#027be3',
+        background_color: '#000',
+        theme_color: '#00704a',
         icons: [
           {
-            src: 'icons/icon-128x128.png',
-            sizes: '128x128',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-192x192.png',
+            src: 'icons/android-chrome-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'icons/icon-256x256.png',
-            sizes: '256x256',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-384x384.png',
-            sizes: '384x384',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-512x512.png',
+            src: 'public/icons/android-chrome-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           }

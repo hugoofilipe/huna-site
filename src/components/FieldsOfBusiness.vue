@@ -11,7 +11,7 @@
             bg_hover_seven: isHovering_7,
             bg_hover_height: isHovering_8
             }"
-        class=" fieldsOfBusiness-wide fieldsOfBusiness bg_hover_third mobile-hide"
+        class=" fieldsOfBusiness-wide fieldsOfBusiness bg_hover_third gt-xs"
         >
             <div class="column justify-center q-py-xl">
                 <h2 class="col text-center text-weight-medium text-white" style="margin:13px">{{$t('fieldsOfBusinessTitle1')}}</h2>
@@ -27,53 +27,52 @@
                 scrollPerPage="true"
             >
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_1 = true" @mouseout="isHovering_1 = false" class="img " src='images/restaurant2.jpg' />
+                    <q-img @mouseover="isHovering_1 = true" @mouseout="isHovering_1 = false" class="img " src='images/restaurant2.jpg' alt="Restaurante Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard1')}}</h5>
                     <div class="overlay"></div>
                 </slide>
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_2 = true" @mouseout="isHovering_2 = false" class="img" src='images/bars.jpg' />
+                    <q-img @mouseover="isHovering_2 = true" @mouseout="isHovering_2 = false" class="img" src='images/bars.jpg' alt="Bars Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard2')}}</h5>
                     <div class="overlay"></div>
                 </slide>
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_3 = true" @mouseout="isHovering_3 = false" class="img" src='images/rooms2.jpg' />
+                    <q-img @mouseover="isHovering_3 = true" @mouseout="isHovering_3 = false" class="img" src='images/rooms2.jpg' alt="Rooms Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard3')}}</h5>
                     <div class="overlay"></div>
                 </slide>
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_4 = true" @mouseout="isHovering_4 = false" class="img" src='images/saude.jpg' />
+                    <q-img @mouseover="isHovering_4 = true" @mouseout="isHovering_4 = false" class="img" src='images/saude.jpg' alt="Health Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard4')}}</h5>
                     <div class="overlay"></div>
                 </slide>
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_5 = true" @mouseout="isHovering_5 = false" class="img" src='images/shopper.jpg' />
+                    <q-img @mouseover="isHovering_5 = true" @mouseout="isHovering_5 = false" class="img" src='images/shopper.jpg' alt="Shopper Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard5')}}</h5>
                     <div class="overlay"></div>
                 </slide>
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_6 = true" @mouseout="isHovering_6 = false" class="img" src='images/construction.jpg' />
+                    <q-img @mouseover="isHovering_6 = true" @mouseout="isHovering_6 = false" class="img" src='images/construction.jpg' alt="Constrution Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard6')}}</h5>
                     <div class="overlay"></div>
                 </slide>
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_7 = true" @mouseout="isHovering_7 = false" class="img" src='images/imobiliario.jpg' />
+                    <q-img @mouseover="isHovering_7 = true" @mouseout="isHovering_7 = false" class="img" src='images/imobiliario.jpg' alt="Real state Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard7')}}</h5>
                     <div class="overlay"></div>
                 </slide>
                 <slide class="container_slide">
-                    <q-img @mouseover="isHovering_8 = true" @mouseout="isHovering_8 = false" class="img" src='images/clinics.jpg' />
+                    <q-img @mouseover="isHovering_8 = true" @mouseout="isHovering_8 = false" class="img" src='images/clinics.jpg' alt="Clinics Huna image"/>
                     <h5 class="centered">{{$t('fieldsOfBusinesscard8')}}</h5>
                     <div class="overlay"></div>
                 </slide>
             </carousel>
         </div>
-        <mobile class="mobile-only"/>
+        <mobile class="lt-sm"/>
     </div>
 </template>
 
 <style lang="sass">
-.fieldsOfBusiness-wide
 .fieldsOfBusiness
     padding: 120px 0px
     .hr

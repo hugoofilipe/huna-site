@@ -15,42 +15,42 @@
             :perPage=1
         >
             <slide class="container_slide">
-                <q-img class="img " src='images/restaurant2.jpg' />
+                <q-img class="img " src='images/restaurant2.jpg' alt="Restaurant Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard1')}}</h5>
                 <div class="overlay"></div>
             </slide>
             <slide class="container_slide">
-                <q-img class="img" src='images/bars.jpg' />
+                <q-img class="img" src='images/bars.jpg' alt="Bars Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard2')}}</h5>
                 <div class="overlay"></div>
             </slide>
             <slide class="container_slide">
-                <q-img class="img" src='images/rooms2.jpg' />
+                <q-img class="img" src='images/rooms2.jpg' alt="Rooms Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard3')}}</h5>
                 <div class="overlay"></div>
             </slide>
             <slide class="container_slide">
-                <q-img class="img" src='images/saude.jpg' />
+                <q-img class="img" src='images/saude.jpg' alt="Health Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard4')}}</h5>
                 <div class="overlay"></div>
             </slide>
             <slide class="container_slide">
-                <q-img class="img" src='images/shopper.jpg' />
+                <q-img class="img" src='images/shopper.jpg' alt="Shoppers Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard5')}}</h5>
                 <div class="overlay"></div>
             </slide>
             <slide class="container_slide">
-                <q-img class="img" src='images/construction.jpg' />
+                <q-img class="img" src='images/construction.jpg' alt="Constrution Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard6')}}</h5>
                 <div class="overlay"></div>
             </slide>
             <slide class="container_slide">
-                <q-img class="img" src='images/imobiliario.jpg' />
+                <q-img class="img" src='images/imobiliario.jpg' alt="Real state Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard7')}}</h5>
                 <div class="overlay"></div>
             </slide>
             <slide class="container_slide">
-                <q-img class="img" src='images/clinics.jpg' />
+                <q-img class="img" src='images/clinics.jpg' alt="Clinics Huna image"/>
                 <h5 class="centered">{{$t('fieldsOfBusinesscard8')}}</h5>
                 <div class="overlay"></div>
             </slide>
@@ -88,7 +88,7 @@
         transform: translate(-50%, -50%)
     .img
         height:500px
-        width: 360px
+        // width: 360px
     .centered
         position: absolute
         transform: translate(-50%)

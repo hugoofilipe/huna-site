@@ -9,10 +9,10 @@
 
           <div class="row justify-around section items-center">
               <!-- Coluna da esquerda -->
-              <div class="col-12 col-md-3">
+              <div class="col-12">
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===1?service_img=0:service_img=1' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/house.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/house.png' alt="Icon House Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerLocationTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -28,7 +28,7 @@
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===2?service_img=0:service_img=2' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/branding.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/branding.png' alt="Icon Branding Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerBrandingTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -44,7 +44,7 @@
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===3?service_img=0:service_img=3' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/socialMedia.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/socialMedia.png' alt="Icon Social Media Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerSocialMediaTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -60,7 +60,7 @@
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===4?service_img=0:service_img=4' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/technology.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/technology.png' alt="Icon Technology Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerTechnologyTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -76,7 +76,7 @@
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===5?service_img=0:service_img=5' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/search.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/search.png' alt="Icon Search Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerSeoTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -92,7 +92,7 @@
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===6?service_img=0:service_img=6' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/pwa.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/pwa.png' alt="Icon PWA Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerPwaTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -108,7 +108,7 @@
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===7?service_img=0:service_img=7' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/monitoring.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/monitoring.png' alt="Icon Monitor Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerMonitoringTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -124,7 +124,7 @@
 
                 <q-card dark flat class="bg-grey-3 my-card q-ma-md pointer" @click='service_img===8?service_img=0:service_img=8' >
                   <q-card-section class="flex">
-                    <q-img class="q-mr-md" style="width:42px" src='icons/responsive.png' />
+                    <q-img class="q-mr-md" style="width:42px" src='icons/responsive.png' alt="Icon Responsive Huna"/>
                     <div class="text-black text-h4 text-weight-medium">{{$t('serviceBannerResponsiveTitle')}}</div>
                   </q-card-section>
                   <q-separator inset class="btn-goldenCustom" style="width:30%"/>
@@ -138,7 +138,6 @@
                     </div>
                 </q-card>
               </div>
-
           </div>
         </div>
     </div>

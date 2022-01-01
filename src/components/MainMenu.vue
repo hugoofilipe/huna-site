@@ -1,7 +1,7 @@
 <template>
     <div>
         <q-header class=" bg-black"  elevated reveal>
-            <q-toolbar class="lt-md q-my-lg menu_mobile">
+            <q-toolbar class="lt-md q-my-sm menu_mobile">
               <q-btn
                   flat
                   dense
@@ -16,19 +16,18 @@
                   size=100px
                   class="q-px-sm"
                 >
-                  <img src="images/huna.svg">
+                  <img src="images/huna.svg" alt="Huna logo">
                 </q-avatar>
               </router-link>
             </q-toolbar>
 
-            <q-toolbar class="gt-sm q-px-lg q-my-md menu ">
+            <q-toolbar class="gt-sm q-px-lg q-my-sm menu ">
               <router-link to="#welcome">
                 <q-avatar
                   square
                   size=100px
                 >
-                  <img src="images/huna.svg"
-                >
+                  <img src="images/huna.svg" alt="Huna logo" >
                 </q-avatar>
               </router-link>
               <q-space />
@@ -82,7 +81,7 @@
               size=100px
               class="q-px-sm text-center q-ma-lg"
             >
-              <img src="images/huna.svg">
+              <img src="images/huna.svg" alt="Huna logo" >
             </q-avatar>
           </router-link>
           <q-list padding style="color:white">

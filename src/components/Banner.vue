@@ -5,11 +5,11 @@
         <hr class="col banner-hr">
     </div>
     <div class="q-pa-lg row justify-center section">
-        <div class="col-11 col-md-4 text-center">
-            <img style="width:65%" src="images/huna.svg">
+        <div class="col-11 col-lg-4 text-center">
+            <img style="width:65%" src="images/huna.svg" alt="Logo HUNA">
         </div>
-        <div class="col-12 mobile-only" style="padding:60px"></div>
-        <div class="col-10 col-md-3 column items-center">
+        <div class="col-12 lt-sm" style="padding:60px"></div>
+        <div class="col-10 col-lg-3 column items-center">
             <p class="text-white"> {{$t('bannerText1')}}</p>
             <div class="col q-pa-md q-gutter-sm self-end btn-ctc">
                 <q-btn
@@ -39,6 +39,8 @@
       padding: 40px 0px 10px 0px
     .section
         padding: 100px 0px
+        .q-btn
+          line-height: 2.415em
         p
           font-size: 36px
           line-height: 46px

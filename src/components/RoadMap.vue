@@ -12,8 +12,8 @@
         class="templates"
       >
       <div class="row justify-around section">
-        <div class="col-10 col-md-3">
-          <q-img style="width:87px" src='icons/computer.png' />
+        <div class="col-10 col-md-5 col-lg-3 section1">
+          <q-img style="width:87px" src='icons/computer.png' alt="Computer Huna image"/>
           <h2 class="text-weight-medium text-white">{{$t('roadmapTitle2')}}</h2>
           <p class="text-white">{{$t('roadmapText2')}}</p>
           <!-- <p class="text-white"> {{$t('readMore')}}</p> -->
@@ -31,8 +31,8 @@
       class="templates sectionTwo"
     >
       <div class="row justify-around section text-right" style="">
-        <div class="col-10 col-md-3">
-          <q-img style="width:87px" src='icons/store.png' />
+        <div class="col-10 col-md-5 col-lg-3">
+          <q-img style="width:87px" src='icons/store.png' alt="Store Huna image"/>
           <h2 class="text-weight-medium text-white">{{$t('roadmapTitle3')}}</h2>
           <p class="text-white">{{$t('roadmapText3')}}</p>
           <!-- <p class="text-white">{{$t('readMore')}}</p> -->
@@ -51,11 +51,11 @@
     <q-space/>
 
     <div class="row justify-around section">
-      <div class="col-10 col-md-6">
-        <q-img src='images/relaxe.png' />
+      <div class="col-10 col-md-6 gt-xs">
+        <q-img src='images/relaxe.png' alt="Dont hurry Huna image"/>
       </div>
-      <div class="col-10 col-md-3">
-        <q-img style="width:87px" src='icons/world.png' />
+      <div class="col-10 col-md-5 col-lg-3">
+        <q-img style="width:87px" src='icons/world.png' alt="Huna world image"/>
         <h2 class="text-weight-medium text-white">{{$t('roadmapTitle5')}}</h2>
         <p class="text-white">{{$t('roadmapText5')}}</p>
       </div>
@@ -78,8 +78,9 @@
           bottom: -50%
     .section
       padding: 50px 0px
-      // @media (max-width: $breakpoint-sm)
-      //   padding: 0px 0px
+      .section1
+        @media (max-width: $breakpoint-sm)
+          margin-top: 100px
       p
         font-size: 36px
         line-height: 1

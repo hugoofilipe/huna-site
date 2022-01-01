@@ -1,5 +1,5 @@
 # huna-site
-This is the source code of HUNA website using docker, vuejs, quasar, yarn, node
+This is the source code of HUNA website using docker, vuejs, quasar, yarn, node, PWA, workblox
 
 Demo:
  - Local -> http://localhost:8000/
@@ -28,6 +28,7 @@ Deploy prod:
 - versionar (alterar em footer.vue)
 - npm run build
 - Fazer pull da branch em CPANEL
+- Não esqueçer que vai para ao 2021.huna.pt
 
 Taks todo:
 - Create docker contanier with node, vue and quasar
