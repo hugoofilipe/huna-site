@@ -62,40 +62,23 @@ export default {
     testimonials,
     footerMain
   },
-  // setup () {
-  //   console.log('IsServer:', process.env.SERVER)
-  //   return {
-  //     meta () {
-  //       return {
-  //         title: 'Test Index',
-  //         meta: {
-  //           description: { name: 'description', content: 'Page 1' },
-  //           keywords: { name: 'keywords', content: 'Quasar website' }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   // Meta(metaData)
-  // }
-  // setup () {
-  //   Meta(() => {
-  //     return {
-  //       title: 'Test Index',
-  //       meta: {
-  //         description: { name: 'description', content: 'Page 1' },
-  //         keywords: { name: 'keywords', content: 'Quasar website' }
-  //       }
-  //     }
-  //   })
-  // },
-  meta () {
-    return {
-      title: 'Test Index',
-      meta: {
-        description: { name: 'description', content: 'Page 1' },
-        keywords: { name: 'keywords', content: 'websites loja online portal plataformas aplicações Marketing digital UX UI Visual Design Criação de Conteudo Redes sociais Branding' }
-      }
-    }
+  metaInfo: {
+    title: 'Huna Digital',
+    titleTemplate: '%s | Produção de produtos digitais',
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'description', content: ' Apoio técnico, todos os dias, de unidade tecnologica com experiência digital capaz de criar e desenvolver por si e pela sua empresa.' },
+      { name: 'author', content: 'Hugo Filipe Duarte' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { name: 'keywords', content: 'websites loja online portal plataformas aplicações Marketing digital UX UI Visual Design Criação de Conteudo Redes sociais Branding' },
+      { name: 'news_keywords', content: 'websites loja online portal plataformas aplicações Marketing digital UX UI Visual Design Criação de Conteudo Redes sociais Branding' },
+      { name: 'og:email', content: 'geral@huna.pt' },
+      { name: 'og:phone_number', content: '913314803' },
+      { name: 'og:url', content: 'https://huna.pt' },
+      { name: 'og:title', content: 'Huna Digital' },
+      { name: 'og:image', content: 'https://huna.pt/images/huna.svg' },
+      { name: 'og:type', content: 'digital.services' }
+    ]
   }
 }
 </script>

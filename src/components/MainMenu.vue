@@ -87,7 +87,7 @@
           <q-list padding style="color:white">
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                <router-link tag="btn" to="#how">
+                <router-link to="#how" class="menu_drawer">
                   {{$t('how')}}
                 </router-link>
               </q-item-section>
@@ -95,7 +95,7 @@
 
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                <router-link tag="btn" to="#services">
+                <router-link to="#services" class="menu_drawer">
                   {{$t('services')}}
                 </router-link>
               </q-item-section>
@@ -103,7 +103,7 @@
 
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                <router-link tag="btn" to="#prices">
+                <router-link to="#prices" class="menu_drawer">
                   {{$t('prices')}}
                 </router-link>
               </q-item-section>
@@ -169,6 +169,13 @@
   .menu_mobile
     span
       font-size: 20px
+  .menu_drawer
+    font-size: 1.5rem
+    font-weight: 400
+    line-height: 2rem
+    letter-spacing: normal
+    color: white
+    text-decoration-line: unset
 </style>
 
 <script>

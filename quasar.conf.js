@@ -8,6 +8,16 @@
 /* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin')
 
+const SitemapPlugin = require('sitemap-webpack-plugin').default
+const paths = [
+  {
+    path: '/',
+    lastmod: '2021-12-30',
+    priority: 1.0,
+    changefreq: 'yearly'
+  }// add all pages here
+]
+
 module.exports = function (/* ctx */) {
   return {
     // https://v1.quasar.dev/quasar-cli/supporting-ts
@@ -44,8 +54,13 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
 
+      extendWebpack (cfg) {
+        cfg.plugins.push(
+          new SitemapPlugin({ base: 'https://huna.pt', paths })
+        )
+      },
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
@@ -123,8 +138,8 @@ module.exports = function (/* ctx */) {
         description: 'Produção de produtos digitais',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#000',
-        theme_color: '#00704a',
+        background_color: '#ffa000',
+        theme_color: '#ffa000',
         icons: [
           {
             src: 'icons/android-chrome-192x192.png',
@@ -132,7 +147,7 @@ module.exports = function (/* ctx */) {
             type: 'image/png'
           },
           {
-            src: 'public/icons/android-chrome-512x512.png',
+            src: 'icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           }

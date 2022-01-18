@@ -10,6 +10,7 @@
         :height="800"
         :speed="1"
         class="templates"
+        alt="Websites Huna layer"
       >
       <div class="row justify-around section">
         <div class="col-10 col-md-5 col-lg-3 section1">

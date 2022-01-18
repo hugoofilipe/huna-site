@@ -17,7 +17,7 @@
             perspective=0
             scalling=200
             display=3
-            controlsVisible=true
+            :controls-visible="true"
           >
             <slide
               :index="0"
@@ -174,8 +174,8 @@
             perspective=0
             scalling=200
             display=1
-            autoplay=true
-            autoplayTimeout=3000
+            :autoplay="true"
+            :autoplayTimeout=3000
           >
             <slide
               :index="0"

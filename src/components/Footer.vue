@@ -1,12 +1,12 @@
 <template>
     <div class="footer">
-        <div class="background gt-sm">
+        <div class="background gt-md">
             <div class="container">
                 <div class="trapezio_left"></div>
                 <div class="trapezio_right"></div>
             </div>
         </div>
-        <div class="row content mobile-hide">
+        <div class="row content gt-md">
             <div class="col-12 col-md-3 self-end">
                 <div class="column items-center">
                     <q-img style="width:60%;" class="q-ma-md" src="images/huna.svg" alt="Huna logo">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <div class="gt-sm col-2">
+            <div class="gt-md col-2">
             </div>
             <div class="col-11 col-md-6 self-end">
                 <div class="row" style="margin-bottom: 34px;">
@@ -54,13 +54,13 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-4" >
-                        <router-link tag="btn" to="#how">
+                        <router-link to="#how" class="menu_footer">
                             <h4>{{$t('how')}}</h4>
                         </router-link>
-                        <router-link tag="btn" to="#services">
+                        <router-link to="#services" class="menu_footer">
                             <h4>{{$t('services')}}</h4>
                         </router-link>
-                        <router-link tag="btn" to="#prices">
+                        <router-link to="#prices" class="menu_footer">
                             <h4>{{$t('prices')}}</h4>
                         </router-link>
                         <h4>Login</h4>
@@ -89,8 +89,8 @@
             </div>
         </div>
 
-        <div class="row content mobile-only">
-            <div class="bg-black col-12 col-md-3 self-end">
+        <div class="row content lt-lg">
+            <div class="bg-black col-12 col-lg-3 self-end">
                 <div class="column items-center">
                     <img style="width:60%;" class="q-my-lg" src="images/huna.svg" alt="HUNA LOGO">
                     <!-- <div class=" q-pt-sm" >
@@ -105,7 +105,7 @@
             </div>
             <div class="gt-sm col-2">
             </div>
-            <div class="bg-black text-white ">
+            <div class="col-12 bg-black text-white ">
                 <div class="row justify-center" style="margin-bottom: 34px;">
                     <div class="col-10 text-center" >
                         <q-btn
@@ -178,15 +178,21 @@
             margin-bottom: 20px
     .content.row
         padding-bottom: 30px
-
+    .menu_footer
+        font-size: 1.5rem
+        font-weight: 400
+        line-height: 2rem
+        letter-spacing: normal
+        color: #7A7A7A
+        text-decoration-line: unset
 </style>
 
 <script>
 export default {
-  name: 'footer',
+  name: 'footer-main',
   data () {
     return {
-      version: 0.08
+      version: 0.11
     }
   }
 }

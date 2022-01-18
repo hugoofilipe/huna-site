@@ -24,7 +24,7 @@
                 class="carousel"
                 :autoplay="true"
                 :loop="true"
-                scrollPerPage="true"
+                :scrollPerPage="true"
             >
                 <slide class="container_slide">
                     <q-img @mouseover="isHovering_1 = true" @mouseout="isHovering_1 = false" class="img " src='images/restaurant2.jpg' alt="Restaurante Huna image"/>
