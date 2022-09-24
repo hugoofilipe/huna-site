@@ -1,10 +1,7 @@
 <!--
+Corrigir mobile
 validação pela cookie nao me está a permitir fazer play em todos os videos no momento de carregamento da página (Fixe era fazer o play do primeiro video, depois fazer sempre play do focus juntamente com o anterior e o seguinte, e fazer play sempre que se carregasse no butão)
-windguru
-magicseedweed
 criar pagina apos login para mostrar "cam" e "campeonato Padel";
-Quero usar: context menu em cima dos videos
-Quero usar: mini-mode with slot
 uqero fazer scrollactive (ou tentar usar calss CSS usando focus para ver o active)
 evocar o formulario de contacto
 Corrigir scroll vuejs add space before section when jump by anchor
@@ -89,33 +86,47 @@ limpar erros
       </div>
     </q-drawer>
     <q-page-container>
-      <div style="padding-top:100px">
-        <div v-for="(beach, index) in webcams" v-bind:key="index" class="section">
-          <h4>
+      <div>
+        <div v-for="(beach, index) in webcams" v-bind:key="index" class="section q-pa-md">
+          <h4 class="text-weight-medium">
             {{beach.title}}
           </h4>
           <video-player :options="videoOptions" :src="beach.src" :type="beach.type" :anchor="beach.anchor" />
         </div>
-        <div id="windguru" style="padding-top:100px">
+        <div id="windguru" style="padding-top:100px" class="section q-pa-md">
+          <h4 class="text-weight-medium">
+            Windguru
+          </h4>
           <iframe scrolling="no" seamless="seamless" style="border: none; width: 100%; overflow: hidden; height: 823px;" src="https://www.windguru.cz/widget-fcst-iframe.php?s=48963&amp;m=3&amp;mw=84&amp;uid=wg_fwdg_48963_3_1616953874460&amp;wj=kmh&amp;tj=c&amp;waj=m&amp;odh=0&amp;doh=24&amp;fhours=240&amp;hrsm=1&amp;vt=forecasts&amp;lng=pt&amp;ts=2&amp;p=WINDSPD,GUST,MWINDSPD,SMER,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR,TMP,TMPE,WCHILL,FLHGT,CDC,TCDC,APCP1s,SLP,RH,RATING&amp;hostname=huna.pt&amp;url=https%3A%2F%2Fhuna.pt%2Fcam%2F" id="iFrameResizer0"></iframe>
         </div>
-        <div id="tide" class="tideschart window-height row justify-center items-center">
-          <iframe scrolling="no" src="https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day" height="700px" width="500px"></iframe></div>
+        <div id="tide" class="tideschart window-height items-center section q-pa-md" style="padding-top:100px" >
+          <h4 class="text-weight-medium">
+            Marés
+          </h4>
+          <q-responsive :ratio="4/3">
+            <iframe scrolling="no" src="https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day" height="700px" width="500px"></iframe>
+          </q-responsive>
         </div>
-        <div id="surfforecast" style="padding-top:100px">
+        <div id="surfforecast" style="padding-top:100px" class="section q-pa-md">
+          <h4 class="text-weight-medium">
+            Surf Forecast
+          </h4>
           <div class="wf-width-cont surf-fc-widget">
             <div class="widget-container">
-              <div class="external-cont" style="height:400px">
-                <iframe class="surf-fc-i" allowtransparency="true" src="//pt.surf-forecast.com/breaks/Costada-Caparica/forecasts/widget/a" height="400px" scrolling="no" frameborder="0" marginwidth="0" marginheight="0">
+              <div class="external-cont">
+                <iframe class="surf-fc-i" allowtransparency="true" src="//pt.surf-forecast.com/breaks/Costada-Caparica/forecasts/widget/a" height="400px" width="100%" scrolling="no" frameborder="0" marginwidth="0" marginheight="0">
                 </iframe>
               </div>
             </div>
           </div>
         </div>
-        <div id="magicseaweed" style="padding-top:200px">
-          <iframe src="https://magicseaweed.com/Costa-da-Caparica-Surf-Report/874/Embed/" width="940" height="600" frameborder="0"></iframe>
+        <div id="magicseaweed" style="padding-top:200px" class="section q-pa-xl">
+          <h4 class="text-weight-medium">
+            MagicSeaWeed
+          </h4>
+          <iframe src="https://magicseaweed.com/Costa-da-Caparica-Surf-Report/874/Embed/" scrolling="no" width="100%" height="5000px" frameborder="0"></iframe>
         </div>
-
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -128,13 +139,6 @@ export default {
   components: {
     VideoPlayer
   },
-  // mounted(){
-  //   function (){
-  //     var iframe = document.getElementById("tide");
-  //     var elmnt = iframe.contentWindow.document.getElementsByTagName("H1")[0];
-  //     elmnt.style.display = "none";
-  //   }
-  // },
   data () {
     return {
       drawer: false,
@@ -263,6 +267,14 @@ export default {
 </script>
 
 <style lang="sass">
+.q-page-container > div
+  padding-top:100px
+  h4
+    margin: 10px
+  .tideschart
+    iframe
+      height:600px
+      width: 800px
 .sidebar
   .align
     position: fixed
@@ -276,12 +288,18 @@ export default {
     padding: 0px
     img
       margin:0px
+  .q-expansion-item__container
+    a
+      border-radius: 6px
   .text-h6
     line-height: 1rem
+  @media (min-width: 1080px) and (max-width: 1366px)
+    .q-item--dense
+      min-height: 13px
+    .text-h6
+      font-size: 15px
+    .q-item__section--side > .q-icon
+      font-size: 20px
   .q-card__section
     padding-left: 56px
-.tideschart
-  iframe
-    height:600px
-    width: 800px
-</style>
+  </style>

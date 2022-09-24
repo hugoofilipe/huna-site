@@ -2,7 +2,7 @@
 # yarn quasar build #gera a pasta dist com o código compilado
 yarn quasar build -m pwa #gera a pasta dist com o código compilado
 mkdir .deploy && cd .deploy
-git clone --branch deploy_dev https://github.com/hugoofilipe/huna-site.git
+git clone --branch deploy_dev git@github.com:hugoofilipe/huna-site.git
 cd huna-site/
 git checkout deploy_dev && rm -rf *
 # cp -r ../../dist/spa/* .

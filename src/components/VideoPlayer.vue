@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :id="anchor" v-if="type === 'application/x-mpegURL'">
+    <div :id="anchor" v-if="type === 'application/x-mpegURL'" class="main-video">
       <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered">
         <source
           :src="src"
@@ -8,7 +8,7 @@
         >
       </video>
     </div>
-    <div :id="anchor" v-else-if="type === 'video/youtube'">
+    <div :id="anchor" v-else-if="type === 'video/youtube'" class="main-video">
       <iframe
         id="ytplayer"
         type="text/html"
@@ -58,8 +58,13 @@ export default {
 </script>
 
 <style lang="sass">
-iframe
- width: 100%
- height: calc(100vw/1.77)
+.main-video
+  iframe
+    width: 100%
+    height: calc(100vw/1.77)
+    border-radius:25px
+
+  div
+    border-radius:25px
 
 </style>
