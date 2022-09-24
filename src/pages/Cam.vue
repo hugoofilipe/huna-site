@@ -103,9 +103,7 @@ limpar erros
           <h4 class="text-weight-medium">
             Marés
           </h4>
-          <q-responsive :ratio="4/3">
             <iframe scrolling="no" src="https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day" height="700px" width="500px"></iframe>
-          </q-responsive>
         </div>
         <div id="surfforecast" style="padding-top:100px" class="section q-pa-md">
           <h4 class="text-weight-medium">
@@ -275,7 +273,7 @@ export default {
   .tideschart
     iframe
       height:600px
-      width: 800px
+      width: 100%
 .sidebar
   .align
     position: fixed
