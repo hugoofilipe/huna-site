@@ -14,7 +14,7 @@ limpar erros
 
 -->
 <template>
-  <q-layout view="lhr lpR lFr">
+  <q-layout view="lhr lpR lFr" class="bg-white">
     <q-drawer v-model="drawer" show-if-above side='right'
       :width="400" :breakpoint="500" class="bg-grey-3 sidebar">
       <div class="align">
@@ -267,6 +267,7 @@ export default {
 </script>
 
 <style lang="sass">
+
 .q-page-container > div
   padding-top:100px
   h4

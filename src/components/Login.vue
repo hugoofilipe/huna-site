@@ -61,8 +61,9 @@ export default {
 body
   background: #00704A
 .main
+  background: #eeeeee
   position: absolute
-  top: 30%
+  top: 20%
   left: 20%
   width: 60%
   text-align: center
