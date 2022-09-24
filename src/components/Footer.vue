@@ -30,8 +30,8 @@
             </div>
             <div class="gt-md col-2">
             </div>
-            <div class="col-11 col-md-6 self-end">
-                <div class="row" style="margin-bottom: 34px;">
+            <div class="col-11 col-md-6 self-end" >
+                <div class="row" style="margin: 34px;">
                     <div class="col-12 col-md-4" >
                         <h4>{{$t('contacts')}}</h4>
                         <div class="text-h6">
@@ -63,7 +63,9 @@
                         <router-link to="#prices" class="menu_footer">
                             <h4>{{$t('prices')}}</h4>
                         </router-link>
-                        <h4>Login</h4>
+                        <router-link to="cam" class="menu_footer">
+                            <h4>{{$t('Login')}}</h4>
+                        </router-link>
                     </div>
                     <div class="col-12 col-md-3" >
                         <q-btn
@@ -192,7 +194,7 @@ export default {
   name: 'footer-main',
   data () {
     return {
-      version: 0.11
+      version: 0.12
     }
   }
 }

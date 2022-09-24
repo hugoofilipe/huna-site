@@ -10,7 +10,7 @@
                   aria-label="Menu"
                   @click="leftDrawerOpen = !leftDrawerOpen"
               />
-              <router-link to="#welcome">
+              <router-link to="/">
                 <q-avatar
                   square
                   size=100px
@@ -22,7 +22,7 @@
             </q-toolbar>
 
             <q-toolbar class="gt-sm q-px-lg q-my-sm menu ">
-              <router-link to="#welcome">
+              <router-link to="/">
                 <q-avatar
                   square
                   size=100px

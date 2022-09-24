@@ -5,12 +5,18 @@ import Carousel3d from 'vue-carousel-3d'
 import VueMeta from 'vue-meta'
 import routes from './routes'
 import VueGtag from 'vue-gtag'
+// import VueScrollactive from 'vue-scrollactive'
+import VueCookies from 'vue-cookies'
+
+Vue.use(VueCookies, { expire: '180d' })
+
+// Vue.use(VueScrollactive)
 
 Vue.use(VueRouter)
 Vue.use(VueCarousel) // https://ssense.github.io/vue-carousel/examples/
 Vue.use(Carousel3d) // https://wlada.github.io/vue-carousel-3d/guide/
 Vue.use(VueGtag, { // https://matteo-gabriele.gitbook.io/vue-gtag/
-  config: { id: 'UA-137807367-1' },
+  config: { id: 'UA-1378  07367-1' },
   routes
 })
 Vue.use(VueMeta) // https://www.digitalocean.com/community/tutorials/vuejs-vue-meta

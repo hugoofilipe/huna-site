@@ -37,5 +37,14 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   error (/* err */) {
     // console.error('Error during service worker registration:', err)
+  },
+  forceSWupdate () {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (const registration of registrations) {
+          registration.update()
+        }
+      })
+    }
   }
 })
