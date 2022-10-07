@@ -5,13 +5,11 @@ import Carousel3d from 'vue-carousel-3d'
 import VueMeta from 'vue-meta'
 import routes from './routes'
 import VueGtag from 'vue-gtag'
-// import VueScrollactive from 'vue-scrollactive'
 import VueCookies from 'vue-cookies'
+import VueScrollActive from 'vue-scrollactive'
+// import scrollactive from 'vue-scrollactive'
 
-Vue.use(VueCookies, { expire: '180d' })
-
-// Vue.use(VueScrollactive)
-
+Vue.use(VueCookies)
 Vue.use(VueRouter)
 Vue.use(VueCarousel) // https://ssense.github.io/vue-carousel/examples/
 Vue.use(Carousel3d) // https://wlada.github.io/vue-carousel-3d/guide/
@@ -19,6 +17,8 @@ Vue.use(VueGtag, { // https://matteo-gabriele.gitbook.io/vue-gtag/
   config: { id: 'UA-1378  07367-1' },
   routes
 })
+Vue.use(VueScrollActive)
+
 Vue.use(VueMeta) // https://www.digitalocean.com/community/tutorials/vuejs-vue-meta
 /*
  * If not building with SSR mode, you can
@@ -28,6 +28,7 @@ Vue.use(VueMeta) // https://www.digitalocean.com/community/tutorials/vuejs-vue-m
  * async/await or return a Promise which resolves
  * with the Router instance.
  */
+Vue.$cookies.config('60d')
 
 export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({

@@ -1,24 +1,17 @@
 <template>
   <div>
-    <div :id="anchor" v-if="type === 'application/x-mpegURL'" class="main-video">
-      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered">
+    <div class="main-video">
+      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" >
         <source
           :src="src"
           :type="type"
         >
       </video>
+
+      <q-btn @click="play" >play</q-btn>
+      <q-btn @click="pause" >pause</q-btn>
+      <q-btn @click="restart(src)" >restart</q-btn>
     </div>
-    <div :id="anchor" v-else-if="type === 'video/youtube'" class="main-video">
-      <iframe
-        id="ytplayer"
-        type="text/html"
-        :src="src"
-        frameborder="0"
-        allowfullscreen
-      >
-      </iframe>
-    </div>
-    <div v-else >somthing goes wrong</div>
   </div>
 </template>
 
@@ -38,6 +31,24 @@ export default {
     src: [Number, String],
     type: [Number, String],
     anchor: [Number, String]
+  },
+  methods: {
+    play () {
+      this.player.play()
+    },
+    pause () {
+      this.player.pause()
+      // this.player.hasStarted(false)
+      // this.player.currentTime(0)
+      // // this.player.posterImage.show()
+      this.player.bigPlayButton.show()
+    },
+    restart (link) {
+      this.player.pause()
+      this.player.src({ src: link })
+      this.player.load()
+      this.player.play()
+    }
   },
   data () {
     return {

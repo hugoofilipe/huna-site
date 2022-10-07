@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "version": "0.0.1",
+  "name": "Huna site",
+  "version": "0.1.01",
   "description": "huna website",
   "productName": "Huna Digital",
   "author": "hugo filipe",
@@ -23,6 +23,7 @@
     "vue-cookies": "^1.8.1",
     "vue-gtag": "^1.16.1",
     "vue-i18n": "^8.0.0",
+    "vue-lazytube": "^1.1.1",
     "vue-meta": "^2.4.0",
     "vue-scrollactive": "^0.6.1",
     "workbox-webpack-plugin": "^6.4.2"
