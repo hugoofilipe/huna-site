@@ -4,10 +4,14 @@ DONE - Scrollactive (ou tentar usar calss CSS usando focus para ver o active)
 DONE - validação pela cookie nao me está a permitir fazer play em todos os videos no momento de carregamento da página (Fixe era fazer o play do primeiro video, depois fazer sempre play do focus juntamente com o anterior e o seguinte, e fazer play sempre que se carregasse no butão)
 DONE - Corrigir mobile
 DONE Correção de titulos e animações
-As novas versões necessitam de force refresh, nao pode ser
-versao mobile -> https://www.npmjs.com/package/vue-scroll-picker
-No mobile, quando carregamos num link a secçaão fica demasiado em cima.
+Corrigur cache porque as novas versões necessitam de force refresh, nao pode ser;
+Reduzir o tamanho dos titulos das camaras em MOBILE
 Criar um buttao de capture e enviar para whatsapp
+Verificar se a password está mesmo a guardar 180 dias
+
+Talves o menu tenha que ter scroll
+Corrigir visao landscape (pelo meno remover o header)
+versao mobile -> https://www.npmjs.com/package/vue-scroll-picker
 criar top ten de captures
 criar pagina apos login para mostrar "cam" e "campeonato Padel";
 evocar o formulario de contacto
