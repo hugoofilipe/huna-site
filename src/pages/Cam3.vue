@@ -28,7 +28,7 @@ limpar erros
 <template>
   <q-layout view="lhr lpR lFr" class="bg-white" @scroll="scrollHandler">
     <q-drawer v-model="drawer" show-if-above side='right'
-      :width="400" :breakpoint="500" class="bg-grey-3 sidebar">
+      :width="320" :breakpoint="500" class="bg-grey-3 sidebar">
       <div class="align">
         <q-list>
           <q-item v-for="(beach, index) in webcams" v-bind:key="index" dense>
@@ -100,10 +100,20 @@ limpar erros
     <q-page-container>
       <div>
         <div v-for="(beach, index) in webcams" v-bind:key="index" class="section q-pa-md" :id="beach.anchor">
-          <h4 class="text-weight-medium">
-            {{beach.title}}
-          </h4>
+
+          <div class="title row items-center">
+            <h4 class="text-weight-medium col-9 col-md-10">
+              {{beach.title}}
+            </h4>
+            <!-- <socialSharing /> -->
+            <q-fab color="green"  icon="share" direction="down" class="desktop-only">
+              <socialSharing style="padding-top:40px" :anchor="beach.anchor" :title="beach.title" position="top"/>
+              <q-btn push round color="white" icon="link" style="margin-top:80px" size="xl" @click="showDialog = true; copyURL(beach.anchor)"/>
+            </q-fab>
+          </div>
+
           <video-player v-if="beach.type === 'application/x-mpegURL'" :options="videoOptions" :src="beach.src" :type="beach.type" :anchor="beach.anchor" ref="video"/>
+
           <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type"/>
 
           <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'windguru'"  class="section q-pa-md">
@@ -132,6 +142,23 @@ limpar erros
         </div>
       </div>
 
+      <q-dialog v-model="showDialog">
+        <q-card class="bg-white text-black q-pa-md" style="width: 700px; max-width: 80vw;">
+          <q-toolbar class="row items-center">
+            <q-avatar size=70px style="height: auto;">
+              <img src="icons/android-chrome-192x192.png" alt="Huna logo">
+            </q-avatar>
+            <q-toolbar-title><span class="text-weight-bold text-h5">Link copiado com sucesso</span></q-toolbar-title>
+          </q-toolbar>
+          <q-card-section class="text-h6">
+            <span class="text-h6">Atenção:</span> Apenas deverás partilhar esta página com surfistas e pseudo-surfistas, que saibam partilhar ondas e momentos especiais. Não te esqueças, a amizade é o mais importante de tudo.
+          </q-card-section>
+          <q-card-actions align="right">
+              <q-btn flat label="Eu entendi" color="black" v-close-popup />
+            </q-card-actions>
+        </q-card>
+      </q-dialog>
+
       <q-page-sticky position="bottom-right" :offset="[22, 5]">
         <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -17px">
           <q-btn
@@ -150,12 +177,15 @@ limpar erros
 <script>
 import VideoPlayer from 'components/VideoPlayer.vue'
 import VideoYoutube from 'components/VideoYoutube.vue'
+// import SocialSharing from 'src/components/SocialSharing.vue'
+import socialSharing from 'components/SocialSharing.vue'
 
 export default {
   name: 'Cam3',
   components: {
     VideoPlayer,
-    VideoYoutube
+    VideoYoutube,
+    socialSharing
   },
   methods: {
     iconSelect (type) {
@@ -163,6 +193,15 @@ export default {
         return 'img:/icons/analytics.svg'
       } else {
         return 'img:/icons/beach.svg'
+      }
+    },
+    async copyURL (anchor) {
+      try {
+        this.copiedUrl = 'www.huna.pt/cam#' + anchor
+        await navigator.clipboard.writeText(this.copiedUrl)
+        // this.toolbar = true
+      } catch ($e) {
+        alert('Cannot copy')
       }
     },
     scrollHandler () {
@@ -219,6 +258,7 @@ export default {
   },
   data () {
     return {
+      showDialog: false,
       key: 0,
       drawer: false,
       mobile: true,
@@ -383,9 +423,30 @@ export default {
     iframe
       height:600px
       width: 100%
+  .title
+    .q-fab
+      display: block
+      position: relative
+      z-index: 1
+      margin-left:100px
+    .q-btn__wrapper
+      position: absolute
+      background: green
+      top: 120px
+  @media (min-width: 1080px) and (max-width: 1366px)
+    .title
+      .q-fab
+        display: block
+        position: relative
+        z-index: 1
+        margin-left:50px
+      .q-btn__wrapper
+        position: absolute
+        background: green
+        top: 50px
+        transform: scale(0.9)
   @media (max-width: 768px)
     .section
-      padding: 50px 0px
 .q-page-sticky
   .q-btn
     background: #ffa000
@@ -428,4 +489,15 @@ export default {
       font-size: 20px
   .q-card__section
     padding-left: 56px
+  @media (max-width: 768px)
+    .q-item
+      min-height: 25px
+      padding: 0px 5px 0px 10px
+      .text-h6
+        font-size: 14px
+        line-height: 0.7rem
+      .q-icon
+        font-size: 20px
+      .btn_active
+        font-size: 18px
   </style>

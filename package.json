@@ -26,6 +26,7 @@
     "vue-lazytube": "^1.1.1",
     "vue-meta": "^2.4.0",
     "vue-scrollactive": "^0.6.1",
+    "vue-social-sharing": "^3.0.9",
     "workbox-webpack-plugin": "^6.4.2"
   },
   "devDependencies": {

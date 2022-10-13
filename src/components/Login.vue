@@ -60,65 +60,66 @@ export default {
 <style lang="sass">
 body
   background: #00704A
-.main
-  background: #eeeeee
-  position: absolute
-  top: 20%
-  left: 20%
-  width: 60%
-  text-align: center
-  padding: 5px
-  border-radius: 3rem
-  box-shadow: 0px 0px 8px -5px #000000
-  padding-top: 3%
-  padding-bottom: 5%
-  font-family: "Poppins", sans-serif
-  @media (max-width: 1080px)
-    left: 5%
-    width: 90%
-    border-radius: none
-    box-shadow: none
-    .q-btn
-      .q-icon
-        color: (white !important)
+.TheLogin
+  .main
+    background: #eeeeee
+    position: absolute
+    top: 20%
+    left: 20%
+    width: 60%
+    text-align: center
+    padding: 5px
+    border-radius: 3rem
+    box-shadow: 0px 0px 8px -5px #000000
+    padding-top: 3%
+    padding-bottom: 5%
+    font-family: "Poppins", sans-serif
+    @media (max-width: 1080px)
+      left: 5%
+      width: 90%
+      border-radius: none
+      box-shadow: none
+      .q-btn
+        .q-icon
+          color: (white !important)
 
-h1
-  cursor: default
-  user-select: none
+  h1
+    cursor: default
+    user-select: none
 
-input
-  border-radius: 3rem
-  border: none
-  padding: 10px
-  text-align: center
-  outline: none
-  margin: 10px
-  width: 50%
-  box-sizing: border-box
-  font-family: "Poppins", sans-serif
-  font-weight: 400
+  input
+    border-radius: 3rem
+    border: none
+    padding: 10px
+    text-align: center
+    outline: none
+    margin: 10px
+    width: 50%
+    box-sizing: border-box
+    font-family: "Poppins", sans-serif
+    font-weight: 400
 
-input:hover
-  box-shadow: 0px 0px 8px -5px #000000
+  input:hover
+    box-shadow: 0px 0px 8px -5px #000000
 
-input:active
-  box-shadow: 0px 0px 8px -5px #000000
+  input:active
+    box-shadow: 0px 0px 8px -5px #000000
 
-#done
-  background: lightgreen
+  #done
+    background: lightgreen
 
-.button
-  cursor: pointer
-  user-select: none
+  .button
+    cursor: pointer
+    user-select: none
 
-img
-  height: 2.2rem
-  margin: 10px
-  user-select: none
+  img
+    height: 2.2rem
+    margin: 10px
+    user-select: none
 
-img:hover
-  box-shadow: 0px 0px 8px -5px #000000
-  cursor: pointer
-  border-radius: 200rem
+  img:hover
+    box-shadow: 0px 0px 8px -5px #000000
+    cursor: pointer
+    border-radius: 200rem
 
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div>
         <q-header class=" bg-black"  elevated reveal>
-            <q-toolbar class="lt-md q-my-sm menu_mobile">
+            <q-toolbar class="lt-md q-my-sm menu_mobile orientation-portrait">
               <q-btn
                   flat
                   dense
