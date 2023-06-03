@@ -168,7 +168,7 @@ export default {
           text: this.text
         }
         // Simple POST request with a JSON body using axios
-        axios.post('https://huna.pt/api/text-mail', mail)
+        axios.post('https://api.huna.pt/api/text-mail', mail)
         this.alert = true
       }
     }

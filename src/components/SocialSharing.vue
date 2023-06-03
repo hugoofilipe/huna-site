@@ -2,7 +2,7 @@
   <ShareNetwork
       network="whatsapp"
       :url="'www.huna.pt/cam#' + anchor"
-      :title="'Cãmara para a praia ' + title"
+      :title="'Câmara da praia ' + title"
       description="Atenção: Apenas deverás partilhar esta página com surfistas e pseudo-surfistas, que saibam partilhar ondas e momentos especiais. Não te esqueças, a amizade é o mais importante de tudo."
       name="Whatsapp"
       color="white"

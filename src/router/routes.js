@@ -9,17 +9,37 @@ const routes = [
   },
   {
     path: '/login',
-    component: () => import('src/layouts/UnProtected.vue'),
+    component: () => import('src/layouts/Onboarding.vue'),
     children: [
       { path: '', component: () => import('src/components/Login.vue') }
     ]
   },
   {
-    // esta é a rota que deve apontar para a página correta
+    path: '/portfolio',
+    component: () => import('src/layouts/UnProtected.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/Portfolio.vue') }
+    ]
+  },
+  {
     path: '/cam',
     component: () => import('layouts/Protected.vue'),
     children: [
-      { path: '', component: () => import('pages/Cam3.vue') }
+      { path: '', component: () => import('pages/Cam4.vue') }
+    ]
+  },
+  {
+    path: '/caparica',
+    component: () => import('layouts/Protected.vue'),
+    children: [
+      { path: '', component: () => import('pages/Cam4.vue') }
+    ]
+  },
+  {
+    path: '/peniche',
+    component: () => import('layouts/Protected.vue'),
+    children: [
+      { path: '', component: () => import('pages/Peniche.vue') }
     ]
   },
   {

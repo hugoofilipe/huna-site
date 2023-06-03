@@ -117,25 +117,25 @@ limpar erros
           <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type"/>
 
           <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'windguru'"  class="section q-pa-md">
-            <iframe scrolling="no" seamless="seamless" style="border: none; width: 100%; overflow: hidden; height: 823px;" src="https://www.windguru.cz/widget-fcst-iframe.php?s=48963&amp;m=3&amp;mw=84&amp;uid=wg_fwdg_48963_3_1616953874460&amp;wj=kmh&amp;tj=c&amp;waj=m&amp;odh=0&amp;doh=24&amp;fhours=240&amp;hrsm=1&amp;vt=forecasts&amp;lng=pt&amp;ts=2&amp;p=WINDSPD,GUST,MWINDSPD,SMER,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR,TMP,TMPE,WCHILL,FLHGT,CDC,TCDC,APCP1s,SLP,RH,RATING&amp;hostname=huna.pt&amp;url=https%3A%2F%2Fhuna.pt%2Fcam%2F" id="iFrameResizer0"></iframe>
+            <iframe scrolling="no" seamless="seamless" style="border: none; width: 100%; overflow: hidden; height: 823px;" src="https://www.windguru.cz/widget-fcst-iframe.php?s=48951&amp;m=3&amp;mw=84&amp;uid=wg_fwdg_48963_3_1616953874460&amp;wj=kmh&amp;tj=c&amp;waj=m&amp;odh=0&amp;doh=24&amp;fhours=240&amp;hrsm=1&amp;vt=forecasts&amp;lng=pt&amp;ts=2&amp;p=WINDSPD,GUST,MWINDSPD,SMER,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR,TMP,TMPE,WCHILL,FLHGT,CDC,TCDC,APCP1s,SLP,RH,RATING&amp;hostname=huna.pt&amp;url=https%3A%2F%2Fhuna.pt%2Fcam%2F" id="iFrameResizer0"></iframe>
           </div>
 
           <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'tide'" class="tideschart window-height items-center section q-pa-md" style="padding-top:100px" >
-            <iframe scrolling="no" src="https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day" height="700px" width="500px"></iframe>
+            <iframe scrolling="no" src="https://pt.tideschart.com/Portugal/Leiria/Peniche/Peniche/#day" height="700px" width="500px"></iframe>
           </div>
 
           <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'surfforecast'" style="padding-top:100px" class="section q-pa-md">
             <div class="wf-width-cont surf-fc-widget">
               <div class="widget-container">
                 <div class="external-cont">
-                  <iframe class="surf-fc-i" allowtransparency="true" src="//pt.surf-forecast.com/breaks/Costada-Caparica/forecasts/widget/a" height="400px" width="100%" scrolling="no" frameborder="0" marginwidth="0" marginheight="0">
+                  <iframe class="surf-fc-i" allowtransparency="true" src="//pt.surf-forecast.com/breaks/Baleal-Sul/forecasts/widget/a" height="400px" width="100%" scrolling="no" frameborder="0" marginwidth="0" marginheight="0">
                   </iframe>
                 </div>
               </div>
             </div>
           </div>
           <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'magicseaweed'" style="padding-top:200px" class="section q-pa-xl box">
-            <iframe src="https://magicseaweed.com/Costa-da-Caparica-Surf-Report/874/Embed/" scrolling="no" width="100%" height="5000px" frameborder="0"></iframe>
+            <iframe src="https://magicseaweed.com/Cantinho-Da-Baia-Surf-Report/994/Embed/" scrolling="no" width="100%" height="5000px" frameborder="0"></iframe>
           </div>
 
           <div v-else > something goes wrong code 5000</div>
@@ -268,135 +268,65 @@ export default {
       },
       webcams: [
         {
-          title: 'Cova do Vapor',
+          title: 'Foz do Arelho',
           type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-covadovapor/chunklist.m3u8',
-          link: 'https://www.surfline.com/surf-report/cova-do-vapor/584204204e65fad6a77096ad',
-          anchor: 'covadovapor'
+          src: 'https://video-auth1.iol.pt/beachcam/bcfozdoarelho/chunks.m3u8',
+          link: 'https://beachcam.meo.pt/livecams/foz-do-arelho/',
+          anchor: 'fozdoarelho'
         },
         {
-          title: 'Lorosae - São joão',
+          title: 'Almagreira',
           type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-saojoaocaparica/chunklist.m3u8',
-          link: 'https://www.surfline.com/surf-report/s-o-joao-da-caparica/5dbb587ff387900001fee288',
-          anchor: 'lorosae'
+          src: 'https://cams.cdn-surfline.com/cdn-int/pt-almagreira/chunklist.m3u8',
+          link: 'https://www.surfline.com/surf-report/almagreira/5dea8356fe21a44513cecc3f?camId=5de9968d7c107c66d95f8b21',
+          anchor: 'almagreira'
         },
         {
-          title: 'Inatel - São joão',
+          title: 'Lagido e Baia',
           type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/costacaparicasaojoao/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/costa-da-caparica-sao-joao/',
-          anchor: 'inatel'
+          src: 'https://video-auth1.iol.pt/beachcam/lagide/chunks.m3u8',
+          link: 'https://beachcam.meo.pt/livecams/lagide-e-ba%C3%ADa/',
+          anchor: 'lagidoebaia'
         },
         {
-          title: 'Marcelino',
-          type: 'video/youtube',
-          src: 'https://www.youtube.com/embed/1w2_rhfA-SQ?autoplay=1&controls=0&mute=1',
-          link: 'https://www.youtube.com/watch?v=1w2_rhfA-SQ&ab_channel=Playocean',
-          anchor: 'marcelino'
-        },
-        // {
-        //   title: 'Marcelino norte até CDS sul',
-        //   type: 'application/x-mpegURL',
-        //   src: 'https://video-auth1.iol.pt/beachcam/costacaparicacds/chunks.m3u8',
-        //   link: 'https://beachcam.meo.pt/livecams/costa-da-caparica/',
-        //   anchor: 'marcelinonorte'
-        // },
-        {
-          title: 'CDS até ao barbas',
+          title: 'Peniche Lagide',
           type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/costacaparicabernard/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/costa-da-caparica-cds/',
-          anchor: 'cds'
+          src: 'https://59775c8bd0cf7.streamlock.net/live/lagido.stream/chunklist_w296396156_tkd293emF0b2tlbmVuZHRpbWU9MTY2ODU5OTI0OSZ3b3d6YXRva2Vuc3RhcnR0aW1lPTE2Njg1OTkwMDkmd293emF0b2tlbmhhc2g9LWhZTDQ2dnVaajZ3QkFpWXJiMHM0QnJvODBiZWdjdHN4Z3lVSFlVWUstTT0=.m3u8',
+          link: 'https://surftotal.com/camaras-report/peniche/peniche-lagido',
+          anchor: 'penichelagide'
         },
         {
-          title: 'Barbas',
+          title: 'Supertubos',
           type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-cdscaparica/chunklist.m3u8',
-          link: '',
-          anchor: 'barbas1'
+          src: 'https://video-auth1.iol.pt/beachcam/supertubos/chunks.m3u8',
+          link: 'https://beachcam.meo.pt/livecams/peniche-supertubos/',
+          anchor: 'supertubos'
         },
         {
-          title: 'Barbas',
+          title: 'Supertubos',
           type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-barbas/chunklist.m3u8',
-          link: 'https://www.surfline.com/surf-report/praia-do-barbas/584204214e65fad6a7709d16?camId=58349f6e3421b20545c4b574',
-          anchor: 'barbas2'
+          src: 'https://59775c8bd0cf7.streamlock.net/live/supertubos.stream/chunklist_w2116594359_tkd293emF0b2tlbmVuZHRpbWU9MTY2ODU5OTkzMiZ3b3d6YXRva2Vuc3RhcnR0aW1lPTE2Njg1OTk2OTImd293emF0b2tlbmhhc2g9RW9WRjNRNjVZdl9iTWxBTWZFQ3hUSmxvUDVKb3ZTOVhzNGFnalMxYTY3Zz0=.m3u8',
+          link: 'https://surftotal.com/camaras-report/peniche/peniche-super-tubos',
+          anchor: 'supertubos2'
         },
         {
-          title: 'Tarquinho',
+          title: 'Consolação Norte',
           type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/bctarquinho/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/costa-da-caparica-tarquinio/',
-          anchor: 'tarquinho'
+          src: 'https://59775c8bd0cf7.streamlock.net/live/peniche.stream/chunklist_w525624008_tkd293emF0b2tlbmVuZHRpbWU9MTY2ODU5Nzk0MiZ3b3d6YXRva2Vuc3RhcnR0aW1lPTE2Njg1OTc3MDImd293emF0b2tlbmhhc2g9eElUcEowOGtGRmZqSHhtQWMyVWdJQXJwTldmUmtiVTc2aTZ4dVltQlQtVT0=.m3u8',
+          link: 'https://surftotal.com/camaras-report/peniche/peniche-hd',
+          anchor: 'consolacaonorte'
         },
         {
-          title: 'Dragão  / Barbas',
+          title: 'Areia Branca',
           type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-costacaparica/chunklist.m3u8',
-          link: '',
-          anchor: 'dragaoebarbas'
-        },
-        {
-          title: 'Panoramica - CDS / Barbas / dragão / praia nova / Nova praia',
-          type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-costadacaparicaoverview/chunklist.m3u8',
-          link: 'https://www.surfline.com/surf-report/costa-da-caparica/5842041f4e65fad6a7708e65?camId=60956af96fe5bbe4ad8557fc',
-          anchor: 'panoramica'
-        },
-        {
-          title: 'Dragão até à Praia nova',
-          type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/bccaparicanovapraia/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/costa-da-caparica-praia-nova/',
-          anchor: 'praianovadragao'
-        },
-        {
-          title: 'Panorâmica fora dos pontões',
-          type: 'video/youtube',
-          src: 'https://www.youtube.com/embed/ts9LyJbLwX8?autoplay=1&controls=0&mute=1',
-          link: 'https://www.youtube.com/watch?v=ts9LyJbLwX8&ab_channel=Playocean',
-          anchor: 'foradospontoes'
-        },
-        {
-          title: 'Praia da Riviera',
-          type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/riviera/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/costa-da-caparica-riviera/',
-          anchor: 'riviera'
-        },
-        {
-          title: 'Praia do castelo',
-          type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-castelo/chunklist.m3u8',
-          link: 'https://www.surfline.com/surf-report/marcelino/584204214e65fad6a7709d15',
-          anchor: 'castelo'
-        },
-        {
-          title: 'Praia da Sereia',
-          type: 'video/youtube',
-          src: 'https://www.youtube.com/embed/ywH7uPTpd98?autoplay=1&controls=0&mute=1',
-          link: 'https://www.youtube.com/watch?v=ywH7uPTpd98&ab_channel=Playocean',
-          anchor: 'sereia'
-        },
-        {
-          title: 'Fonte da telha - Norte',
-          type: 'video/youtube',
-          src: 'https://www.youtube.com/embed/Icwrq0WqOXo?autoplay=1&controls=0&mute=1',
-          link: 'https://www.youtube.com/watch?v=Icwrq0WqOXo&ab_channel=Playocean',
-          anchor: 'fontedatelhanorte'
-        },
-        {
-          title: 'Fonte da telha - Sul',
-          type: 'video/youtube',
-          src: 'https://www.youtube.com/embed/aiCB3ZVf6xY?autoplay=1&controls=0&mute=1',
-          link: 'https://www.youtube.com/watch?v=aiCB3ZVf6xY&ab_channel=Playocean',
-          anchor: 'fontedatelhasul'
+          src: 'https://video-auth1.iol.pt/beachcam/bcareiabranca/chunks.m3u8',
+          link: 'https://beachcam.meo.pt/livecams/areia-branca/',
+          anchor: 'areiabranca'
         },
         {
           title: 'Windguru',
           type: 'previsoes',
-          link: 'http://www.windguru.cz/pt/index.php?sc=48963',
+          link: 'https://www.windguru.cz/48951',
           src: 'none',
           anchor: 'windguru'
         },
@@ -413,6 +343,13 @@ export default {
           link: 'none',
           src: 'none',
           anchor: 'surfforecast'
+        },
+        {
+          title: 'MagicSeaWeed',
+          type: 'previsoes',
+          link: 'none',
+          src: 'none',
+          anchor: 'magicseaweed'
         }
       ]
     }

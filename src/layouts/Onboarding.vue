@@ -3,7 +3,6 @@
     <main-menu />
     <q-page-container class="container">
       <router-view />
-      <footer-main />
     </q-page-container>
   </q-layout>
 </template>
@@ -15,10 +14,9 @@
 
 <script>
 import MainMenu from 'components/MainMenu.vue'
-import footerMain from 'src/components/Footer.vue'
 
 export default {
   name: 'MainLayout',
-  components: { MainMenu, footerMain }
+  components: { MainMenu }
 }
 </script>

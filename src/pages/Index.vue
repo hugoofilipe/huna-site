@@ -8,7 +8,6 @@
     <prices-table id="prices"/>
     <testimonials />
     <contact-form id="contacto"/>
-    <footer-main />
   </q-page>
 </template>
 
@@ -22,7 +21,6 @@ import serviceBanner from 'src/components/ServiceBanner.vue'
 import pricesTable from 'src/components/PricesTable.vue'
 import contactForm from 'src/components/ContactForm.vue'
 import testimonials from 'src/components/Testimonials.vue'
-import footerMain from 'src/components/Footer.vue'
 
 // import { Meta } from 'quasar'
 
@@ -59,8 +57,7 @@ export default {
     serviceBanner,
     pricesTable,
     contactForm,
-    testimonials,
-    footerMain
+    testimonials
   },
   metaInfo: {
     title: 'Huna Digital',

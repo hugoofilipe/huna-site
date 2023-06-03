@@ -194,7 +194,7 @@ export default {
   name: 'footer-main',
   data () {
     return {
-      version: '0.1.02'
+      version: '0.2.04'
     }
   }
 }
