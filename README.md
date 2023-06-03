@@ -10,7 +10,7 @@ This is the source code of HUNA website using docker, vuejs, quasar, yarn, node,
 
 # Run Developing mode
 - yarn 
-- yarn quasar dev
+- yarn quasar dev -m spa -d
 
 # Versions
 - yarn: 1.22.19

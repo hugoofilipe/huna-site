@@ -1,6 +1,11 @@
 #!/bin/bash
+
 # yarn quasar build #gera a pasta dist com o código compilado
 yarn quasar build -m spa #gera a pasta dist com o código compilado
+
+# If you want a production build with debugging enabled:
+#yarn quasar build -m spa -d
+
 mkdir .deploy && cd .deploy
 git clone --branch deploy_dev git@github.com:hugoofilipe/huna-site.git
 cd huna-site/
