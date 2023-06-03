@@ -1,0 +1,149 @@
+[
+  {
+    "title": "Cova do Vapor",
+    "type": "application/x-mpegURL",
+    "src": "https://cams.cdn-surfline.com/cdn-int/pt-covadovapor/chunklist.m3u8",
+    "link": "https://www.surfline.com/surf-report/cova-do-vapor/584204204e65fad6a77096ad",
+    "anchor": "covadovapor"
+  },
+  {
+    "title": "Lorosae - São joão",
+    "type": "application/x-mpegURL",
+    "src": "https://cams.cdn-surfline.com/cdn-int/pt-saojoaocaparica/chunklist.m3u8",
+    "link": "https://www.surfline.com/surf-report/s-o-joao-da-caparica/5dbb587ff387900001fee288",
+    "anchor": "lorosae"
+  },
+  {
+    "title": "Inatel - São joão",
+    "type": "application/x-mpegURL",
+    "src": "https://video-auth1.iol.pt/beachcam/costacaparicasaojoao/chunks.m3u8",
+    "link": "https://beachcam.meo.pt/livecams/costa-da-caparica-sao-joao/",
+    "anchor": "inatel"
+  },
+  {
+    "title": "Marcelino",
+    "type": "video/youtube",
+    "src": "https://www.youtube.com/embed/1w2_rhfA-SQ?autoplay=1&controls=0&mute=1",
+    "link": "https://www.youtube.com/watch?v=1w2_rhfA-SQ&ab_channel=Playocean",
+    "anchor": "marcelino"
+  },
+  {
+    "title": "Marcelino norte até CDS sul",
+    "type": "application/x-mpegURL",
+    "src": "https://video-auth1.iol.pt/beachcam/costacaparicacds/chunks.m3u8",
+    "link": "https://beachcam.meo.pt/livecams/costa-da-caparica/",
+    "anchor": "marcelinonorte"
+  },
+  {
+    "title": "CDS até ao barbas",
+    "type": "application/x-mpegURL",
+    "src": "https://video-auth1.iol.pt/beachcam/costacaparicabernard/chunks.m3u8",
+    "link": "https://beachcam.meo.pt/livecams/costa-da-caparica-cds/",
+    "anchor": "cds"
+  },
+  {
+    "title": "Barbas",
+    "type": "application/x-mpegURL",
+    "src": "https://cams.cdn-surfline.com/cdn-int/pt-cdscaparica/chunklist.m3u8",
+    "link": "",
+    "anchor": "barbas1"
+  },
+  {
+    "title": "Barbas",
+    "type": "application/x-mpegURL",
+    "src": "https://cams.cdn-surfline.com/cdn-int/pt-barbas/chunklist.m3u8",
+    "link": "https://www.surfline.com/surf-report/praia-do-barbas/584204214e65fad6a7709d16?camId=58349f6e3421b20545c4b574",
+    "anchor": "barbas2"
+  },
+  {
+    "title": "Tarquinho",
+    "type": "application/x-mpegURL",
+    "src": "https://video-auth1.iol.pt/beachcam/bctarquinho/chunks.m3u8",
+    "link": "https://beachcam.meo.pt/livecams/costa-da-caparica-tarquinio/",
+    "anchor": "tarquinho"
+  },
+  {
+    "title": "Dragão  / Barbas",
+    "type": "application/x-mpegURL",
+    "src": "https://cams.cdn-surfline.com/cdn-int/pt-costacaparica/chunklist.m3u8",
+    "link": "",
+    "anchor": "dragaoebarbas"
+  },
+  {
+    "title": "Panoramica - CDS / Barbas / dragão / praia nova / Nova praia",
+    "type": "application/x-mpegURL",
+    "src": "https://cams.cdn-surfline.com/cdn-int/pt-costadacaparicaoverview/chunklist.m3u8",
+    "link": "https://www.surfline.com/surf-report/costa-da-caparica/5842041f4e65fad6a7708e65?camId=60956af96fe5bbe4ad8557fc",
+    "anchor": "panoramica"
+  },
+  {
+    "title": "Dragão até à Praia nova",
+    "type": "application/x-mpegURL",
+    "src": "https://video-auth1.iol.pt/beachcam/bccaparicanovapraia/chunks.m3u8",
+    "link": "https://beachcam.meo.pt/livecams/costa-da-caparica-praia-nova/",
+    "anchor": "praianovadragao"
+  },
+  {
+    "title": "Panorâmica fora dos pontões",
+    "type": "video/youtube",
+    "src": "https://www.youtube.com/embed/ts9LyJbLwX8?autoplay=1&controls=0&mute=1",
+    "link": "https://www.youtube.com/watch?v=ts9LyJbLwX8&ab_channel=Playocean",
+    "anchor": "foradospontoes"
+  },
+  {
+    "title": "Praia da Riviera",
+    "type": "application/x-mpegURL",
+    "src": "https://video-auth1.iol.pt/beachcam/riviera/chunks.m3u8",
+    "link": "https://beachcam.meo.pt/livecams/costa-da-caparica-riviera/",
+    "anchor": "riviera"
+  },
+  {
+    "title": "Praia do castelo",
+    "type": "application/x-mpegURL",
+    "src": "https://cams.cdn-surfline.com/cdn-int/pt-castelo/chunklist.m3u8",
+    "link": "https://www.surfline.com/surf-report/marcelino/584204214e65fad6a7709d15",
+    "anchor": "castelo"
+  },
+  {
+    "title": "Praia da Sereia",
+    "type": "video/youtube",
+    "src": "https://www.youtube.com/embed/ywH7uPTpd98?autoplay=1&controls=0&mute=1",
+    "link": "https://www.youtube.com/watch?v=ywH7uPTpd98&ab_channel=Playocean",
+    "anchor": "sereia"
+  },
+  {
+    "title": "Fonte da telha - Norte",
+    "type": "video/youtube",
+    "src": "https://www.youtube.com/embed/Icwrq0WqOXo?autoplay=1&controls=0&mute=1",
+    "link": "https://www.youtube.com/watch?v=Icwrq0WqOXo&ab_channel=Playocean",
+    "anchor": "fontedatelhanorte"
+  },
+  {
+    "title": "Fonte da telha - Sul",
+    "type": "video/youtube",
+    "src": "https://www.youtube.com/embed/aiCB3ZVf6xY?autoplay=1&controls=0&mute=1",
+    "link": "https://www.youtube.com/watch?v=aiCB3ZVf6xY&ab_channel=Playocean",
+    "anchor": "fontedatelhasul"
+  },
+  {
+    "title": "Windguru",
+    "type": "previsoes",
+    "link": "http://www.windguru.cz/pt/index.php?sc=48963",
+    "src": "none",
+    "anchor": "windguru"
+  },
+  {
+    "title": "Tabela de Marés",
+    "type": "previsoes",
+    "link": "http://www.windguru.cz/pt/index.php?sc=48963",
+    "src": "none",
+    "anchor": "tide"
+  },
+  {
+    "title": "Surf Forecast",
+    "type": "previsoes",
+    "link": "none",
+    "src": "none",
+    "anchor": "surfforecast"
+  }
+]

@@ -8,6 +8,16 @@
 /* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin')
 
+const SitemapPlugin = require('sitemap-webpack-plugin').default
+const paths = [
+  {
+    path: '/',
+    lastmod: '2021-12-30',
+    priority: 1.0,
+    changefreq: 'yearly'
+  }// add all pages here
+]
+
 module.exports = function (/* ctx */) {
   return {
     // https://v1.quasar.dev/quasar-cli/supporting-ts
@@ -33,7 +43,7 @@ module.exports = function (/* ctx */) {
     extras: [
       // 'ionicons-v4',
       // 'mdi-v5',
-      // 'fontawesome-v5',
+      'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
       // 'line-awesome',
@@ -44,8 +54,13 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
 
+      extendWebpack (cfg) {
+        cfg.plugins.push(
+          new SitemapPlugin({ base: 'https://huna.pt', paths })
+        )
+      },
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
@@ -100,7 +115,7 @@ module.exports = function (/* ctx */) {
       // ],
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Meta']
     },
 
     // animations: 'all', // --- includes all animations
@@ -118,32 +133,17 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Quasar App',
-        short_name: 'Quasar App',
-        description: 'huna website',
+        name: 'Huna Digital',
+        short_name: 'Huna Digital',
+        description: 'Produção de produtos digitais',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#fff',
-        theme_color: '#027be3',
+        background_color: '#ffa000',
+        theme_color: '#ffa000',
         icons: [
           {
-            src: 'icons/icon-128x128.png',
-            sizes: '128x128',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-192x192.png',
+            src: 'icons/android-chrome-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-256x256.png',
-            sizes: '256x256',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-384x384.png',
-            sizes: '384x384',
             type: 'image/png'
           },
           {

@@ -1,7 +1,7 @@
 <template>
     <div>
         <q-header class=" bg-black"  elevated reveal>
-            <q-toolbar class="lt-md q-my-lg menu_mobile">
+            <q-toolbar class="lt-md q-my-sm menu_mobile orientation-portrait">
               <q-btn
                   flat
                   dense
@@ -10,30 +10,40 @@
                   aria-label="Menu"
                   @click="leftDrawerOpen = !leftDrawerOpen"
               />
-              <q-avatar
-                square
-                size=100px
-                class="q-px-sm"
-              >
-                <img src="images/huna.svg">
-              </q-avatar>
+              <router-link to="/">
+                <q-avatar
+                  square
+                  size=100px
+                  class="q-px-sm"
+                >
+                  <img src="images/huna.svg" alt="Huna logo">
+                </q-avatar>
+              </router-link>
             </q-toolbar>
 
-            <q-toolbar class="gt-sm q-px-lg q-my-md menu ">
-              <q-avatar
-                square
-                size=100px
-              >
-                <img src="images/huna.svg">
-              </q-avatar>
-
+            <q-toolbar class="gt-sm q-px-lg q-my-sm menu ">
+              <router-link to="/">
+                <q-avatar
+                  square
+                  size=100px
+                >
+                  <img src="images/huna.svg" alt="Huna logo" >
+                </q-avatar>
+              </router-link>
               <q-space />
               <div>
-                <q-btn no-caps :label="$t('services')" />
-                <q-btn no-caps :label="$t('portfolio')" />
-                <q-btn no-caps :label="$t('prices')" />
-                <q-btn no-caps class="btn-goldenCustom" text-clor="white" rounded :label="$t('letsTalk')" />
-
+                <q-btn no-caps type="a" href="#how" :label="$t('how')" />
+                <q-btn no-caps type="a" href="#services" :label="$t('services')" />
+                <q-btn no-caps type="a" href="#prices" :label="$t('prices')" />
+                <q-btn
+                  no-caps
+                  class="btn-goldenCustom btn-rounded"
+                  type="a"
+                  href="#contacto"
+                  text-color="white"
+                  rounded
+                  :label="$t('letsTalk')"
+                />
                 <q-btn :label="languageKeyNow">
                   <q-menu>
                     <q-list
@@ -65,29 +75,37 @@
           content-class="bg-black"
           :width="300"
         >
-          <q-avatar
-                square
-                size=100px
-                class="q-px-sm text-center q-ma-lg"
-              >
-                <img src="images/huna.svg">
-              </q-avatar>
+          <router-link to="#welcome">
+            <q-avatar
+              square
+              size=100px
+              class="q-px-sm text-center q-ma-lg"
+            >
+              <img src="images/huna.svg" alt="Huna logo" >
+            </q-avatar>
+          </router-link>
           <q-list padding style="color:white">
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                {{$t('services')}}
+                <router-link to="#how" class="menu_drawer">
+                  {{$t('how')}}
+                </router-link>
               </q-item-section>
             </q-item>
 
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                {{$t('portfolio')}}
+                <router-link to="#services" class="menu_drawer">
+                  {{$t('services')}}
+                </router-link>
               </q-item-section>
             </q-item>
 
             <q-item clickable v-ripple class="text-h5">
               <q-item-section>
-                {{$t('prices')}}
+                <router-link to="#prices" class="menu_drawer">
+                  {{$t('prices')}}
+                </router-link>
               </q-item-section>
             </q-item>
           </q-list>
@@ -101,11 +119,11 @@
                 flat
                 clickable
                 v-ripple
-                :to="{ name:'request'}"
+                type="a"
+                href="#contacto"
+                :label="$t('letsTalk')"
                 class="col-12 btn-goldenCustom text-white"
-              >
-                {{ $t('letsTalk') }}
-              </q-btn>
+              />
 
               <q-btn
                 :label="languageKeyNow"
@@ -151,6 +169,13 @@
   .menu_mobile
     span
       font-size: 20px
+  .menu_drawer
+    font-size: 1.5rem
+    font-weight: 400
+    line-height: 2rem
+    letter-spacing: normal
+    color: white
+    text-decoration-line: unset
 </style>
 
 <script>

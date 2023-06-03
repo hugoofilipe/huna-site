@@ -1,8 +1,8 @@
 {
-  "name": "app",
-  "version": "0.0.1",
+  "name": "Huna",
+  "version": "0.1.02",
   "description": "huna website",
-  "productName": "Quasar App",
+  "productName": "Huna Digital",
   "author": "hugo filipe",
   "private": true,
   "scripts": {
@@ -11,13 +11,24 @@
     "build": "sh ./scripts/build_deploy.sh"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.12.2",
+    "@quasar/quasar-ui-qflashcard": "^1.0.5",
     "@vue/composition-api": "^1.0.2",
     "axios": "^0.22.0",
     "core-js": "^3.15.2",
+    "nvm": "^0.0.4",
     "quasar": "^1.0.0",
+    "sitemap-webpack-plugin": "^1.1.1",
     "vue-carousel": "^0.18.0",
-    "vue-i18n": "^8.0.0"
+    "vue-carousel-3d": "^1.0.1",
+    "vue-cookies": "^1.8.1",
+    "vue-gtag": "^1.16.1",
+    "vue-i18n": "^8.0.0",
+    "vue-lazytube": "^1.1.1",
+    "vue-meta": "^2.4.0",
+    "vue-scrollactive": "^0.6.1",
+    "vue-social-sharing": "^3.0.9",
+    "workbox-webpack-plugin": "^6.4.2"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",
@@ -28,7 +39,8 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-vue": "^7.7.0",
-    "eslint-webpack-plugin": "^2.4.0"
+    "eslint-webpack-plugin": "^2.4.0",
+    "video.js": "^7.20.3"
   },
   "browserslist": [
     "last 10 Chrome versions",

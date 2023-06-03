@@ -1,12 +1,25 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueCarousel from 'vue-carousel'
-
+import Carousel3d from 'vue-carousel-3d'
+import VueMeta from 'vue-meta'
 import routes from './routes'
+import VueGtag from 'vue-gtag'
+import VueCookies from 'vue-cookies'
+import VueScrollActive from 'vue-scrollactive'
+// import scrollactive from 'vue-scrollactive'
 
+Vue.use(VueCookies)
 Vue.use(VueRouter)
-Vue.use(VueCarousel)
+Vue.use(VueCarousel) // https://ssense.github.io/vue-carousel/examples/
+Vue.use(Carousel3d) // https://wlada.github.io/vue-carousel-3d/guide/
+Vue.use(VueGtag, { // https://matteo-gabriele.gitbook.io/vue-gtag/
+  config: { id: 'UA-1378  07367-1' },
+  routes
+})
+Vue.use(VueScrollActive)
 
+Vue.use(VueMeta) // https://www.digitalocean.com/community/tutorials/vuejs-vue-meta
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -15,18 +28,26 @@ Vue.use(VueCarousel)
  * async/await or return a Promise which resolves
  * with the Router instance.
  */
+Vue.$cookies.config('60d')
 
 export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({
-    scrollBehavior: () => ({ x: 0, y: 0 }),
-    routes,
-
+    // scrollBehavior: () => ({ x: 0, y: 0 }),
+    scrollBehavior: function (to, from, savedPosition) {
+      if (to.hash) {
+        return { selector: to.hash }
+      } else {
+        return { x: 0, y: 0 }
+      }
+    },
     // Leave these as they are and change in quasar.conf.js instead!
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
-    mode: process.env.VUE_ROUTER_MODE,
-    base: process.env.VUE_ROUTER_BASE
+    // mode: process.env.VUE_ROUTER_MODE,
+    routes,
+    mode: 'history',
+    base: process.env.BASE_URL
+    // base: process.env.VUE_ROUTER_BASE
   })
-
   return Router
 }
