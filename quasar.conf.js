@@ -132,6 +132,7 @@ module.exports = function (/* ctx */) {
     pwa: {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {
+        exclude: ['index.html', /\.html$/],
         skipWaiting: true,
         clientsClaim: true
       }, // only for GenerateSW

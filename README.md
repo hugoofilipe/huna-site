@@ -1,5 +1,6 @@
 # Site Huna
 This is the source code of HUNA website using docker, vuejs, quasar, yarn, node, PWA, workblox, sitemap
+**We still serve this version with pwa mode using service worker, but we are working on a new version using only SPA mode.**
 
 # repo github
 - https://github.com/hugoofilipe/huna-site
@@ -10,7 +11,7 @@ This is the source code of HUNA website using docker, vuejs, quasar, yarn, node,
 
 # Run Developing mode
 - yarn 
-- yarn quasar dev -m spa -d
+- yarn quasar dev -m pwa -d (-m spa -d -> to run in SPA mode)
 
 # Versions
 - yarn: 1.22.19
