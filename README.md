@@ -22,6 +22,7 @@ This is the source code of HUNA website using docker, vuejs, quasar, yarn, node,
 
 # Deploy in prod
 - versionar (alterar em footer.vue)
+- save in github with tag (ex: - git add * && git commit -m "v0.0.1" && git tag v0.0.1 && git push origin v0.0.1)
 - npm run build
 - Fazer pull da branch em CPANEL
 - Não esqueçer que vai para ao 2021.huna.pt
