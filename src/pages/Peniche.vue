@@ -179,6 +179,7 @@ import VideoPlayer from 'components/VideoPlayer.vue'
 import VideoYoutube from 'components/VideoYoutube.vue'
 // import SocialSharing from 'src/components/SocialSharing.vue'
 import socialSharing from 'components/SocialSharing.vue'
+import axios from 'axios'
 
 export default {
   name: 'Cam3',
@@ -188,6 +189,15 @@ export default {
     socialSharing
   },
   methods: {
+    async getLinks () {
+      try {
+        const response = await axios.get(this.url_links)
+        this.webcams = response.data
+        console.log(this.webcams)
+      } catch (error) {
+        console.log('[foo] Something is wrong with urllinks_peniche.json file: ', error)
+      }
+    },
     iconSelect (type) {
       if (type === 'previsoes') {
         return 'img:/icons/analytics.svg'
@@ -250,6 +260,7 @@ export default {
     }
   },
   beforeMount () {
+    this.getLinks()
     this.isMobile()
   },
   watch: {
@@ -266,92 +277,8 @@ export default {
         controls: true,
         muted: 'muted'
       },
-      webcams: [
-        {
-          title: 'Foz do Arelho',
-          type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/bcfozdoarelho/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/foz-do-arelho/',
-          anchor: 'fozdoarelho'
-        },
-        {
-          title: 'Almagreira',
-          type: 'application/x-mpegURL',
-          src: 'https://cams.cdn-surfline.com/cdn-int/pt-almagreira/chunklist.m3u8',
-          link: 'https://www.surfline.com/surf-report/almagreira/5dea8356fe21a44513cecc3f?camId=5de9968d7c107c66d95f8b21',
-          anchor: 'almagreira'
-        },
-        {
-          title: 'Lagido e Baia',
-          type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/lagide/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/lagide-e-ba%C3%ADa/',
-          anchor: 'lagidoebaia'
-        },
-        {
-          title: 'Peniche Lagide',
-          type: 'application/x-mpegURL',
-          src: 'https://59775c8bd0cf7.streamlock.net/live/lagido.stream/chunklist_w296396156_tkd293emF0b2tlbmVuZHRpbWU9MTY2ODU5OTI0OSZ3b3d6YXRva2Vuc3RhcnR0aW1lPTE2Njg1OTkwMDkmd293emF0b2tlbmhhc2g9LWhZTDQ2dnVaajZ3QkFpWXJiMHM0QnJvODBiZWdjdHN4Z3lVSFlVWUstTT0=.m3u8',
-          link: 'https://surftotal.com/camaras-report/peniche/peniche-lagido',
-          anchor: 'penichelagide'
-        },
-        {
-          title: 'Supertubos',
-          type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/supertubos/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/peniche-supertubos/',
-          anchor: 'supertubos'
-        },
-        {
-          title: 'Supertubos',
-          type: 'application/x-mpegURL',
-          src: 'https://59775c8bd0cf7.streamlock.net/live/supertubos.stream/chunklist_w2116594359_tkd293emF0b2tlbmVuZHRpbWU9MTY2ODU5OTkzMiZ3b3d6YXRva2Vuc3RhcnR0aW1lPTE2Njg1OTk2OTImd293emF0b2tlbmhhc2g9RW9WRjNRNjVZdl9iTWxBTWZFQ3hUSmxvUDVKb3ZTOVhzNGFnalMxYTY3Zz0=.m3u8',
-          link: 'https://surftotal.com/camaras-report/peniche/peniche-super-tubos',
-          anchor: 'supertubos2'
-        },
-        {
-          title: 'Consolação Norte',
-          type: 'application/x-mpegURL',
-          src: 'https://59775c8bd0cf7.streamlock.net/live/peniche.stream/chunklist_w525624008_tkd293emF0b2tlbmVuZHRpbWU9MTY2ODU5Nzk0MiZ3b3d6YXRva2Vuc3RhcnR0aW1lPTE2Njg1OTc3MDImd293emF0b2tlbmhhc2g9eElUcEowOGtGRmZqSHhtQWMyVWdJQXJwTldmUmtiVTc2aTZ4dVltQlQtVT0=.m3u8',
-          link: 'https://surftotal.com/camaras-report/peniche/peniche-hd',
-          anchor: 'consolacaonorte'
-        },
-        {
-          title: 'Areia Branca',
-          type: 'application/x-mpegURL',
-          src: 'https://video-auth1.iol.pt/beachcam/bcareiabranca/chunks.m3u8',
-          link: 'https://beachcam.meo.pt/livecams/areia-branca/',
-          anchor: 'areiabranca'
-        },
-        {
-          title: 'Windguru',
-          type: 'previsoes',
-          link: 'https://www.windguru.cz/48951',
-          src: 'none',
-          anchor: 'windguru'
-        },
-        {
-          title: 'Tabela de Marés',
-          type: 'previsoes',
-          link: 'http://www.windguru.cz/pt/index.php?sc=48963',
-          src: 'none',
-          anchor: 'tide'
-        },
-        {
-          title: 'Surf Forecast',
-          type: 'previsoes',
-          link: 'none',
-          src: 'none',
-          anchor: 'surfforecast'
-        },
-        {
-          title: 'MagicSeaWeed',
-          type: 'previsoes',
-          link: 'none',
-          src: 'none',
-          anchor: 'magicseaweed'
-        }
-      ]
+      webcams: [],
+      url_links: 'https://api.huna.pt/urllinks_peniche.json' // Guardei o ficherio na raiz do projeto para backup
     }
   }
 }

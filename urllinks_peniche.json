@@ -1,0 +1,86 @@
+[
+    {
+      "title": "Foz do Arelho",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/bcfozdoarelho/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/foz-do-arelho/",
+      "anchor": "fozdoarelho"
+    },
+    {
+      "title": "Praia de Rei Cortiço",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/bcreicortico/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/praia-de-rei-cortico/",
+      "anchor": "reicortico"
+    },
+    {
+      "title": "Almagreira",
+      "type": "application/x-mpegURL",
+      "src": "https://cams.cdn-surfline.com/cdn-int/pt-almagreira/chunklist.m3u8",
+      "link": "https://www.surfline.com/surf-report/almagreira/5dea8356fe21a44513cecc3f?camId=5de9968d7c107c66d95f8b21",
+      "anchor": "almagreira"
+    },
+    {
+      "title": "Peniche | Lagide",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/lagide/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/lagide-e-baía/",
+      "anchor": "lagide"
+    },
+    {
+      "title": "Baía de Peniche | Baleal",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/bcbalealgeral/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/peniche-baleal-panoramica/",
+      "anchor": "baleal"
+    },
+    {
+      "title": "Supertubos | molho leste",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/supertubos/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/peniche-supertubos/",
+      "anchor": "molholeste"
+    },
+    {
+      "title": "Supertubos",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/bcsupertubosfixa/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/penichesupertubosestatica/",
+      "anchor": "supertubos"
+    },
+    {
+      "title": "Consolação",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/bcconsolacao/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/praia-da-consolacao/",
+      "anchor": "consolacao"
+    },
+    {
+      "title": "Areia Branca",
+      "type": "application/x-mpegURL",
+      "src": "https://video-auth1.iol.pt/beachcam/bcareiabranca/chunks.m3u8",
+      "link": "https://beachcam.meo.pt/livecams/areia-branca/",
+      "anchor": "areiabranca"
+    },
+    {
+      "title": "Windguru",
+      "type": "previsoes",
+      "link": "https://www.windguru.cz/48951",
+      "src": "none",
+      "anchor": "windguru"
+    },
+    {
+      "title": "Tabela de Marés",
+      "type": "previsoes",
+      "link": "http://www.windguru.cz/pt/index.php?sc=48963",
+      "src": "none",
+      "anchor": "tide"
+    },
+    {
+      "title": "Surf Forecast",
+      "type": "previsoes",
+      "link": "none",
+      "src": "none",
+      "anchor": "surfforecast"
+    }
+  ]
