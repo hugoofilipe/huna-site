@@ -66,6 +66,10 @@ const routes = [
       { path: '', component: () => import('src/pages/Cam3.vue') }
     ]
   },
+  {
+    path: '/botaca',
+    component: () => import('src/pages/Botaca.vue')
+  },
 
   // Always leave this as last one,
   // but you can also remove it
