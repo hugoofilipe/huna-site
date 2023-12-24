@@ -67,7 +67,7 @@ const routes = [
     ]
   },
   {
-    path: '/botaca',
+    path: '/reports/botaca',
     component: () => import('src/pages/Botaca.vue')
   },
 
