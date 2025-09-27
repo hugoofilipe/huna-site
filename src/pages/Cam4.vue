@@ -27,73 +27,38 @@ limpar erros
 -->
 <template>
   <q-layout view="lhr lpR lFr" class="bg-white" @scroll="scrollHandler">
+    <!-- Ajuste no q-drawer para posicioná-lo abaixo do header -->
     <q-drawer v-model="drawer" show-if-above side='right'
-      :width="320" :breakpoint="500" class="bg-grey-3 sidebar">
+      :width="320" :breakpoint="500" class="bg-grey-3 sidebar" :content-style="{ top: '60px' }">
       <div class="align">
         <q-list>
-          <q-item v-for="(beach, index) in webcams" v-bind:key="index" dense>
-            <q-item-section>
-              <q-expansion-item :label="beach.title" :to="'#' + beach.anchor" dense dense-toggle
-                :class="'text-h6 ' + beach.anchor" :icon="iconSelect(beach.type)" active-class="text-black">
-                <q-card>
-                  <q-card-section>
-                    <p>
-                      Title: {{beach.title}}
-                    </p>
-                    <p>Type: {{beach.type}}</p>
-                    <p>SRC: {{beach.src}}</p>
-                    <p>Link: {{beach.link}}</p>
-                    <p>Anchor: {{beach.anchor}}</p>
-                    <p>Index: {{index}}</p>
-                  </q-card-section>
-                </q-card>
-              </q-expansion-item>
-            </q-item-section>
-          </q-item>
-          <!-- <q-item dense>
-            <q-expansion-item expand-separator label="Windguru" to="#windguru" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: http://www.windguru.cz/pt/index.php?sc=48963
-                  </p>
-                </q-card-section>
-              </q-card>
+          <!-- Adicionado o model-value e @update:model-value para controlar o comportamento de acordeão -->
+          <q-expansion-item
+            v-for="(beach, index) in webcams"
+            :key="index"
+            :label="beach.title"
+            :to="'#' + beach.anchor"
+            dense
+            dense-toggle
+            expand-separator
+            :class="'text-h6 ' + beach.anchor"
+            :icon="iconSelect(beach.type)"
+            active-class="text-black"
+            :name="index"
+            :model-value="expandedItem === index"
+            @update:model-value="toggleExpand(index)"
+          >
+            <q-card>
+              <q-card-section style="white-space: normal">
+                <p>Title: {{beach.title}}</p>
+                <p>Type: {{beach.type}}</p>
+                <p>SRC: {{beach.src}}</p>
+                <p>Link: {{beach.link}}</p>
+                <p>Anchor: {{beach.anchor}}</p>
+                <p>Index: {{index}}</p>
+              </q-card-section>
+            </q-card>
           </q-expansion-item>
-          </q-item> -->
-          <!-- <q-item dense>
-            <q-expansion-item expand-separator label="Marés" to="#tide" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day
-                  </p>
-                </q-card-section>
-              </q-card>
-          </q-expansion-item>
-          </q-item> -->
-          <!-- <q-item dense>
-            <q-expansion-item expand-separator label="Surf-forcast" to="#surfforecast" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: https://www.surf-forecast.com/breaks/Costada-Caparica/forecasts/latest
-                  </p>
-                </q-card-section>
-              </q-card>
-          </q-expansion-item>
-          </q-item>
-          <q-item dense>
-            <q-expansion-item expand-separator label="MagicseaWeed" to="#magicseaweed" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: https://pt.magicseaweed.com/Costa-da-Caparica-Surf-Report/874/
-                  </p>
-                </q-card-section>
-              </q-card>
-          </q-expansion-item>
-          </q-item> -->
         </q-list>
       </div>
     </q-drawer>
@@ -137,11 +102,22 @@ limpar erros
           <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'magicseaweed'" style="padding-top:200px" class="section q-pa-xl box">
             <iframe src="https://magicseaweed.com/Costa-da-Caparica-Surf-Report/874/Embed/" scrolling="no" width="100%" height="5000px" frameborder="0"></iframe>
           </div>
-
           <div v-else > something goes wrong code 5000</div>
+        </div>
+
+        <div class="title row items-center q-pa-md">
+          <h4 class="text-weight-medium col-9 col-md-10">
+            Livros e dicas
+          </h4>
+          <div class="row items-center">
+            <div class="col-3 col-md-2 flex flex-center">
+              <img src="images/book_windguru_for_dummies.png" alt="Livros e dicas" style="max-width: 100%; height: auto; cursor: pointer;" @click="showDialog_dontDontNeedThis = true"/>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- message: thanks for sharing -->
       <q-dialog v-model="showDialog">
         <q-card class="bg-white text-black q-pa-md" style="width: 700px; max-width: 80vw;">
           <q-toolbar class="row items-center">
@@ -159,6 +135,61 @@ limpar erros
         </q-card>
       </q-dialog>
 
+       <!-- message: dont need this, just talk with Hugo -->
+        <q-dialog v-model="showDialog_dontDontNeedThis">
+         <q-card class="bg-white text-black q-pa-md" style="width: 900px; max-width: 80vw;">
+           <q-toolbar class="row items-center">
+             <q-avatar size=70px style="height: auto;">
+               <img src="icons/android-chrome-192x192.png" alt="Huna logo">
+             </q-avatar>
+             <q-toolbar-title><span class="text-weight-bold text-h5">Tu não precisas disso</span></q-toolbar-title>
+           </q-toolbar>
+           <q-card-section class="text-h6">
+             Basta falares com o Hugo, ele tem tudo o que precisas.
+           </q-card-section>
+           <q-card-actions align="right">
+               <q-btn flat label="Eu entendi" color="black" v-close-popup />
+             </q-card-actions>
+         </q-card>
+       </q-dialog>
+
+         <!-- Real estate ad popup -->
+         <q-dialog v-model="showAdDialog" persistent maximized class="transparent-dialog">
+             <q-card class="ad-popup-card" style="padding: 0; border-radius: 2px; overflow: hidden; position: relative; max-width: 95vw; max-height: 95vh; margin: auto; background: transparent;">
+               <!-- Desktop/Tablet Image -->
+               <img
+                 v-if="!mobile"
+                 src="images/poster_bg.png"
+                 alt="Real Estate Ad"
+                 style="width: 100%; height: 100%; object-fit: contain; display: block;"
+               />
+               <!-- Mobile Image -->
+               <img
+                 v-if="mobile"
+                 src="images/poster_bg_mobile.png"
+                 alt="Real Estate Ad Mobile"
+                 style="width: 100%; height: 100%; object-fit: contain; display: block;"
+               />
+               <q-card-actions
+                 align="center"
+                 class="ad-popup-actions"
+                 style="position: absolute; left: 50%; transform: translateX(-50%);"
+               >
+                 <q-btn
+                   label="Não tenho tempo"
+                   padding="12px 24px"
+                   color="orange"
+                   text-color="black"
+                   unelevated
+                   size="lg"
+                   class="text-weight-bold"
+                   style="min-width: 100px; white-space: nowrap;"
+                   v-close-popup
+                 />
+               </q-card-actions>
+           </q-card>
+         </q-dialog>
+
       <q-page-sticky position="bottom-right" :offset="[22, 5]">
         <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -17px">
           <q-btn
@@ -173,11 +204,9 @@ limpar erros
     </q-page-container>
   </q-layout>
 </template>
-
 <script>
 import VideoPlayer from 'components/VideoPlayer.vue'
 import VideoYoutube from 'components/VideoYoutube.vue'
-// import SocialSharing from 'src/components/SocialSharing.vue'
 import socialSharing from 'components/SocialSharing.vue'
 import axios from 'axios'
 
@@ -189,6 +218,16 @@ export default {
     socialSharing
   },
   methods: {
+    // Método para controlar o comportamento de acordeão
+    toggleExpand (index) {
+      // Se clicar no item já expandido, fecha-o
+      if (this.expandedItem === index) {
+        this.expandedItem = null
+      } else {
+        // Caso contrário, expande o novo item e fecha os outros
+        this.expandedItem = index
+      }
+    },
     async getLinks () {
       try {
         const response = await axios.get(this.url_links)
@@ -263,13 +302,22 @@ export default {
     this.getLinks()
     this.isMobile()
   },
+  mounted () {
+    setTimeout(() => {
+      this.showAdDialog = true
+    }, 10000)
+  },
   watch: {
     $route (to, from) {
     }
   },
   data () {
     return {
+      // Nova propriedade para controlar qual item está expandido
+      expandedItem: null,
       showDialog: false,
+      showDialog_dontDontNeedThis: false,
+      showAdDialog: false,
       key: 0,
       drawer: false,
       mobile: true,
@@ -285,7 +333,9 @@ export default {
 </script>
 
 <style lang="sass">
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;200;300;400;500;600;700&display=swap')
 
+// Ajustes no CSS para garantir que a barra lateral apareça abaixo do header
 .q-page-container > div
   padding-top:60px
   h4
@@ -322,11 +372,14 @@ export default {
   .q-btn
     background: #ffa000
 .sidebar
+  // Ajuste para garantir que a barra lateral começa abaixo do header
+  margin-top: 60px
   .align
     position: fixed
     bottom: 30px
   p
     font-size: 15px
+    line-height: 1.2rem
     margin-bottom:0px
     color: gray
   .q-item__section--avatar
@@ -359,16 +412,40 @@ export default {
     .q-item__section--side > .q-icon
       font-size: 20px
   .q-card__section
-    padding-left: 56px
-  @media (max-width: 768px)
-    .q-item
-      min-height: 25px
-      padding: 0px 5px 0px 10px
-      .text-h6
-        font-size: 14px
-        line-height: 0.7rem
-      .q-icon
-        font-size: 20px
-      .btn_active
-        font-size: 18px
-  </style>
+    padding-right: 20px
+    word-break: break-all      // Mantido conforme sugestão anterior
+    overflow-wrap: break-word  // Mantido conforme sugestão anterior
+    @media (max-width: 768px)
+      .q-item
+        min-height: 25px
+        padding: 0px 5px 0px 10px
+        .text-h6
+          font-size: 14px
+          line-height: 0.7rem
+        .q-icon
+          font-size: 20px
+        .btn_active
+          font-size: 18px
+  .ad-popup-card
+    position: relative
+  .transparent-dialog
+    .q-dialog__inner
+      background: transparent !important
+    .q-dialog__backdrop
+      background: rgba(0, 0, 0, 0.8) !important
+  .logo-layer
+    position: absolute
+    top: 16px
+    right: 16px
+    z-index: 1
+  .ad-popup-section
+    position: relative
+  .casa-title
+    font-family: 'Josefin Sans', sans-serif !important
+    font-size: 96px !important
+    font-weight: 700 !important
+.ad-popup-actions
+  bottom: 20px
+  @media (max-width: 680px)
+    bottom: 100px
+</style>
