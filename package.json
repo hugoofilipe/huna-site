@@ -8,6 +8,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
+    "dev": "NODE_OPTIONS=\"--openssl-legacy-provider\" quasar dev",
     "build": "sh ./scripts/build_deploy.sh"
   },
   "dependencies": {
@@ -32,7 +33,7 @@
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",
-    "@vue/devtools": "^6.5.0",
+    "@vue/devtools": "^8.0.2",
     "babel-eslint": "^10.0.1",
     "eslint": "^7.21.0",
     "eslint-config-standard": "^16.0.2",
