@@ -8,7 +8,7 @@
       <input type="password" name="password" id="password" :rules="[val => !!val || 'Field is required']"
         placeholder="Password" v-model="pwd" filled />
       <br />
-      <q-toggle v-model="accept" label="I accept the license and terms" />
+      <!-- <q-toggle v-model="accept" label="I accept the license and terms" /> -->
 
       <br />
       <br />
@@ -33,18 +33,19 @@
 export default {
   name: 'TheLogin',
   data () {
-    const accept = false
+    // const accept = false
     const username = null
     const pwd = null
     return {
-      accept,
+      // accept,
       username,
       pwd
     }
   },
   methods: {
     logIn () {
-      if (this.pwd === 'caparica' && this.accept === true && this.username && this.username.length > 3) {
+      // if (this.pwd === 'caparica' && this.accept === true && this.username && this.username.length > 3) {
+      if (this.pwd === 'caparica' && this.username && this.username.length > 3) {
         this.$emit('Login::loginResult', { loginResult: true })
         this.$cookies.set('pwd', { code: this.pwd, token: 'v1' })
       } else {
