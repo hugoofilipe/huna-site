@@ -1,12 +1,7 @@
 <template>
   <div>
     <div class="main-video-player">
-      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" >
-        <source
-          :src="src"
-          :type="type"
-        >
-      </video>
+       <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" ></video>
       <div class="q-pa-md q-gutter-sm row item.centers ">
         <q-btn @click="play" >play</q-btn>
         <q-btn @click="pause" >pause</q-btn>
@@ -41,6 +36,7 @@
 import 'video.js/dist/video-js.css'
 import videojs from 'video.js'
 import socialSharing from 'components/SocialSharing.vue'
+import axios from 'axios'
 
 export default {
   name: 'VideoPlayer',
@@ -56,7 +52,8 @@ export default {
     },
     src: [Number, String],
     type: [Number, String],
-    anchor: [Number, String]
+    anchor: [Number, String],
+    userAgent: [String]
   },
   methods: {
     play () {
@@ -92,10 +89,28 @@ export default {
       copiedUrl: ''
     }
   },
-  mounted () {
+  async mounted () {
     this.player = videojs(this.$refs.videoPlayer, this.options, () => {
       this.player.log('onPlayerReady', this)
     })
+    if (this.userAgent) {
+      try {
+        const response = await axios.get(this.src, {
+          headers: {
+            'User-Agent': this.userAgent
+          }
+        })
+        const blob = new Blob([response.data], { type: 'application/x-mpegURL' })
+        const blobSrc = URL.createObjectURL(blob)
+        this.player.src({ src: blobSrc, type: this.type })
+      } catch (error) {
+        console.error('Error fetching video with User-Agent:', error)
+        // Fallback to original src
+        this.player.src({ src: this.src, type: this.type })
+      }
+    } else {
+      this.player.src({ src: this.src, type: this.type })
+    }
   },
   beforeDestroy () {
     if (this.player) {
