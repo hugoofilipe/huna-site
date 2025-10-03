@@ -50,11 +50,11 @@ export default {
         return {}
       }
     },
-     src: [Number, String],
-     type: [Number, String],
-     anchor: [Number, String],
-     userAgent: [String],
-     referer: [String]
+    src: [Number, String],
+    type: [Number, String],
+    anchor: [Number, String],
+    userAgent: [String],
+    referer: [String]
   },
   methods: {
     play () {
@@ -94,12 +94,12 @@ export default {
     this.player = videojs(this.$refs.videoPlayer, this.options, () => {
       this.player.log('onPlayerReady', this)
     })
-     if (this.userAgent || this.referer) {
+    if (this.userAgent || this.referer) {
       try {
-         const headers = {}
-         if (this.userAgent) headers['User-Agent'] = this.userAgent
-         if (this.referer) headers['Referer'] = this.referer
-         const response = await axios.get(this.src, { headers })
+        const headers = {}
+        if (this.userAgent) headers['User-Agent'] = this.userAgent
+        if (this.referer) headers.Referer = this.referer
+        const response = await axios.get(this.src, { headers })
         const blob = new Blob([response.data], { type: 'application/x-mpegURL' })
         const blobSrc = URL.createObjectURL(blob)
         this.player.src({ src: blobSrc, type: this.type })
