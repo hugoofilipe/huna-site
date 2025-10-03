@@ -5,7 +5,8 @@
     "src": "https://cams.cdn-surfline.com/cdn-int/pt-covadovapor/chunklist.m3u8",
     "link": "https://www.surfline.com/surf-report/cova-do-vapor/584204204e65fad6a77096ad",
     "anchor": "covadovapor",
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "referer": "https://www.surfline.com/"
   },
   {
     "title": "Lorosae - São joão",
@@ -13,7 +14,8 @@
     "src": "https://cams.cdn-surfline.com/cdn-int/pt-saojoaocaparica/chunklist.m3u8",
     "link": "https://www.surfline.com/surf-report/s-o-joao-da-caparica/5dbb587ff387900001fee288",
     "anchor": "lorosae",
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "referer": "https://www.surfline.com/"
   },
   {
     "title": "Inatel - São joão",
@@ -49,7 +51,8 @@
     "src": "https://cams.cdn-surfline.com/cdn-int/pt-cdscaparica/chunklist.m3u8",
     "link": "",
     "anchor": "barbas1",
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "referer": "https://www.surfline.com/"
   },
   {
     "title": "Barbas",
@@ -57,7 +60,8 @@
     "src": "https://cams.cdn-surfline.com/cdn-int/pt-barbas/chunklist.m3u8",
     "link": "https://www.surfline.com/surf-report/praia-do-barbas/584204214e65fad6a7709d16?camId=58349f6e3421b20545c4b574",
     "anchor": "barbas2",
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "referer": "https://www.surfline.com/"
   },
   {
     "title": "Tarquinho",
@@ -72,7 +76,8 @@
     "src": "https://cams.cdn-surfline.com/cdn-int/pt-costacaparica/chunklist.m3u8",
     "link": "",
     "anchor": "dragaoebarbas",
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "referer": "https://www.surfline.com/"
   },
   {
     "title": "Panoramica - CDS / Barbas / dragão / praia nova / Nova praia",
@@ -80,7 +85,8 @@
     "src": "https://cams.cdn-surfline.com/cdn-int/pt-costadacaparicaoverview/chunklist.m3u8",
     "link": "https://www.surfline.com/surf-report/costa-da-caparica/5842041f4e65fad6a7708e65?camId=60956af96fe5bbe4ad8557fc",
     "anchor": "panoramica",
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "referer": "https://www.surfline.com/"
   },
   {
     "title": "Dragão até à Praia nova",
@@ -109,7 +115,8 @@
     "src": "https://cams.cdn-surfline.com/cdn-int/pt-castelo/chunklist.m3u8",
     "link": "https://www.surfline.com/surf-report/marcelino/584204214e65fad6a7709d15",
     "anchor": "castelo",
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "referer": "https://www.surfline.com/"
   },
   {
     "title": "Praia da Sereia",
