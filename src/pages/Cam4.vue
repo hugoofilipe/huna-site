@@ -306,6 +306,9 @@ export default {
     setTimeout(() => {
       this.showAdDialog = true
     }, 10000)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw-blacklist.js', { scope: '/' }).then(reg => console.log('SW registered', reg.scope)).catch(err => console.warn('SW register failed', err))
+    }
   },
   watch: {
     $route (to, from) {

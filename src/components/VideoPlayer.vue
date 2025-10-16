@@ -36,7 +36,6 @@
 import 'video.js/dist/video-js.css'
 import videojs from 'video.js'
 import socialSharing from 'components/SocialSharing.vue'
-import axios from 'axios'
 
 export default {
   name: 'VideoPlayer',
@@ -94,24 +93,40 @@ export default {
     this.player = videojs(this.$refs.videoPlayer, this.options, () => {
       this.player.log('onPlayerReady', this)
     })
-    if (this.userAgent || this.referer) {
+
+    // Para streams da Surfline, use o proxy
+    let videoSrc = this.src
+    if (this.src && this.src.includes && this.src.includes('surfline')) {
       try {
-        const headers = {}
-        if (this.userAgent) headers['User-Agent'] = this.userAgent
-        if (this.referer) headers.Referer = this.referer
-        const response = await axios.get(this.src, { headers })
-        const blob = new Blob([response.data], { type: 'application/x-mpegURL' })
-        const blobSrc = URL.createObjectURL(blob)
-        this.player.src({ src: blobSrc, type: this.type })
+        const url = new URL(this.src)
+        const pathParts = url.pathname.split('/').filter(part => part.length > 0)
+        // If the incoming URL is a playlist -> request the playlist filename on the proxy
+        if (pathParts.length >= 3 && pathParts[2] === 'playlist.m3u8') {
+          const country = pathParts[0]
+          const location = pathParts[1]
+          videoSrc = `http://proxy.huna.pt/proxy/surfline/${country}/${location}/playlist.m3u8`
+          console.log(`Converted Surfline playlist URL: ${this.src} -> ${videoSrc}`)
+        } else if (this.src.endsWith('.ts') && pathParts.length >= 3) {
+          // If src is a direct segment, route the segment through the proxy surfline segment endpoint
+          const country = pathParts[0]
+          const location = pathParts[1]
+          const filename = pathParts[pathParts.length - 1]
+          videoSrc = `http://proxy.huna.pt/proxy/surfline/${country}/${location}/${filename}`
+          console.log(`Converted Surfline segment URL: ${this.src} -> ${videoSrc}`)
+        } else {
+          console.warn('Unexpected Surfline URL format:', this.src)
+          videoSrc = 'http://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/playlist.m3u8'
+        }
       } catch (error) {
-        console.error('Error fetching video with User-Agent:', error)
-        // Fallback to original src
-        this.player.src({ src: this.src, type: this.type })
+        console.error('Error parsing Surfline URL:', error)
+        videoSrc = 'http://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/playlist.m3u8'
       }
-    } else {
-      this.player.src({ src: this.src, type: this.type })
     }
+
+    console.log('Loading video source:', videoSrc)
+    this.player.src({ src: videoSrc, type: this.type })
   },
+
   beforeDestroy () {
     if (this.player) {
       this.player.dispose()
