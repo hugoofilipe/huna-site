@@ -70,10 +70,10 @@ app.get('/proxy/surfline/:country/:location/playlist.m3u8', async (req, res) => 
 
     // Rewrite any absolute Surfline URLs in the playlist to route via our proxy
     // Example: https://hls.cdn-surfline.com/ireland/pt-covadovapor/media_31008_j2rwb.ts
-    // becomes:  http://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/media_31008_j2rwb.ts
+    // becomes:  https://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/media_31008_j2rwb.ts
     m3u8Content = m3u8Content.replace(
       /https?:\/\/hls\.cdn-surfline\.com\/([^\/]+)\/([^\/]+)\//g,
-      'http://proxy.huna.pt/proxy/surfline/$1/$2/'
+      'https://proxy.huna.pt/proxy/surfline/$1/$2/'
     );
 
     console.log(`M3U8 content sample for ${country}/${location}:`, m3u8Content.substring(0, 300));

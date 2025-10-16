@@ -104,22 +104,22 @@ export default {
         if (pathParts.length >= 3 && pathParts[2] === 'playlist.m3u8') {
           const country = pathParts[0]
           const location = pathParts[1]
-          videoSrc = `http://proxy.huna.pt/proxy/surfline/${country}/${location}/playlist.m3u8`
+          videoSrc = `https://proxy.huna.pt/proxy/surfline/${country}/${location}/playlist.m3u8`
           console.log(`Converted Surfline playlist URL: ${this.src} -> ${videoSrc}`)
         } else if (this.src.endsWith('.ts') && pathParts.length >= 3) {
           // If src is a direct segment, route the segment through the proxy surfline segment endpoint
           const country = pathParts[0]
           const location = pathParts[1]
           const filename = pathParts[pathParts.length - 1]
-          videoSrc = `http://proxy.huna.pt/proxy/surfline/${country}/${location}/${filename}`
+          videoSrc = `https://proxy.huna.pt/proxy/surfline/${country}/${location}/${filename}`
           console.log(`Converted Surfline segment URL: ${this.src} -> ${videoSrc}`)
         } else {
           console.warn('Unexpected Surfline URL format:', this.src)
-          videoSrc = 'http://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/playlist.m3u8'
+          videoSrc = 'https://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/playlist.m3u8'
         }
       } catch (error) {
         console.error('Error parsing Surfline URL:', error)
-        videoSrc = 'http://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/playlist.m3u8'
+        videoSrc = 'https://proxy.huna.pt/proxy/surfline/ireland/pt-covadovapor/playlist.m3u8'
       }
     }
 
