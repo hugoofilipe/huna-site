@@ -9,8 +9,8 @@
       style="text-decoration: none;"
     >
     <q-btn v-if="position === 'top'" push round color="white" size="xl" icon="whatsapp"/>
-    <q-btn v-else-if="position === 'bottom'" align="around" text-color="black" class=" btn-fixed-width" label="whatsapp" icon="whatsapp">
-    </q-btn>
+  <q-btn v-else-if="position === 'bottom'" align="around" text-color="black" class=" btn-fixed-width social-btn" label="whatsapp" icon="whatsapp">
+  </q-btn>
   </ShareNetwork>
 </template>
 

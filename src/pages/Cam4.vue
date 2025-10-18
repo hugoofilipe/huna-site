@@ -77,7 +77,7 @@ limpar erros
             </q-fab>
           </div>
 
-           <video-player v-if="beach.type === 'application/x-mpegURL'" :options="videoOptions" :src="beach.src" :type="beach.type" :anchor="beach.anchor" :userAgent="beach.userAgent" :referer="beach.referer" ref="video"/>
+          <video-player v-if="beach.type === 'application/x-mpegURL'" :options="videoOptions" :src="beach.src" :type="beach.type" :anchor="beach.anchor" :userAgent="beach.userAgent" :referer="beach.referer" ref="video"/>
 
           <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type"/>
 
@@ -153,44 +153,18 @@ limpar erros
          </q-card>
        </q-dialog>
 
-         <!-- Real estate ad popup -->
-         <q-dialog v-model="showAdDialog" persistent maximized class="transparent-dialog">
-             <q-card class="ad-popup-card" style="padding: 0; border-radius: 2px; overflow: hidden; position: relative; max-width: 95vw; max-height: 95vh; margin: auto; background: transparent;">
-               <!-- Desktop/Tablet Image -->
-               <img
-                 v-if="!mobile"
-                 src="images/poster_bg.png"
-                 alt="Real Estate Ad"
-                 style="width: 100%; height: 100%; object-fit: contain; display: block;"
-               />
-               <!-- Mobile Image -->
-               <img
-                 v-if="mobile"
-                 src="images/poster_bg_mobile.png"
-                 alt="Real Estate Ad Mobile"
-                 style="width: 100%; height: 100%; object-fit: contain; display: block;"
-               />
-               <q-card-actions
-                 align="center"
-                 class="ad-popup-actions"
-                 style="position: absolute; left: 50%; transform: translateX(-50%);"
-               >
-                 <q-btn
-                   label="Não tenho tempo"
-                   padding="12px 24px"
-                   color="orange"
-                   text-color="black"
-                   unelevated
-                   size="lg"
-                   class="text-weight-bold"
-                   style="min-width: 100px; white-space: nowrap;"
-                   v-close-popup
-                 />
-               </q-card-actions>
-           </q-card>
-         </q-dialog>
+         <!-- Real estate ad popup (extracted) -->
+         <ad-dialog
+           :model-value="showAdDialog"
+           :value="showAdDialog"
+           :mobile="mobile"
+           poster-desktop="images/poster_bg.png"
+           poster-mobile="images/poster_bg_mobile.png"
+           @update:modelValue="v => showAdDialog = v"
+           @input="v => showAdDialog = v"
+         ></ad-dialog>
 
-      <q-page-sticky position="bottom-right" :offset="[22, 5]">
+      <q-page-sticky position="bottom-right" :offset="[22, 50]">
         <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -17px">
           <q-btn
             round
@@ -208,6 +182,7 @@ limpar erros
 import VideoPlayer from 'components/VideoPlayer.vue'
 import VideoYoutube from 'components/VideoYoutube.vue'
 import socialSharing from 'components/SocialSharing.vue'
+import AdDialog from 'components/AdDialog.vue'
 import axios from 'axios'
 
 export default {
@@ -215,7 +190,8 @@ export default {
   components: {
     VideoPlayer,
     VideoYoutube,
-    socialSharing
+    socialSharing,
+    AdDialog
   },
   methods: {
     // Método para controlar o comportamento de acordeão
@@ -233,8 +209,36 @@ export default {
         const response = await axios.get(this.url_links)
         this.webcams = response.data
         console.log(this.webcams)
+        // If URL contains a hash (e.g. /cam#someAnchor), attempt to scroll to it
+        this.$nextTick(() => {
+          this.scrollToHash()
+        })
       } catch (error) {
         console.log('[foo] Something is wrong with urllinks.json file: ', error)
+      }
+    },
+    // Smooth scroll to the current location.hash anchor (if present).
+    // Retry a few times in case the DOM element isn't yet rendered.
+    scrollToHash (attempt = 0) {
+      try {
+        const hash = (window.location.hash || '').replace('#', '')
+        if (!hash) return
+        const el = document.getElementById(hash)
+        if (el) {
+          // scrollIntoView with padding to account for fixed header
+          const rect = el.getBoundingClientRect()
+          const offset = 60 // header height
+          const top = window.pageYOffset + rect.top - offset
+          window.scrollTo({ top, behavior: 'smooth' })
+          // mark the drawer button as active if present
+          const navBar = document.getElementsByClassName(hash)
+          if (navBar && navBar[0]) navBar[0].classList.add('btn_active')
+        } else if (attempt < 5) {
+          // retry after a short delay
+          setTimeout(() => this.scrollToHash(attempt + 1), 150)
+        }
+      } catch (e) {
+        console.warn('scrollToHash failed', e)
       }
     },
     iconSelect (type) {
@@ -312,6 +316,14 @@ export default {
   },
   watch: {
     $route (to, from) {
+      // when navigating to a hash like /cam#anchor, attempt to scroll
+      this.$nextTick(() => this.scrollToHash())
+    },
+    webcams (newVal, oldVal) {
+      // if webcams were empty and now populated, ensure we honor hash
+      if (Array.isArray(newVal) && newVal.length > 0) {
+        this.$nextTick(() => this.scrollToHash())
+      }
     }
   },
   data () {
@@ -370,7 +382,9 @@ export default {
         top: 50px
         transform: scale(0.9)
   @media (max-width: 768px)
-    .section
+    div
+      padding: 1px 0px
+      margin-bottom: 10px
 .q-page-sticky
   .q-btn
     background: #ffa000
@@ -447,8 +461,31 @@ export default {
     font-family: 'Josefin Sans', sans-serif !important
     font-size: 96px !important
     font-weight: 700 !important
-.ad-popup-actions
-  bottom: 20px
+  .ad-popup-actions
+    bottom: 20px
+    @media (max-width: 680px)
+      bottom: 100px
+
+  /* New ad popup styles: padded container with cover image */
+  .ad-popup-card
+    padding: 0
+    background: transparent
+    // ensure card centers and doesn't exceed viewport
+    max-height: 90vh
+    display: flex
+    justify-content: center
+    align-items: center
+
+  .ad-image
+    height: 100%
+    object-fit: cover
+    display: block
+
+  /* Reduce padding on small screens to avoid cutting too much of the image */
   @media (max-width: 680px)
-    bottom: 100px
+    .ad-popup-card
+      padding: 20px 0
+    .ad-image-wrapper
+      max-height: calc(80vh - 40px)
+      height: calc(60vh - 40px)
 </style>
