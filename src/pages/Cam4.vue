@@ -1,84 +1,104 @@
-<!--
-DONE - Alterar tempo da cookie
-DONE - Scrollactive (ou tentar usar calss CSS usando focus para ver o active)
-DONE - validação pela cookie nao me está a permitir fazer play em todos os videos no momento de carregamento da página (Fixe era fazer o play do primeiro video, depois fazer sempre play do focus juntamente com o anterior e o seguinte, e fazer play sempre que se carregasse no butão)
-DONE - Corrigir mobile
-DONE Correção de titulos e animações
-Corrigur cache porque as novas versões necessitam de force refresh, nao pode ser;
-Reduzir o tamanho dos titulos das camaras em MOBILE
-Criar um buttao de capture e enviar para whatsapp
-Verificar se a password está mesmo a guardar 180 dias
-
-Talves o menu tenha que ter scroll
-Corrigir visao landscape (pelo meno remover o header)
-versao mobile -> https://www.npmjs.com/package/vue-scroll-picker
-criar top ten de captures
-criar pagina apos login para mostrar "cam" e "campeonato Padel";
-evocar o formulario de contacto
-notificaoes como o atalho para desktop, guardar bookmark, banner de publicidade, etc...
-Corrigir scroll vuejs add space before section when jump by anchor
-user online para uma api
-Rating das ondas para uma api - https://quasar.dev/vue-components/rating
-Criar vários tipo de user (admin, cam, etc...)
-botao para by coffee
-banner de publicidade
-limpar erros
-
--->
 <template>
   <q-layout view="lhr lpR lFr" class="bg-white" @scroll="scrollHandler">
     <!-- Ajuste no q-drawer para posicioná-lo abaixo do header -->
-    <q-drawer v-model="drawer" show-if-above side='right'
-      :width="320" :breakpoint="500" class="bg-grey-3 sidebar" :content-style="{ top: '60px' }">
-      <div class="align">
-        <q-list>
-          <!-- Adicionado o model-value e @update:model-value para controlar o comportamento de acordeão -->
-          <q-expansion-item
-            v-for="(beach, index) in webcams"
-            :key="index"
-            :label="beach.title"
-            :to="'#' + beach.anchor"
-            dense
-            dense-toggle
-            expand-separator
-            :class="'text-h6 ' + beach.anchor"
-            :icon="iconSelect(beach.type)"
-            active-class="text-black"
-            :name="index"
-            :model-value="expandedItem === index"
-            @update:model-value="toggleExpand(index)"
-          >
-            <q-card>
-              <q-card-section style="white-space: normal">
-                <p>Title: {{beach.title}}</p>
-                <p>Type: {{beach.type}}</p>
-                <p>SRC: {{beach.src}}</p>
-                <p>Link: {{beach.link}}</p>
-                <p>Anchor: {{beach.anchor}}</p>
-                <p>Index: {{index}}</p>
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
+    <q-drawer
+      v-model="drawer"
+      show-if-above
+      side="right"
+      :width="320"
+      :breakpoint="600"
+      class="bg-grey-3 sidebar"
+      :content-style="mobile ? {} : { top: '60px' }"
+      :overlay="mobile"
+      @hide="drawer = false"
+    >
+      <!-- Drawer header (useful on mobile) -->
+      <q-toolbar class="q-pa-sm">
+        <q-toolbar-title class="text-h6">Câmaras</q-toolbar-title>
+        <q-btn dense flat icon="close" v-if="mobile" @click="drawer = false" aria-label="Fechar menu" />
+      </q-toolbar>
+
+      <div class="sidebar-content q-pa-xs">
+        <q-list padding>
+          <!-- Mobile: Simple clickable items for direct navigation -->
+          <template v-if="mobile">
+            <q-item
+              v-for="(beach, index) in webcams"
+              :key="index"
+              clickable
+              v-ripple
+              @click="goToCamera(beach.anchor, index)"
+              :class="'text-h6 menu-item-mobile ' + beach.anchor"
+              active-class="text-black"
+            >
+              <q-item-section avatar>
+                <q-icon :name="iconSelect(beach.type)" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ beach.title }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-icon name="chevron_right" />
+              </q-item-section>
+            </q-item>
+          </template>
+
+          <!-- Desktop: Expansion items with details -->
+          <template v-else>
+            <q-expansion-item
+              v-for="(beach, index) in webcams"
+              :key="index"
+              :label="beach.title"
+              dense
+              dense-toggle
+              expand-icon-toggle
+              expand-separator
+              @click="goToCamera(beach.anchor, index)"
+              group="beach"
+              :class="'text-h6 ' + beach.anchor"
+              :icon="iconSelect(beach.type)"
+              active-class="text-black"
+              :name="index"
+              :model-value="expandedItem === index"
+            >
+              <q-card>
+                <q-card-section style="white-space: normal">
+                  <p class="text-subtitle2">Type: <strong>{{beach.type}}</strong></p>
+                  <p class="text-caption">SRC: {{beach.src}}</p>
+                  <p class="text-caption">Anchor: {{beach.anchor}}</p>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </template>
         </q-list>
       </div>
     </q-drawer>
     <q-page-container>
       <div>
         <div v-for="(beach, index) in webcams" v-bind:key="index" class="section q-pa-md" :id="beach.anchor">
-
-          <div class="title row items-center">
-            <h4 class="text-weight-medium col-9 col-md-10">
+          <div class="title row items-start items-center">
+            <h4 class="text-weight-medium ">
               {{beach.title}}
             </h4>
-            <!-- <socialSharing /> -->
-            <q-fab color="green"  icon="share" direction="down" class="desktop-only">
-              <socialSharing style="padding-top:40px" :anchor="beach.anchor" :title="beach.title" position="top"/>
-              <q-btn push round color="white" icon="link" style="margin-top:80px" size="xl" @click="showDialog = true; copyURL(beach.anchor)"/>
-            </q-fab>
+            <q-btn icon="link" @click="showDialog = true; copyURL(beach.anchor)" name="copy-link"  aria-label="Copiar link" flat round size="small" style="color: #ffa000;" />
           </div>
+          <q-btn v-if="!mobile" round icon="camera_alt" style="font-size: 14px;margin-top: 8px;top: 60px;float: right;z-index: 20;right: 60px; cursor: pointer; background: #ffa000;" size="md" @click.stop.prevent="captureImage(index)" title="Capturar imagem" />
 
-          <video-player v-if="beach.type === 'application/x-mpegURL'" :options="videoOptions" :src="beach.src" :type="beach.type" :anchor="beach.anchor" :userAgent="beach.userAgent" :referer="beach.referer" ref="video"/>
-
+          <video-player
+            v-if="beach.type === 'application/x-mpegURL'"
+            :options="videoOptions"
+            :src="beach.src"
+            :type="beach.type"
+            :anchor="beach.anchor"
+            :userAgent="beach.userAgent"
+            :referer="beach.referer"
+            :has-previous="hasPreviousCamera(index)"
+            :has-next="hasNextCamera(index)"
+            ref="video"
+            @capture-request="captureImage(index)"
+            @previous-camera="navigateToPreviousCamera(index)"
+            @next-camera="navigateToNextCamera(index)"
+          />
           <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type"/>
 
           <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'windguru'"  class="section q-pa-md">
@@ -163,9 +183,9 @@ limpar erros
            @update:modelValue="v => showAdDialog = v"
            @input="v => showAdDialog = v"
          ></ad-dialog>
-
       <q-page-sticky position="bottom-right" :offset="[22, 50]">
-        <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -17px">
+        <!-- remove manual absolute offsets so q-page-sticky can position the button reliably -->
+        <div class="q-mini-drawer-hide">
           <q-btn
             round
             unelevated
@@ -178,19 +198,19 @@ limpar erros
     </q-page-container>
   </q-layout>
 </template>
+
 <script>
 import VideoPlayer from 'components/VideoPlayer.vue'
 import VideoYoutube from 'components/VideoYoutube.vue'
-import socialSharing from 'components/SocialSharing.vue'
+// import socialSharing from 'components/SocialSharing.vue'
 import AdDialog from 'components/AdDialog.vue'
 import axios from 'axios'
-
 export default {
   name: 'Cam4',
   components: {
     VideoPlayer,
     VideoYoutube,
-    socialSharing,
+    // socialSharing,
     AdDialog
   },
   methods: {
@@ -300,6 +320,195 @@ export default {
         this.mobile = false
         // console.log('mobile foo FALSE')
       }
+    },
+    // Scroll to camera anchor and close drawer on mobile
+    goToCamera (anchor, index) {
+      try {
+        console.log('goToCamera called', { anchor, index, mobile: this.mobile })
+
+        // close drawer on mobile so content is visible
+        if (this.mobile) {
+          this.drawer = false
+        }
+
+        // Use nextTick to ensure drawer closes before scrolling
+        this.$nextTick(() => {
+          const el = document.getElementById(anchor)
+          if (el) {
+            const rect = el.getBoundingClientRect()
+            const offset = this.mobile ? 20 : 60
+            const top = window.pageYOffset + rect.top - offset
+            window.scrollTo({ top, behavior: 'smooth' })
+
+            // mark active in drawer
+            try {
+              const navBar = document.getElementsByClassName(anchor)
+              if (navBar && navBar[0]) navBar[0].classList.add('btn_active')
+            } catch (e) {}
+          } else {
+            // fallback: set location.hash which will trigger scrollToHash
+            console.log('Element not found, using hash fallback')
+            window.location.hash = '#' + anchor
+          }
+        })
+      } catch (e) {
+        console.warn('goToCamera failed', e)
+      }
+    },
+    // Navigate to a specific camera by index
+    navigateToCamera (targetIndex) {
+      if (!this.webcams || targetIndex < 0 || targetIndex >= this.webcams.length) {
+        console.log('navigateToCamera: invalid index', targetIndex)
+        return
+      }
+      const targetCamera = this.webcams[targetIndex]
+      if (targetCamera && targetCamera.anchor) {
+        console.log('navigateToCamera: navigating to', targetIndex, targetCamera.anchor)
+        this.goToCamera(targetCamera.anchor, targetIndex)
+      }
+    },
+    // Navigate to previous camera (skipping previsoes)
+    navigateToPreviousCamera (currentIndex) {
+      console.log('navigateToPreviousCamera called from index', currentIndex)
+      if (currentIndex <= 0) return
+      // Find previous camera that is not a 'previsoes' type
+      for (let i = currentIndex - 1; i >= 0; i--) {
+        if (this.webcams[i] && this.webcams[i].type !== 'previsoes') {
+          console.log('Found previous camera at index', i)
+          this.switchToCamera(currentIndex, i)
+          return
+        }
+      }
+      console.log('No previous camera found')
+    },
+    // Navigate to next camera (skipping previsoes)
+    navigateToNextCamera (currentIndex) {
+      console.log('navigateToNextCamera called from index', currentIndex)
+      if (!this.webcams || currentIndex >= this.webcams.length - 1) return
+      // Find next camera that is not a 'previsoes' type
+      for (let i = currentIndex + 1; i < this.webcams.length; i++) {
+        if (this.webcams[i] && this.webcams[i].type !== 'previsoes') {
+          console.log('Found next camera at index', i)
+          this.switchToCamera(currentIndex, i)
+          return
+        }
+      }
+      console.log('No next camera found')
+    },
+    // Switch to a different camera (change video source in place, maintaining fullscreen)
+    switchToCamera (fromIndex, toIndex) {
+      try {
+        const videosRef = this.$refs && this.$refs.video
+        if (!videosRef || !this.webcams) return
+
+        const currentPlayer = Array.isArray(videosRef) ? videosRef[fromIndex] : videosRef
+        const targetCamera = this.webcams[toIndex]
+
+        if (!currentPlayer || !targetCamera) {
+          console.log('switchToCamera: missing player or camera')
+          return
+        }
+
+        console.log('Switching from', fromIndex, 'to', toIndex, targetCamera)
+
+        // Check if currently in fullscreen
+        const inFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement ||
+                                document.mozFullScreenElement || document.msFullscreenElement)
+
+        if (inFullscreen && typeof currentPlayer.changeCameraSource === 'function') {
+          // Use the player's method to change source while staying in fullscreen
+          console.log('Changing source to:', targetCamera.src)
+          currentPlayer.changeCameraSource(targetCamera.src, targetCamera.type)
+
+          // Update URL hash to reflect current camera
+          window.location.hash = '#' + targetCamera.anchor
+
+          // Update active class in drawer
+          try {
+            // Remove active from all
+            const allItems = document.querySelectorAll('.btn_active')
+            allItems.forEach(item => item.classList.remove('btn_active'))
+            // Add active to target
+            const navBar = document.getElementsByClassName(targetCamera.anchor)
+            if (navBar && navBar[0]) navBar[0].classList.add('btn_active')
+          } catch (e) {
+            console.warn('Error updating active class:', e)
+          }
+        } else {
+          // Not in fullscreen, use normal navigation
+          console.log('Not in fullscreen, using normal navigation')
+          this.navigateToCamera(toIndex)
+        }
+      } catch (e) {
+        console.error('switchToCamera failed:', e)
+        // Fallback to normal navigation
+        this.navigateToCamera(toIndex)
+      }
+    },
+    // Check if there's a previous camera (non-preview type)
+    hasPreviousCamera (currentIndex) {
+      if (currentIndex <= 0) return false
+      // Find previous camera that is not a 'previsoes' type
+      for (let i = currentIndex - 1; i >= 0; i--) {
+        if (this.webcams[i] && this.webcams[i].type !== 'previsoes') {
+          return true
+        }
+      }
+      return false
+    },
+    // Check if there's a next camera (non-preview type)
+    hasNextCamera (currentIndex) {
+      if (!this.webcams || currentIndex >= this.webcams.length - 1) return false
+      // Find next camera that is not a 'previsoes' type
+      for (let i = currentIndex + 1; i < this.webcams.length; i++) {
+        if (this.webcams[i] && this.webcams[i].type !== 'previsoes') {
+          return true
+        }
+      }
+      return false
+    },
+    // Capture the current frame from the video component and copy image to clipboard
+    async captureImage (index) {
+      try {
+        const videosRef = this.$refs && this.$refs.video
+        const vp = Array.isArray(videosRef) ? videosRef[index] : videosRef
+        if (!vp || typeof vp.captureFrame !== 'function') {
+          if (this.$q && this.$q.notify) this.$q.notify({ type: 'negative', message: 'Captura indisponível' })
+          return
+        }
+        const blob = await vp.captureFrame()
+        if (!blob) {
+          if (this.$q && this.$q.notify) this.$q.notify({ type: 'negative', message: 'Não foi possível capturar imagem' })
+          return
+        }
+        // Use Clipboard API to write image
+        try {
+          // ClipboardItem requires an object mapping MIME to Blob
+          const ClipboardItemCtor = window.ClipboardItem
+          if (ClipboardItemCtor) {
+            const item = new ClipboardItemCtor({ 'image/png': blob })
+            await navigator.clipboard.write([item])
+            if (this.$q && this.$q.notify) this.$q.notify({ type: 'positive', message: 'Imagem copiada' })
+          } else {
+            throw new Error('ClipboardItem not supported')
+          }
+        } catch (e) {
+          // fallback: offer download
+          console.warn('clipboard write failed, falling back to download', e)
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'capture.png'
+          document.body.appendChild(a)
+          a.click()
+          a.remove()
+          URL.revokeObjectURL(url)
+          if (this.$q && this.$q.notify) this.$q.notify({ type: 'positive', message: 'Imagem preparada para download' })
+        }
+      } catch (e) {
+        console.warn('captureImage failed', e)
+        if (this.$q && this.$q.notify) this.$q.notify({ type: 'negative', message: 'Erro na captura' })
+      }
     }
   },
   beforeMount () {
@@ -359,16 +568,6 @@ export default {
     iframe
       height:600px
       width: 100%
-  .title
-    .q-fab
-      display: block
-      position: relative
-      z-index: 1
-      margin-left:100px
-    .q-btn__wrapper
-      position: absolute
-      background: green
-      top: 120px
   @media (min-width: 1080px) and (max-width: 1366px)
     .title
       .q-fab
@@ -384,16 +583,34 @@ export default {
   @media (max-width: 768px)
     div
       padding: 1px 0px
-      margin-bottom: 10px
-.q-page-sticky
-  .q-btn
-    background: #ffa000
+  .q-page-sticky
+    .q-btn
+      background: #ffa000
+.q-drawer
+  z-index: 2001
+  @media (max-width: 600px)
+    z-index: 6000
 .sidebar
   // Ajuste para garantir que a barra lateral começa abaixo do header
   margin-top: 60px
+  @media (max-width: 600px)
+    margin-top: 0
+  .sidebar-content
+    max-height: calc(100vh - 60px)
+    overflow-y: auto
+    padding: 8px
+    @media (max-width: 600px)
+      max-height: calc(100vh - 60px)
+  .menu-item-mobile
+    padding: 5px 5px
+    transition: background-color 0.2s
+    &:active
+      background-color: rgba(0, 0, 0, 0.1)
+    .q-item__label
+      font-size: 20px
+      font-weight: 500
   .align
-    position: fixed
-    bottom: 30px
+    position: static
   p
     font-size: 15px
     line-height: 1.2rem
@@ -411,7 +628,6 @@ export default {
     font-size: 18px
     line-height: 0.7rem
   .btn_active
-    font-size: 25px
     background: #ffa000
     border-radius: 50px
     font-weight: 600

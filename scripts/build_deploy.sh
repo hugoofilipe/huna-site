@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # yarn quasar build #gera a pasta dist com o código compilado
-yarn quasar build -m pwa #gera a pasta dist com o código compilado
+NODE_OPTIONS="--openssl-legacy-provider" yarn quasar build -m pwa #gera a pasta dist com o código compilado
 
 # If you want a production build with debugging enabled:
 #yarn quasar build -m spa -d

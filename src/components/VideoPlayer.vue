@@ -3,13 +3,22 @@
    <div class="main-video-player">
      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" ></video>
      <div class="custom-controls q-pa-md q-gutter-sm row flex justify-center align-center">
+      <q-btn v-if="isFullscreen && hasPrevious" @click="$emit('previous-camera')" icon="skip_previous" label="Anterior" unelevated class="icon-only-mobile fullscreen-nav-btn"/>
       <q-btn @click="togglePlay" :label="isPlaying ? 'pause' : 'play'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile"/>
       <q-btn @click="restart()" icon="replay" :label="'restart'" unelevated class="icon-only-mobile"/>
       <q-btn v-if="showFullscreenButton" @click="toggleFullscreen" :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" flat dense />
-      <q-btn  align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" icon="link"  @click="showDialog = true; copyURL(anchor)">
+      <q-btn align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" icon="link"  @click="showDialog = true; copyURL(anchor)">
         <q-tooltip class="bg-accent">Copiar link</q-tooltip>
       </q-btn>
       <socialSharing  :anchor="anchor" :title="anchor" position="bottom" class="icon-only-mobile"/>
+      <q-btn
+        v-if="$q.platform.is.mobile"
+        icon="camera_alt"
+        size="md"
+        @click.stop.prevent="$emit('capture-request')"
+        title="Capturar imagem"
+      />
+      <q-btn v-if="isFullscreen && hasNext" @click="$emit('next-camera')" icon="skip_next" label="Próximo" unelevated class="icon-only-mobile fullscreen-nav-btn"/>
     </div>
   </div>
 
@@ -54,7 +63,9 @@ export default {
     anchor: [Number, String],
     showFullscreenButton: { type: Boolean, default: true },
     userAgent: [String],
-    referer: [String]
+    referer: [String],
+    hasPrevious: { type: Boolean, default: false },
+    hasNext: { type: Boolean, default: false }
   },
   methods: {
     play () {
@@ -114,6 +125,22 @@ export default {
       }
     },
 
+    // Change to a new camera source (exposed for parent to call)
+    changeCameraSource (newSrc, newType) {
+      try {
+        const srcToUse = this.toProxy(newSrc)
+        console.log('changeCameraSource:', newSrc, '->', srcToUse)
+        this.player.pause()
+        this.player.src({ src: srcToUse, type: newType || this.type })
+        this.player.load()
+        this.player.play().catch(e => {
+          console.warn('Auto-play failed after camera change:', e)
+        })
+      } catch (e) {
+        console.error('changeCameraSource failed:', e)
+      }
+    },
+
     // Restart using optional link, otherwise use stored proxiedSrc
     restart (link) {
       const raw = link || this.proxiedSrc || this.src
@@ -128,6 +155,43 @@ export default {
         // this.toolbar = true
       } catch ($e) {
         alert('Cannot copy')
+      }
+    },
+
+    // Capture the current video frame and return a Blob (image/png).
+    // Returns null on failure.
+    async captureFrame () {
+      try {
+        // Prefer the video tech element from video.js if available
+        let htmlVideo = null
+        try {
+          if (this.player && this.player.tech && typeof this.player.tech === 'function') {
+            const tech = this.player.tech()
+            if (tech && tech.el) htmlVideo = tech.el()
+          }
+        } catch (e) {
+          // ignore and fallback
+        }
+        if (!htmlVideo) htmlVideo = this.$refs.videoPlayer
+        if (!htmlVideo) return null
+
+        const width = htmlVideo.videoWidth || htmlVideo.clientWidth || 640
+        const height = htmlVideo.videoHeight || htmlVideo.clientHeight || 360
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        // draw current frame
+        ctx.drawImage(htmlVideo, 0, 0, width, height)
+
+        // Convert to blob
+        const blob = await new Promise((resolve) => {
+          canvas.toBlob((b) => resolve(b), 'image/png')
+        })
+        return blob
+      } catch (e) {
+        console.warn('captureFrame failed', e)
+        return null
       }
     },
 
@@ -378,6 +442,11 @@ export default {
 .main-video-player.is-fullscreen .custom-controls
   bottom: 18px
   padding: 8px 12px
+
+/* Fullscreen navigation buttons styling */
+.fullscreen-nav-btn
+  background: #ffa000 !important
+  font-weight: 600
 
 /* Hide Video.js default controls to show only our custom buttons */
 .video-js .vjs-control-bar,
