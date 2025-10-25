@@ -53,7 +53,6 @@
               dense-toggle
               expand-icon-toggle
               expand-separator
-              @click="goToCamera(beach.anchor, index)"
               group="beach"
               :class="'text-h6 ' + beach.anchor"
               :icon="iconSelect(beach.type)"
@@ -61,6 +60,14 @@
               :name="index"
               :model-value="expandedItem === index"
             >
+              <template v-slot:header>
+                <q-item-section avatar>
+                  <q-icon :name="iconSelect(beach.type)" />
+                </q-item-section>
+                <q-item-section @click.stop="goToCamera(beach.anchor, index)" style="cursor: pointer;">
+                  <q-item-label>{{ beach.title }}</q-item-label>
+                </q-item-section>
+              </template>
               <q-card>
                 <q-card-section style="white-space: normal">
                   <p class="text-subtitle2">Type: <strong>{{beach.type}}</strong></p>
@@ -520,7 +527,22 @@ export default {
       this.showAdDialog = true
     }, 10000)
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw-blacklist.js', { scope: '/' }).then(reg => console.log('SW registered', reg.scope)).catch(err => console.warn('SW register failed', err))
+      navigator.serviceWorker.register('/sw-blacklist.js', { scope: '/' })
+        .then(reg => {
+          console.log('[Cam4] Service Worker registered:', reg.scope)
+          // Force update to get latest version
+          reg.update()
+          // Check for updates periodically
+          setInterval(() => {
+            reg.update()
+          }, 60000) // Check every minute
+        })
+        .catch(err => console.warn('[Cam4] SW register failed:', err))
+
+      // Log when SW is controlling the page
+      navigator.serviceWorker.ready.then(() => {
+        console.log('[Cam4] Service Worker is active and controlling the page')
+      })
     }
   },
   watch: {
