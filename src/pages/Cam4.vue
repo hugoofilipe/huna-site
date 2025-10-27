@@ -1,147 +1,31 @@
 <template>
   <q-layout view="lhr lpR lFr" class="bg-white" @scroll="scrollHandler">
-    <!-- Ajuste no q-drawer para posicioná-lo abaixo do header -->
-    <q-drawer
+    <webcam-sidebar
       v-model="drawer"
-      show-if-above
-      side="right"
-      :width="320"
-      :breakpoint="600"
-      class="bg-grey-3 sidebar"
-      :content-style="mobile ? {} : { top: '60px' }"
-      :overlay="mobile"
-      @hide="drawer = false"
-    >
-      <!-- Drawer header (useful on mobile) -->
-      <q-toolbar class="q-pa-sm">
-        <q-toolbar-title class="text-h6">Câmaras</q-toolbar-title>
-        <q-btn dense flat icon="close" v-if="mobile" @click="drawer = false" aria-label="Fechar menu" />
-      </q-toolbar>
-
-      <div class="sidebar-content q-pa-xs">
-        <q-list padding>
-          <!-- Mobile: Simple clickable items for direct navigation -->
-          <template v-if="mobile">
-            <q-item
-              v-for="(beach, index) in webcams"
-              :key="index"
-              clickable
-              v-ripple
-              @click="goToCamera(beach.anchor, index)"
-              :class="'text-h6 menu-item-mobile ' + beach.anchor"
-              active-class="text-black"
-            >
-              <q-item-section avatar>
-                <q-icon :name="iconSelect(beach.type)" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ beach.title }}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-icon name="chevron_right" />
-              </q-item-section>
-            </q-item>
-          </template>
-
-          <!-- Desktop: Expansion items with details -->
-          <template v-else>
-            <q-expansion-item
-              v-for="(beach, index) in webcams"
-              :key="index"
-              :label="beach.title"
-              dense
-              dense-toggle
-              expand-icon-toggle
-              expand-separator
-              group="beach"
-              :class="'text-h6 ' + beach.anchor"
-              :icon="iconSelect(beach.type)"
-              active-class="text-black"
-              :name="index"
-              :model-value="expandedItem === index"
-            >
-              <template v-slot:header>
-                <q-item-section avatar>
-                  <q-icon :name="iconSelect(beach.type)" />
-                </q-item-section>
-                <q-item-section @click.stop="goToCamera(beach.anchor, index)" style="cursor: pointer;">
-                  <q-item-label>{{ beach.title }}</q-item-label>
-                </q-item-section>
-              </template>
-              <q-card>
-                <q-card-section style="white-space: normal">
-                  <p class="text-subtitle2">Type: <strong>{{beach.type}}</strong></p>
-                  <p class="text-caption">SRC: {{beach.src}}</p>
-                  <p class="text-caption">Anchor: {{beach.anchor}}</p>
-                </q-card-section>
-              </q-card>
-            </q-expansion-item>
-          </template>
-        </q-list>
-      </div>
-    </q-drawer>
+      :webcams="webcams"
+      :mobile="mobile"
+      :expanded-item="expandedItem"
+      @go-to-camera="goToCamera"
+      @update:expanded-item="expandedItem = $event"
+    />
     <q-page-container>
       <div>
-        <div v-for="(beach, index) in webcams" v-bind:key="index" class="section q-pa-md" :id="beach.anchor">
-          <div class="title row items-start items-center">
-            <h4 class="text-weight-medium ">
-              {{beach.title}}
-            </h4>
-            <q-btn icon="link" @click="showDialog = true; copyURL(beach.anchor)" name="copy-link"  aria-label="Copiar link" flat round size="small" style="color: #ffa000;" />
-          </div>
-          <q-btn v-if="!mobile" round icon="camera_alt" style="font-size: 14px;margin-top: 8px;top: 60px;float: right;z-index: 20;right: 60px; cursor: pointer; background: #ffa000;" size="md" @click.stop.prevent="captureImage(index)" title="Capturar imagem" />
-
-          <video-player
-            v-if="beach.type === 'application/x-mpegURL'"
-            :options="videoOptions"
-            :src="beach.src"
-            :type="beach.type"
-            :anchor="beach.anchor"
-            :userAgent="beach.userAgent"
-            :referer="beach.referer"
-            :has-previous="hasPreviousCamera(index)"
-            :has-next="hasNextCamera(index)"
-            ref="video"
-            @capture-request="captureImage(index)"
-            @previous-camera="navigateToPreviousCamera(index)"
-            @next-camera="navigateToNextCamera(index)"
-          />
-          <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type"/>
-
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'windguru'"  class="section q-pa-md">
-            <iframe scrolling="no" seamless="seamless" style="border: none; width: 100%; overflow: hidden; height: 823px;" src="https://www.windguru.cz/widget-fcst-iframe.php?s=48963&amp;m=3&amp;mw=84&amp;uid=wg_fwdg_48963_3_1616953874460&amp;wj=kmh&amp;tj=c&amp;waj=m&amp;odh=0&amp;doh=24&amp;fhours=240&amp;hrsm=1&amp;vt=forecasts&amp;lng=pt&amp;ts=2&amp;p=WINDSPD,GUST,MWINDSPD,SMER,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR,TMP,TMPE,WCHILL,FLHGT,CDC,TCDC,APCP1s,SLP,RH,RATING&amp;hostname=huna.pt&amp;url=https%3A%2F%2Fhuna.pt%2Fcam%2F" id="iFrameResizer0"></iframe>
-          </div>
-
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'tide'" class="tideschart window-height items-center section q-pa-md" style="padding-top:100px" >
-            <iframe scrolling="no" src="https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day" height="700px" width="500px"></iframe>
-          </div>
-
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'surfforecast'" style="padding-top:100px" class="section q-pa-md">
-            <div class="wf-width-cont surf-fc-widget">
-              <div class="widget-container">
-                <div class="external-cont">
-                  <iframe class="surf-fc-i" allowtransparency="true" src="//pt.surf-forecast.com/breaks/Costada-Caparica/forecasts/widget/a" height="400px" width="100%" scrolling="no" frameborder="0" marginwidth="0" marginheight="0">
-                  </iframe>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'magicseaweed'" style="padding-top:200px" class="section q-pa-xl box">
-            <iframe src="https://magicseaweed.com/Costa-da-Caparica-Surf-Report/874/Embed/" scrolling="no" width="100%" height="5000px" frameborder="0"></iframe>
-          </div>
-          <div v-else > something goes wrong code 5000</div>
-        </div>
-
-        <div class="title row items-center q-pa-md">
-          <h4 class="text-weight-medium col-9 col-md-10">
-            Livros e dicas
-          </h4>
-          <div class="row items-center">
-            <div class="col-3 col-md-2 flex flex-center">
-              <img src="images/book_windguru_for_dummies.png" alt="Livros e dicas" style="max-width: 100%; height: auto; cursor: pointer;" @click="showDialog_dontDontNeedThis = true"/>
-            </div>
-          </div>
-        </div>
+        <webcam-item
+          v-for="(beach, index) in webcams"
+          :key="index"
+          :beach="beach"
+          :index="index"
+          :mobile="mobile"
+          :video-options="videoOptions"
+          :has-previous="hasPreviousCamera(index)"
+          :has-next="hasNextCamera(index)"
+          @copy-url="showDialog = true; copyURL($event)"
+          @capture-image="captureImage"
+          @previous-camera="navigateToPreviousCamera"
+          @next-camera="navigateToNextCamera"
+          ref="webcamItems"
+        />
+        <books-section @show-dont-need-dialog="showDialog_dontDontNeedThis = true" />
       </div>
 
       <!-- message: thanks for sharing -->
@@ -207,17 +91,17 @@
 </template>
 
 <script>
-import VideoPlayer from 'components/VideoPlayer.vue'
-import VideoYoutube from 'components/VideoYoutube.vue'
-// import socialSharing from 'components/SocialSharing.vue'
+import WebcamSidebar from 'components/WebcamSidebar.vue'
+import WebcamItem from 'components/WebcamItem.vue'
+import BooksSection from 'components/BooksSection.vue'
 import AdDialog from 'components/AdDialog.vue'
 import axios from 'axios'
 export default {
   name: 'Cam4',
   components: {
-    VideoPlayer,
-    VideoYoutube,
-    // socialSharing,
+    WebcamSidebar,
+    WebcamItem,
+    BooksSection,
     AdDialog
   },
   methods: {
@@ -291,10 +175,14 @@ export default {
           if (this.isInViewport(document.getElementById(item.anchor))) {
             // console.log(item.anchor)
             navBar[0].classList.add('btn_active')
-            this.$refs.video[index].play()
+            if (this.$refs.webcamItems && this.$refs.webcamItems[index] && this.$refs.webcamItems[index].$refs.video) {
+              this.$refs.webcamItems[index].$refs.video.play()
+            }
           } else {
             navBar[0].classList.remove('btn_active')
-            this.$refs.video[index].pause()
+            if (this.$refs.webcamItems && this.$refs.webcamItems[index] && this.$refs.webcamItems[index].$refs.video) {
+              this.$refs.webcamItems[index].$refs.video.pause()
+            }
           }
         } catch {
           console.log('something goes wrong code:4000')
@@ -303,7 +191,9 @@ export default {
     },
     start () {
       // console.log('start')
-      this.$refs.video[0].play()
+      if (this.$refs.webcamItems && this.$refs.webcamItems[0] && this.$refs.webcamItems[0].$refs.video) {
+        this.$refs.webcamItems[0].$refs.video.play()
+      }
     },
     isInViewport (element) {
       const rect = element.getBoundingClientRect()
@@ -405,16 +295,18 @@ export default {
     // Switch to a different camera (change video source in place, maintaining fullscreen)
     switchToCamera (fromIndex, toIndex) {
       try {
-        const videosRef = this.$refs && this.$refs.video
-        if (!videosRef || !this.webcams) return
+        const webcamItemsRef = this.$refs && this.$refs.webcamItems
+        if (!webcamItemsRef || !this.webcams) return
 
-        const currentPlayer = Array.isArray(videosRef) ? videosRef[fromIndex] : videosRef
+        const currentItem = webcamItemsRef[fromIndex]
         const targetCamera = this.webcams[toIndex]
 
-        if (!currentPlayer || !targetCamera) {
+        if (!currentItem || !currentItem.$refs.video || !targetCamera) {
           console.log('switchToCamera: missing player or camera')
           return
         }
+
+        const currentPlayer = currentItem.$refs.video
 
         console.log('Switching from', fromIndex, 'to', toIndex, targetCamera)
 
@@ -477,8 +369,9 @@ export default {
     // Capture the current frame from the video component and copy image to clipboard
     async captureImage (index) {
       try {
-        const videosRef = this.$refs && this.$refs.video
-        const vp = Array.isArray(videosRef) ? videosRef[index] : videosRef
+        const webcamItemsRef = this.$refs && this.$refs.webcamItems
+        const item = webcamItemsRef && webcamItemsRef[index]
+        const vp = item && item.$refs.video
         if (!vp || typeof vp.captureFrame !== 'function') {
           if (this.$q && this.$q.notify) this.$q.notify({ type: 'negative', message: 'Captura indisponível' })
           return
@@ -586,22 +479,6 @@ export default {
   padding-top:60px
   h4
     margin: 10px
-  .tideschart
-    iframe
-      height:600px
-      width: 100%
-  @media (min-width: 1080px) and (max-width: 1366px)
-    .title
-      .q-fab
-        display: block
-        position: relative
-        z-index: 1
-        margin-left:50px
-      .q-btn__wrapper
-        position: absolute
-        background: green
-        top: 50px
-        transform: scale(0.9)
   @media (max-width: 768px)
     div
       padding: 1px 0px
@@ -612,75 +489,6 @@ export default {
   z-index: 2001
   @media (max-width: 600px)
     z-index: 6000
-.sidebar
-  // Ajuste para garantir que a barra lateral começa abaixo do header
-  margin-top: 60px
-  @media (max-width: 600px)
-    margin-top: 0
-  .sidebar-content
-    max-height: calc(100vh - 60px)
-    overflow-y: auto
-    padding: 8px
-    @media (max-width: 600px)
-      max-height: calc(100vh - 60px)
-  .menu-item-mobile
-    padding: 5px 5px
-    transition: background-color 0.2s
-    &:active
-      background-color: rgba(0, 0, 0, 0.1)
-    .q-item__label
-      font-size: 20px
-      font-weight: 500
-  .align
-    position: static
-  p
-    font-size: 15px
-    line-height: 1.2rem
-    margin-bottom:0px
-    color: gray
-  .q-item__section--avatar
-    min-width: 40px
-    padding: 0px
-    img
-      margin:0px
-  .q-expansion-item__container
-    a
-      border-radius: 6px
-  .text-h6
-    font-size: 18px
-    line-height: 0.7rem
-  .btn_active
-    background: #ffa000
-    border-radius: 50px
-    font-weight: 600
-    .q-item__label
-      line-height: 1.4rem !important
-    a
-      padding: 8px 0px
-    img
-      padding-left: 10px
-  @media (min-width: 1080px) and (max-width: 1366px)
-    .q-item--dense
-      min-height: 13px
-    .text-h6
-      font-size: 15px
-    .q-item__section--side > .q-icon
-      font-size: 20px
-  .q-card__section
-    padding-right: 20px
-    word-break: break-all      // Mantido conforme sugestão anterior
-    overflow-wrap: break-word  // Mantido conforme sugestão anterior
-    @media (max-width: 768px)
-      .q-item
-        min-height: 25px
-        padding: 0px 5px 0px 10px
-        .text-h6
-          font-size: 14px
-          line-height: 0.7rem
-        .q-icon
-          font-size: 20px
-        .btn_active
-          font-size: 18px
   .ad-popup-card
     position: relative
   .transparent-dialog
