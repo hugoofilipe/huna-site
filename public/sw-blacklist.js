@@ -32,7 +32,20 @@ const BLACKLIST = [
   'criteo.com',
   'criteo.net',
   'outbrain.com',
-  'taboola.com'
+  'taboola.com',
+  'pubmatic.com',
+  'ads.pubmatic.com',
+  'yieldlab.net',
+  'adform.net',
+  'adition.com',
+  'adition.de',
+  'quantserve.com',
+  'scorecardresearch.com',
+  'zedo.com',
+  'advertising.com',
+  'tribalfusion.com',
+  'media.net',
+  'ads.adthrive.com'
 ]
 
 self.addEventListener('install', event => {

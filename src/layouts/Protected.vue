@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpR fFf" :class="{ 'cam4-layout': isCam4Page }">
     <main-menu />
     <q-page-container class="container">
       <router-view v-if="isLoggedIn || (this.$cookies.isKey('pwd') && this.$cookies.get('pwd').code === 'caparica' && this.$cookies.get('pwd').token === 'v1' ) "></router-view>
@@ -12,6 +12,11 @@
 <style lang="sass">
   .container
     padding:0px !important
+
+  // Cam4 specific styles
+  .cam4-layout
+    .q-header
+      position: absolute
 </style>
 
 <script>
@@ -30,6 +35,10 @@ export default {
   computed: {
     isLoggedIn () {
       return this.userIsLoggedIn
+    },
+    isCam4Page () {
+      // Check if current page is Cam4
+      return this.$route.path === '/cam' || this.$route.path === '/caparica'
     }
   },
   methods: {

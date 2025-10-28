@@ -19,6 +19,8 @@
       :has-previous="hasPrevious"
       :has-next="hasNext"
       ref="video"
+      :index="index"
+      @fullscreen-change="$emit('fullscreen-change', { index, isFullscreen: $event && $event.isFullscreen })"
       @capture-request="$emit('capture-image', index)"
       @previous-camera="$emit('previous-camera', index)"
       @next-camera="$emit('next-camera', index)"
@@ -86,7 +88,7 @@ export default {
       default: false
     }
   },
-  emits: ['copy-url', 'capture-image', 'previous-camera', 'next-camera']
+  emits: ['copy-url', 'capture-image', 'previous-camera', 'next-camera', 'fullscreen-change']
 }
 
 </script>

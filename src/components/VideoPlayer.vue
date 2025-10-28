@@ -3,7 +3,7 @@
    <div class="main-video-player">
      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" ></video>
      <div class="custom-controls q-pa-md q-gutter-sm row flex justify-center align-center">
-      <q-btn v-if="isFullscreen && hasPrevious" @click="$emit('previous-camera')" icon="skip_previous" label="Anterior" unelevated class="icon-only-mobile fullscreen-nav-btn"/>
+  <q-btn v-if="isFullscreen && computedHasPrevious" @click="$emit('previous-camera')" icon="skip_previous" label="Anterior" unelevated class="icon-only-mobile fullscreen-nav-btn"/>
       <q-btn @click="togglePlay" :label="isPlaying ? 'pause' : 'play'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile"/>
       <q-btn @click="restart()" icon="replay" :label="'restart'" unelevated class="icon-only-mobile"/>
       <q-btn v-if="showFullscreenButton" @click="toggleFullscreen" :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" flat dense />
@@ -12,7 +12,7 @@
       </q-btn>
       <socialSharing  :anchor="anchor" :title="anchor" position="bottom" class="icon-only-mobile"/>
       <q-btn
-        v-if="$q.platform.is.mobile"
+        v-if="(isFullscreen && !$q.platform.is.mobile) || $q.platform.is.mobile"
         icon="camera_alt"
         size="md"
         @click.stop.prevent="$emit('capture-request')"
@@ -65,8 +65,22 @@ export default {
     userAgent: [String],
     referer: [String],
     hasPrevious: { type: Boolean, default: false },
-    hasNext: { type: Boolean, default: false }
+    hasNext: { type: Boolean, default: false },
+    // index of this webcam item in the parent's webcams array
+    index: { type: Number }
   },
+  computed: {
+    // show previous when explicit prop is true OR this item has an index > 0
+    computedHasPrevious () {
+      try {
+        if (this.hasPrevious) return true
+        if (typeof this.index === 'number' && this.index > 0) return true
+        console.log('computedHasPrevious: no previous for index', this.index)
+      } catch (e) {}
+      return false
+    }
+  },
+  // single props block already contains index
   methods: {
     play () {
       if (this.player) this.player.play()
@@ -126,19 +140,123 @@ export default {
     },
 
     // Change to a new camera source (exposed for parent to call)
+    // changeCameraSource now returns a Promise which resolves when playback starts
     changeCameraSource (newSrc, newType) {
-      try {
-        const srcToUse = this.toProxy(newSrc)
-        console.log('changeCameraSource:', newSrc, '->', srcToUse)
-        this.player.pause()
-        this.player.src({ src: srcToUse, type: newType || this.type })
-        this.player.load()
-        this.player.play().catch(e => {
-          console.warn('Auto-play failed after camera change:', e)
-        })
-      } catch (e) {
-        console.error('changeCameraSource failed:', e)
-      }
+      const srcToUse = this.toProxy(newSrc)
+      console.log('[VideoPlayer.changeCameraSource] request:', newSrc, '->', srcToUse)
+      return new Promise((resolve, reject) => {
+        if (!this.player) {
+          return reject(new Error('no player'))
+        }
+
+        let resolved = false
+        const cleanup = () => {
+          try {
+            if (this.player && this._onCanPlay) this.player.off('canplay', this._onCanPlay)
+            if (this.player && this._onPlaying) this.player.off('playing', this._onPlaying)
+            if (this.player && this._onError) this.player.off('error', this._onError)
+          } catch (e) {}
+          if (this._changeTimeout) {
+            clearTimeout(this._changeTimeout)
+            this._changeTimeout = null
+          }
+        }
+
+        this._onCanPlay = () => {
+          if (resolved) return
+          resolved = true
+          cleanup()
+          try {
+            const current = this.player && this.player.currentSrc && this.player.currentSrc()
+            let techSrc = null
+            try {
+              const tech = this.player && this.player.tech && this.player.tech()
+              if (tech && tech.el) techSrc = tech.el().src || null
+            } catch (e) {}
+            // log more diagnostic details to help trace blob/url issues
+            let playerErr = null
+            try { playerErr = this.player && this.player.error && this.player.error() } catch (e) { playerErr = e }
+            let mediaSourceUrl = null
+            try { mediaSourceUrl = this.mediaSourceUrl || null } catch (e) {}
+            console.log('[VideoPlayer.changeCameraSource] canplay', { currentSrc: current, techSrc, mediaSourceUrl, playerError: playerErr })
+          } catch (e) {
+            console.log('[VideoPlayer.changeCameraSource] canplay (log failed)', e)
+          }
+          resolve()
+        }
+        this._onPlaying = () => {
+          if (resolved) return
+          resolved = true
+          cleanup()
+          try {
+            const current = this.player && this.player.currentSrc && this.player.currentSrc()
+            let playerErr = null
+            try { playerErr = this.player && this.player.error && this.player.error() } catch (e) { playerErr = e }
+            console.log('[VideoPlayer.changeCameraSource] playing', { currentSrc: current, playerError: playerErr })
+          } catch (e) {
+            console.log('[VideoPlayer.changeCameraSource] playing (log failed)', e)
+          }
+          resolve()
+        }
+        this._onError = (e) => {
+          if (resolved) return
+          resolved = true
+          cleanup()
+          console.warn('[VideoPlayer.changeCameraSource] player error', e)
+          // Attempt a graceful restart as a fallback to recover from transient errors
+          try {
+            console.log('[VideoPlayer.changeCameraSource] attempting restart fallback')
+            this.restart()
+          } catch (err) {
+            console.warn('[VideoPlayer.changeCameraSource] restart fallback failed', err)
+          }
+          reject(new Error('player error'))
+        }
+
+        try {
+          this.player.pause()
+          this.player.src({ src: srcToUse, type: newType || this.type })
+          this.player.load()
+          // attach events
+          if (this.player && this.player.on) {
+            this.player.on('canplay', this._onCanPlay)
+            this.player.on('playing', this._onPlaying)
+            this.player.on('error', this._onError)
+          }
+
+          // fallback timeout: attempt restart before resolving so callers can continue
+          this._changeTimeout = setTimeout(() => {
+            if (resolved) return
+            resolved = true
+            cleanup()
+            console.warn('[VideoPlayer.changeCameraSource] timeout waiting for play/canplay, attempting restart fallback')
+            try {
+              this.restart()
+              // allow a short grace period for restart to begin
+              setTimeout(() => {
+                try {
+                  const current = this.player && this.player.currentSrc && this.player.currentSrc()
+                  console.log('[VideoPlayer.changeCameraSource] post-restart currentSrc', current)
+                } catch (e) {}
+              }, 300)
+            } catch (e) {
+              console.warn('[VideoPlayer.changeCameraSource] restart attempt after timeout failed', e)
+            }
+            // still resolve so FS queue can continue; caller may inspect player.error()
+            resolve()
+          }, 6000)
+
+          // attempt to play; ignore play promise rejection
+          try {
+            const p = this.player.play()
+            if (p && p.catch) p.catch(() => {})
+          } catch (e) {}
+        } catch (e) {
+          cleanup()
+          console.error('[VideoPlayer.changeCameraSource] failed to set src', e)
+          reject(e)
+        }
+      })
     },
 
     // Restart using optional link, otherwise use stored proxiedSrc
@@ -315,6 +433,14 @@ export default {
             if (docIsFs) wrapper.classList.add('is-fullscreen')
             else wrapper.classList.remove('is-fullscreen')
           }
+          // emit an event only when this player's wrapper is the actual fullscreen element
+          try {
+            const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
+            const isThisFs = fsEl && wrapper && fsEl === wrapper
+            if (isThisFs) {
+              this.$emit('fullscreen-change', { index: this.index, isFullscreen: !!docIsFs })
+            }
+          } catch (e) {}
           // Attempt to lock orientation to landscape on mobile when entering fullscreen
           try {
             if (docIsFs) this.lockOrientationIfMobile()

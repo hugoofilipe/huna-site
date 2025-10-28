@@ -23,6 +23,7 @@
           @capture-image="captureImage"
           @previous-camera="navigateToPreviousCamera"
           @next-camera="navigateToNextCamera"
+          @fullscreen-change="onFullscreenChange"
           ref="webcamItems"
         />
         <books-section @show-dont-need-dialog="showDialog_dontDontNeedThis = true" />
@@ -123,9 +124,91 @@ export default {
         // If URL contains a hash (e.g. /cam#someAnchor), attempt to scroll to it
         this.$nextTick(() => {
           this.scrollToHash()
+          // start playback for the first camera immediately so users don't need to scroll
+          try { this.start() } catch (e) { console.warn('start() failed', e) }
         })
       } catch (error) {
         console.log('[foo] Something is wrong with urllinks.json file: ', error)
+      }
+    },
+    // Build the fullscreen list (index, src, anchor) for quick navigation in FS
+    buildFsList () {
+      this.fsList = []
+      if (!Array.isArray(this.webcams)) return
+      this.webcams.forEach((cam, idx) => {
+        if (cam && cam.type && cam.type === 'application/x-mpegURL') {
+          this.fsList.push({ index: idx, src: cam.src, anchor: cam.anchor })
+        }
+      })
+      // reset fs index pointer
+      this.fsIndex = -1
+    },
+
+    // Handler for fullscreen-change events emitted by WebcamItem -> VideoPlayer
+    onFullscreenChange (payload) {
+      try {
+        if (!payload) return
+        const { index, isFullscreen } = payload
+        if (isFullscreen) {
+          // Build or refresh the fs list and set pointer to this camera index
+          this.buildFsList()
+          // find pointer index inside fsList
+          const ptr = this.fsList.findIndex(i => i.index === index)
+          this.fsIndex = ptr
+          // remember which DOM component (webcamItems index) is fullscreen
+          this.fsComponentIndex = index
+          console.log('[Cam4] Entered fullscreen at index', index, 'fsListIndex', ptr)
+        } else {
+          // leaving fullscreen - clear pointer
+          console.log('[Cam4] Exited fullscreen')
+          this.fsIndex = -1
+          this.fsComponentIndex = -1
+        }
+      } catch (e) {
+        console.warn('onFullscreenChange failed', e)
+      }
+    },
+    // Internal queue processing for fullscreen navigation. Enqueue +1 or -1 steps.
+    async startProcessingFsQueue (fromIndex) {
+      if (this.isProcessingFsQueue) return
+      this.isProcessingFsQueue = true
+      try {
+        // If fsList isn't built, build it
+        if (!this.fsList || !Array.isArray(this.fsList) || this.fsList.length === 0) this.buildFsList()
+
+        while (this.fsQueue && this.fsQueue.length > 0) {
+          const step = this.fsQueue.shift()
+          // compute target based on current fsIndex
+          if (this.fsIndex < 0) {
+            // fallback: find the current item matching fromIndex
+            const curPtr = (this.fsList || []).findIndex(i => i.index === fromIndex)
+            this.fsIndex = curPtr >= 0 ? curPtr : 0
+          }
+          const nextPtr = this.fsIndex + step
+          if (nextPtr < 0 || nextPtr >= (this.fsList || []).length) {
+            console.log('[Cam4] FS queue step would go out of bounds, ignoring')
+            continue
+          }
+          const target = this.fsList[nextPtr]
+          if (!target) continue
+          // call switchToCamera with the real indices. Prefer the component index that is
+          // currently fullscreen (`fsComponentIndex`) because the DOM player component remains
+          // the same element while we change its src in-place.
+          const currentRealIndex = (typeof this.fsComponentIndex === 'number' && this.fsComponentIndex >= 0)
+            ? this.fsComponentIndex
+            : (this.fsList[this.fsIndex] && this.fsList[this.fsIndex].index)
+          try {
+            await this.switchToCamera(currentRealIndex, target.index)
+          } catch (e) {
+            console.warn('[Cam4] switchToCamera failed during FS queue', e)
+          }
+          // advance pointer
+          this.fsIndex = nextPtr
+          // small gap to avoid hammering (allow player to settle); rely on changeCameraSource promise for readiness
+          await new Promise(resolve => setTimeout(resolve, 200))
+        }
+      } finally {
+        this.isProcessingFsQueue = false
       }
     },
     // Smooth scroll to the current location.hash anchor (if present).
@@ -199,8 +282,8 @@ export default {
       const rect = element.getBoundingClientRect()
       if (this.mobile) {
         return (
-          rect.top - 350 <= 0 &&
-          rect.bottom - 350 >= 0
+          rect.top - 500 <= 0 &&
+          rect.bottom - 250 >= 0
         )
       } else {
         return (
@@ -268,6 +351,14 @@ export default {
     navigateToPreviousCamera (currentIndex) {
       console.log('navigateToPreviousCamera called from index', currentIndex)
       if (currentIndex <= 0) return
+      // If we're in fullscreen and have an fs list pointer, enqueue the move
+      const inFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
+      if (inFullscreen && this.fsIndex >= 0) {
+        // enqueue -1 (previous) and start processing
+        this.fsQueue.push(-1)
+        this.startProcessingFsQueue(currentIndex)
+        return
+      }
       // Find previous camera that is not a 'previsoes' type
       for (let i = currentIndex - 1; i >= 0; i--) {
         if (this.webcams[i] && this.webcams[i].type !== 'previsoes') {
@@ -282,6 +373,14 @@ export default {
     navigateToNextCamera (currentIndex) {
       console.log('navigateToNextCamera called from index', currentIndex)
       if (!this.webcams || currentIndex >= this.webcams.length - 1) return
+      // If we're in fullscreen and have an fs list pointer, enqueue the move
+      const inFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
+      if (inFullscreen && this.fsIndex >= 0) {
+        // enqueue +1 (next) and start processing
+        this.fsQueue.push(+1)
+        this.startProcessingFsQueue(currentIndex)
+        return
+      }
       // Find next camera that is not a 'previsoes' type
       for (let i = currentIndex + 1; i < this.webcams.length; i++) {
         if (this.webcams[i] && this.webcams[i].type !== 'previsoes') {
@@ -293,7 +392,7 @@ export default {
       console.log('No next camera found')
     },
     // Switch to a different camera (change video source in place, maintaining fullscreen)
-    switchToCamera (fromIndex, toIndex) {
+    async switchToCamera (fromIndex, toIndex) {
       try {
         const webcamItemsRef = this.$refs && this.$refs.webcamItems
         if (!webcamItemsRef || !this.webcams) return
@@ -315,9 +414,43 @@ export default {
                                 document.mozFullScreenElement || document.msFullscreenElement)
 
         if (inFullscreen && typeof currentPlayer.changeCameraSource === 'function') {
-          // Use the player's method to change source while staying in fullscreen
-          console.log('Changing source to:', targetCamera.src)
-          currentPlayer.changeCameraSource(targetCamera.src, targetCamera.type)
+          // If we have a fullscreen index pointer, compute delta moves instead of
+          // relying on the fromIndex DOM position which may be out of sync in FS.
+          if (this.fsIndex >= 0) {
+            // find current fs pointer and the target pointer
+            const targetPtr = this.fsList.findIndex(i => i.index === toIndex)
+            if (targetPtr >= 0) this.fsIndex = targetPtr
+          }
+
+          console.log('[Cam4] Changing source to (fullscreen):', targetCamera.src, 'fromIndex', fromIndex, 'toIndex', toIndex, 'fsIndexPtr', this.fsIndex)
+
+          // Use the player's promise-based changeCameraSource when available
+          try {
+            if (typeof currentPlayer.changeCameraSource === 'function') {
+              await currentPlayer.changeCameraSource(targetCamera.src, targetCamera.type)
+            } else {
+              currentPlayer.changeCameraSource(targetCamera.src, targetCamera.type)
+            }
+            // Post-change diagnostics: check player internal error state and attempt restart if needed
+            try {
+              const playerErr = currentPlayer && currentPlayer.player && currentPlayer.player.error && currentPlayer.player.error()
+              if (playerErr) {
+                console.warn('[Cam4] changeCameraSource resolved but player reports error:', playerErr)
+                try {
+                  console.log('[Cam4] invoking restart() fallback on child player')
+                  currentPlayer.restart()
+                } catch (e) {
+                  console.warn('[Cam4] restart() fallback failed', e)
+                }
+              } else {
+                console.log('[Cam4] changeCameraSource resolved, player looks OK')
+              }
+            } catch (e) {
+              console.warn('[Cam4] post-change diagnostic check failed', e)
+            }
+          } catch (e) {
+            console.warn('[Cam4] changeCameraSource awaited and failed:', e)
+          }
 
           // Update URL hash to reflect current camera
           window.location.hash = '#' + targetCamera.anchor
@@ -395,15 +528,22 @@ export default {
         } catch (e) {
           // fallback: offer download
           console.warn('clipboard write failed, falling back to download', e)
-          const url = URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = 'capture.png'
-          document.body.appendChild(a)
-          a.click()
-          a.remove()
-          URL.revokeObjectURL(url)
-          if (this.$q && this.$q.notify) this.$q.notify({ type: 'positive', message: 'Imagem preparada para download' })
+          // If we're currently processing fullscreen swaps or queueing, avoid creating blob URLs
+          const inFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
+          if (inFullscreen && ((this.fsQueue && this.fsQueue.length > 0) || this.isProcessingFsQueue)) {
+            console.warn('captureImage: skipping download fallback during fullscreen queue to avoid blob races')
+            if (this.$q && this.$q.notify) this.$q.notify({ type: 'negative', message: 'Download temporariamente indisponível em ecrã inteiro' })
+          } else {
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'capture.png'
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+            URL.revokeObjectURL(url)
+            if (this.$q && this.$q.notify) this.$q.notify({ type: 'positive', message: 'Imagem preparada para download' })
+          }
         }
       } catch (e) {
         console.warn('captureImage failed', e)
@@ -465,7 +605,18 @@ export default {
         muted: 'muted'
       },
       webcams: [],
-      url_links: 'https://api.huna.pt/urllinks.json' // Guardei o ficherio na raiz do projeto para backup
+      url_links: 'https://api.huna.pt/urllinks.json', // Guardei o ficherio na raiz do projeto para backup
+
+      // Internal state for fullscreen navigation and queueing
+      fsList: [], // list of { index, src, anchor } for mpeg cams
+      fsIndex: -1, // pointer into fsList for current fullscreen camera
+      fsComponentIndex: -1, // the DOM component index (webcamItems index) currently fullscreen
+      fsQueue: [], // queue of integer steps (+1 or -1)
+      isProcessingFsQueue: false,
+      // suppression/guard flags (previous mitigation)
+      suppressScroll: false,
+      isSwitching: false,
+      switchClearTimeout: null
     }
   }
 }
