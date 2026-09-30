@@ -98,6 +98,18 @@ limpar erros
       </div>
     </q-drawer>
     <q-page-container>
+      <div v-if="showWeather" class="weather-widget q-pa-md">
+        <bestweather-forecast
+          location="Caparica"
+          latitude="38.6175"
+          longitude="-9.191389"
+          layout="row"
+          lang="pt"
+          theme="light"
+          data-source="live"
+          max-days="3"
+        ></bestweather-forecast>
+      </div>
       <div>
         <div v-for="(beach, index) in webcams" v-bind:key="index" class="section q-pa-md" :id="beach.anchor">
 
@@ -257,14 +269,34 @@ export default {
         this.mobile = false
         // console.log('mobile foo FALSE')
       }
+    },
+    loadWeatherWidget () {
+      const src = 'https://widget.bestweather.org/v0.1.0/bestweather-forecast.js'
+      if (document.querySelector('script[src="' + src + '"]')) {
+        return
+      }
+      const script = document.createElement('script')
+      script.src = src
+      script.defer = true
+      document.head.appendChild(script)
     }
   },
   beforeMount () {
     this.getLinks()
     this.isMobile()
   },
+  mounted () {
+    if (this.showWeather) {
+      this.loadWeatherWidget()
+    }
+  },
   watch: {
     $route (to, from) {
+    }
+  },
+  computed: {
+    showWeather () {
+      return this.$route.path === '/caparica'
     }
   },
   data () {
