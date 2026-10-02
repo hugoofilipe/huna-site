@@ -11,7 +11,11 @@ This is the source code of HUNA website using docker, vuejs, quasar, yarn, node,
 
 # Run Developing mode
 - yarn 
-- yarn quasar dev -m pwa -d (-m spa -d -> to run in SPA mode)
+- PWA mode: `yarn quasar dev -m pwa`
+- SPA mode: `yarn quasar dev -m spa`
+- With newer Node.js versions, webpack may fail with `ERR_OSSL_EVP_UNSUPPORTED`. Use the OpenSSL legacy provider for the dev server:
+  - PWA mode: `NODE_OPTIONS=--openssl-legacy-provider yarn quasar dev -m pwa`
+  - SPA mode: `NODE_OPTIONS=--openssl-legacy-provider yarn quasar dev -m spa`
 
 # Versions
 - yarn: 1.22.19

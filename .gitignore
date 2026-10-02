@@ -1,0 +1,15 @@
+# Dependencies
+/node_modules/
+
+# Quasar generated files
+/.quasar/
+/dist/
+
+# Logs and local environment files
+*.log
+.env
+.env.*
+!.env.example
+
+# Operating system files
+.DS_Store
