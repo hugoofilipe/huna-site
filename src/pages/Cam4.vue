@@ -271,7 +271,7 @@ export default {
       }
     },
     loadWeatherWidget () {
-      const src = 'https://widget.bestweather.org/v0.1.0/bestweather-forecast.js'
+      const src = 'https://widget.bestweather.org/v0.2.0/bestweather-forecast.js'
       if (document.querySelector('script[src="' + src + '"]')) {
         return
       }
