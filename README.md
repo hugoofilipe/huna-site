@@ -17,6 +17,14 @@ This is the source code of HUNA website using docker, vuejs, quasar, yarn, node,
   - PWA mode: `NODE_OPTIONS=--openssl-legacy-provider yarn quasar dev -m pwa`
   - SPA mode: `NODE_OPTIONS=--openssl-legacy-provider yarn quasar dev -m spa`
 
+## Caparica camera interface
+- The newer camera UI comes from `release1`; the weather widget was originally added on the older `master` UI. Keep both integrations when merging or deploying.
+- `Cam4.vue` combines `WebcamItem.vue`, `WebcamSidebar.vue`, and the BestWeather widget. Fullscreen navigation, capture, and compact playback controls live in `VideoPlayer.vue`.
+- Run regression tests with Node.js 18+: `npm test`. They execute the actual Vue component scripts with a controlled player/DOM, covering explicit camera selection, fullscreen playback/identity, cancellation, errors/timeouts, shared capture capability, clipboard, widget loading, and dynamic header clearance.
+- This remains a selective camera-UI port, not a full `release1` merge/rebase. Unrelated release1 features and deployment changes are not included.
+- To preview from another device: `NODE_OPTIONS=--openssl-legacy-provider yarn quasar dev -m spa --hostname 0.0.0.0 --port 8093`.
+- Optional browser regression checks: start that preview, then run `npm run test:browser` with Playwright available and `ffmpeg` on PATH. Alternatively set `PLAYWRIGHT_MODULE` to an existing Playwright installation. `BASE_URL` defaults to `http://localhost:8093`; `CAMERA_FIXTURE_DIR` can point to existing generated HLS fixtures. The checks use local test streams, not production camera data, and exercise the real weather-script integration. They require network access to the widget provider. Native fullscreen-exit events are covered; headless OS/browser Escape shortcuts and physical-device access require manual verification.
+
 # Versions
 - yarn: 1.22.19
 - node: v12.22.9

@@ -26,132 +26,52 @@ limpar erros
 
 -->
 <template>
-  <q-layout view="lhr lpR lFr" class="bg-white" @scroll="scrollHandler">
-    <q-drawer v-model="drawer" show-if-above side='right'
-      :width="320" :breakpoint="500" class="bg-grey-3 sidebar">
-      <div class="align">
-        <q-list>
-          <q-item v-for="(beach, index) in webcams" v-bind:key="index" dense>
-            <q-item-section>
-              <q-expansion-item :label="beach.title" :to="'#' + beach.anchor" dense dense-toggle
-                :class="'text-h6 ' + beach.anchor" :icon="iconSelect(beach.type)" active-class="text-black">
-                <q-card>
-                  <q-card-section>
-                    <p>
-                      Title: {{beach.title}}
-                    </p>
-                    <p>Type: {{beach.type}}</p>
-                    <p>SRC: {{beach.src}}</p>
-                    <p>Link: {{beach.link}}</p>
-                    <p>Anchor: {{beach.anchor}}</p>
-                    <p>Index: {{index}}</p>
-                  </q-card-section>
-                </q-card>
-              </q-expansion-item>
-            </q-item-section>
-          </q-item>
-          <!-- <q-item dense>
-            <q-expansion-item expand-separator label="Windguru" to="#windguru" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: http://www.windguru.cz/pt/index.php?sc=48963
-                  </p>
-                </q-card-section>
-              </q-card>
-          </q-expansion-item>
-          </q-item> -->
-          <!-- <q-item dense>
-            <q-expansion-item expand-separator label="Marés" to="#tide" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day
-                  </p>
-                </q-card-section>
-              </q-card>
-          </q-expansion-item>
-          </q-item> -->
-          <!-- <q-item dense>
-            <q-expansion-item expand-separator label="Surf-forcast" to="#surfforecast" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: https://www.surf-forecast.com/breaks/Costada-Caparica/forecasts/latest
-                  </p>
-                </q-card-section>
-              </q-card>
-          </q-expansion-item>
-          </q-item>
-          <q-item dense>
-            <q-expansion-item expand-separator label="MagicseaWeed" to="#magicseaweed" dense dense-toggle class="text-h6" icon=img:/icons/analytics.svg  active-class="bg-orange-3 text-grey-9">
-              <q-card>
-                <q-card-section>
-                  <p>
-                    Link: https://pt.magicseaweed.com/Costa-da-Caparica-Surf-Report/874/
-                  </p>
-                </q-card-section>
-              </q-card>
-          </q-expansion-item>
-          </q-item> -->
-        </q-list>
-      </div>
-    </q-drawer>
+  <q-layout view="lhr lpR lFr" class="camera-page bg-white" @scroll="scrollHandler">
+    <webcam-sidebar
+      v-model="drawer"
+      :webcams="webcams"
+      :mobile="mobile"
+      :expanded-item="expandedItem"
+      @go-to-camera="goToCamera"
+      @update:expanded-item="expandedItem = $event"
+    />
     <q-page-container>
+      <div v-if="captureError" class="q-pa-md" role="alert">{{ captureError }}</div>
+      <div v-if="cameraSwitchError" class="q-pa-md" role="alert">{{ cameraSwitchError }}</div>
       <div v-if="showWeather" class="weather-widget q-pa-md">
+        <div v-if="weatherWidgetError" role="alert">
+          Não foi possível carregar a previsão meteorológica.
+          <q-btn flat no-caps label="Tentar novamente" @click="loadWeatherWidget" />
+        </div>
         <bestweather-forecast
           location="Caparica"
           latitude="38.6175"
           longitude="-9.191389"
-          layout="row"
+          layout="auto"
           lang="pt"
           theme="light"
           data-source="live"
           max-days="3"
         ></bestweather-forecast>
       </div>
-      <div>
-        <div v-for="(beach, index) in webcams" v-bind:key="index" class="section q-pa-md" :id="beach.anchor">
-
-          <div class="title row items-center">
-            <h4 class="text-weight-medium col-9 col-md-10">
-              {{beach.title}}
-            </h4>
-            <!-- <socialSharing /> -->
-            <q-fab color="green"  icon="share" direction="down" class="desktop-only">
-              <socialSharing style="padding-top:40px" :anchor="beach.anchor" :title="beach.title" position="top"/>
-              <q-btn push round color="white" icon="link" style="margin-top:80px" size="xl" @click="showDialog = true; copyURL(beach.anchor)"/>
-            </q-fab>
-          </div>
-
-          <video-player v-if="beach.type === 'application/x-mpegURL'" :options="videoOptions" :src="beach.src" :type="beach.type" :anchor="beach.anchor" ref="video"/>
-
-          <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type"/>
-
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'windguru'"  class="section q-pa-md">
-            <iframe scrolling="no" seamless="seamless" style="border: none; width: 100%; overflow: hidden; height: 823px;" src="https://www.windguru.cz/widget-fcst-iframe.php?s=48963&amp;m=3&amp;mw=84&amp;uid=wg_fwdg_48963_3_1616953874460&amp;wj=kmh&amp;tj=c&amp;waj=m&amp;odh=0&amp;doh=24&amp;fhours=240&amp;hrsm=1&amp;vt=forecasts&amp;lng=pt&amp;ts=2&amp;p=WINDSPD,GUST,MWINDSPD,SMER,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR,TMP,TMPE,WCHILL,FLHGT,CDC,TCDC,APCP1s,SLP,RH,RATING&amp;hostname=huna.pt&amp;url=https%3A%2F%2Fhuna.pt%2Fcam%2F" id="iFrameResizer0"></iframe>
-          </div>
-
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'tide'" class="tideschart window-height items-center section q-pa-md" style="padding-top:100px" >
-            <iframe scrolling="no" src="https://pt.tideschart.com/Portugal/District-of-Setubal/Almada/Trafaria/#day" height="700px" width="500px"></iframe>
-          </div>
-
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'surfforecast'" style="padding-top:100px" class="section q-pa-md">
-            <div class="wf-width-cont surf-fc-widget">
-              <div class="widget-container">
-                <div class="external-cont">
-                  <iframe class="surf-fc-i" allowtransparency="true" src="//pt.surf-forecast.com/breaks/Costada-Caparica/forecasts/widget/a" height="400px" width="100%" scrolling="no" frameborder="0" marginwidth="0" marginheight="0">
-                  </iframe>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'magicseaweed'" style="padding-top:200px" class="section q-pa-xl box">
-            <iframe src="https://magicseaweed.com/Costa-da-Caparica-Surf-Report/874/Embed/" scrolling="no" width="100%" height="5000px" frameborder="0"></iframe>
-          </div>
-
-          <div v-else > something goes wrong code 5000</div>
-        </div>
+      <div class="camera-sections">
+        <webcam-item
+          v-for="(beach, index) in webcams"
+          :key="beach.anchor"
+          :beach="beach"
+          :index="index"
+          :mobile="mobile"
+          :video-options="videoOptions"
+          :has-previous="hasCamera(index, -1)"
+          :has-next="hasCamera(index, 1)"
+          :displayed-camera="displayedCamera(index)"
+          @copy-url="showDialog = true; copyURL($event)"
+          @capture-image="captureImage"
+          @previous-camera="navigateCamera($event, -1)"
+          @next-camera="navigateCamera($event, 1)"
+          @fullscreen-change="onFullscreenChange"
+          ref="webcamItems"
+        />
       </div>
 
       <q-dialog v-model="showDialog">
@@ -171,12 +91,13 @@ limpar erros
         </q-card>
       </q-dialog>
 
-      <q-page-sticky position="bottom-right" :offset="[22, 5]">
-        <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -17px">
+      <q-page-sticky position="bottom-right" :offset="[4, 12]">
+        <div class="q-mini-drawer-hide">
           <q-btn
             round
             unelevated
-            icon="chevron_left"
+            :icon="drawer ? 'chevron_right' : 'chevron_left'"
+            :aria-label="drawer ? 'Fechar menu de câmaras' : 'Abrir menu de câmaras'"
             @click="drawer = !drawer"
           />
         </div>
@@ -187,18 +108,21 @@ limpar erros
 </template>
 
 <script>
-import VideoPlayer from 'components/VideoPlayer.vue'
-import VideoYoutube from 'components/VideoYoutube.vue'
-// import SocialSharing from 'src/components/SocialSharing.vue'
-import socialSharing from 'components/SocialSharing.vue'
+import WebcamItem from 'components/WebcamItem.vue'
+import WebcamSidebar from 'components/WebcamSidebar.vue'
 import axios from 'axios'
+import { loadWeatherWidget } from 'src/utils/weather-widget.mjs'
+import { findCamera } from 'src/utils/camera-navigation.mjs'
+import { copyText } from 'src/utils/clipboard.mjs'
 
 export default {
   name: 'Cam4',
   components: {
-    VideoPlayer,
-    VideoYoutube,
-    socialSharing
+    WebcamItem,
+    WebcamSidebar
+  },
+  inject: {
+    cameraLayout: { default: () => ({ clearance: 0, height: 0 }) }
   },
   methods: {
     async getLinks () {
@@ -219,50 +143,60 @@ export default {
     },
     async copyURL (anchor) {
       try {
-        this.copiedUrl = 'www.huna.pt/cam#' + anchor
-        await navigator.clipboard.writeText(this.copiedUrl)
+        this.copiedUrl = window.location.origin + this.$route.path + '#' + anchor
+        await copyText(this.copiedUrl)
         // this.toolbar = true
       } catch ($e) {
         alert('Cannot copy')
       }
     },
     scrollHandler () {
+      if (this.cameraDisposed || this.fsComponentIndex >= 0) return
+      if (this.navigationTarget >= 0) {
+        clearTimeout(this._navigationTimer)
+        this._navigationTimer = setTimeout(this.cancelNavigation, 180)
+        return
+      }
+      const current = this.webcams[this.activeCameraIndex]
+      const currentElement = current && document.getElementById(current.anchor)
+      const activeIndex = currentElement && this.isInViewport(currentElement)
+        ? this.activeCameraIndex
+        : this.webcams.findIndex(item => {
+          const element = document.getElementById(item.anchor)
+          return element && this.isInViewport(element)
+        })
+      // Only change playback when entering/leaving a camera. Scroll events must
+      // not override a user's play/pause click on the current camera.
+      if (activeIndex === this.activeCameraIndex) return
+      this.selectCamera(activeIndex)
+    },
+    videoAt (index) {
+      const component = this.$refs.webcamItems && this.$refs.webcamItems[index]
+      return component && component.$refs.video
+    },
+    selectCamera (activeIndex, { play = true } = {}) {
+      this.activeCameraIndex = activeIndex
       this.webcams.forEach((item, index) => {
-        try {
-          const navBar = document.getElementsByClassName(item.anchor)
-          if (this.isInViewport(document.getElementById(item.anchor))) {
-            // console.log(item.anchor)
-            navBar[0].classList.add('btn_active')
-            this.$refs.video[index].play()
-          } else {
-            navBar[0].classList.remove('btn_active')
-            this.$refs.video[index].pause()
-          }
-        } catch {
-          console.log('something goes wrong code:4000')
+        const navBar = document.getElementsByClassName(item.anchor)[0]
+        if (navBar) navBar.classList.toggle('btn_active', index === activeIndex)
+        const video = this.videoAt(index)
+        if (video) {
+          if (index === activeIndex && play) video.play()
+          else video.pause()
         }
       })
     },
     start () {
       // console.log('start')
-      this.$refs.video[0].play()
+      const video = this.$refs.webcamItems && this.$refs.webcamItems[0].$refs.video
+      if (video) video.play()
     },
     isInViewport (element) {
       const rect = element.getBoundingClientRect()
-      if (this.mobile) {
-        return (
-          rect.top - 350 <= 0 &&
-          rect.bottom - 350 >= 0
-        )
-      } else {
-        return (
-          rect.top - 500 <= 0 &&
-          rect.bottom - 500 >= 0
-        )
-      }
+      return rect.bottom > this.cameraLayout.clearance && rect.top < window.innerHeight
     },
     isMobile () {
-      if (screen.width <= 760) {
+      if (window.innerWidth <= 760) {
         this.mobile = true
         // console.log('mobile foo TRUE')
       } else {
@@ -270,15 +204,157 @@ export default {
         // console.log('mobile foo FALSE')
       }
     },
-    loadWeatherWidget () {
-      const src = 'https://widget.bestweather.org/v0.2.0/bestweather-forecast.js'
-      if (document.querySelector('script[src="' + src + '"]')) {
+    findCamera (index, step, fullscreen = false) {
+      return findCamera(this.webcams, index, step, fullscreen)
+    },
+    goToCamera (anchor) {
+      const index = this.webcams.findIndex(camera => camera.anchor === anchor)
+      if (index < 0 || this.cameraDisposed) return
+      this.cancelNavigation()
+      this.navigationTarget = index
+      // Explicit selection always plays the requested camera, including a
+      // paused/reselected card, even when the previous card is still visible.
+      this.selectCamera(index)
+      this._navigationTimer = setTimeout(this.cancelNavigation, 2000)
+      if (this.mobile) this.drawer = false
+      this.$nextTick(() => {
+        if (this.cameraDisposed || this.navigationTarget !== index) return
+        const element = document.getElementById(anchor)
+        if (element) {
+          // Scrolling upward can reveal the header before arrival. Reserve its
+          // measured full height; landscape with no toolbar measures zero.
+          const top = window.pageYOffset + element.getBoundingClientRect().top - this.cameraLayout.height
+          window.scrollTo({ top, behavior: 'smooth' })
+        }
+      })
+    },
+    cancelNavigation () {
+      clearTimeout(this._navigationTimer)
+      this.navigationTarget = -1
+    },
+    onNavigationEnd () {
+      const camera = this.webcams[this.navigationTarget]
+      const element = camera && document.getElementById(camera.anchor)
+      if (!element) return
+      const requested = window.pageYOffset + element.getBoundingClientRect().top - this.cameraLayout.height
+      const maximum = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+      const destination = Math.max(0, Math.min(requested, maximum))
+      if (Math.abs(window.pageYOffset - destination) < 2) this.cancelNavigation()
+    },
+    onNavigationInput (event) {
+      if (event.type !== 'keydown' || ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
+        this.cancelNavigation()
+      }
+    },
+    displayedCamera (index) {
+      return this.webcams[this.fsComponentIndex === index ? this.fsCameraIndex : index]
+    },
+    hasCamera (index, step) {
+      const fullscreen = this.fsComponentIndex === index
+      return this.findCamera(fullscreen ? this.fsCameraIndex : index, step, fullscreen) >= 0
+    },
+    onFullscreenChange ({ index, isFullscreen }) {
+      if (this.cameraDisposed) return
+      const video = this.videoAt(index)
+      if (!video) return
+      const playback = video.getPlaybackIntent()
+      this.fsSession += 1
+      this.fsQueue = []
+      this.cancelNavigation()
+      if (isFullscreen) {
+        video.cancelSourceChange()
+        this.fsComponentIndex = index
+        this.fsCameraIndex = index
+        this.selectCamera(index, { play: playback })
+      } else if (this.fsComponentIndex === index) {
+        this.fsComponentIndex = -1
+        this.fsCameraIndex = -1
+        video.cancelSourceChange()
+        // Both the button and Escape use this restoration path. Preserve the
+        // user's current pause/play intent, not the incidental loading pause.
+        const camera = this.webcams[index]
+        const session = this.fsSession
+        Promise.resolve(video.restoreSource(camera.src, camera.type, { play: playback })).catch(error => {
+          if (!this.cameraDisposed && session === this.fsSession && error.code !== 'SOURCE_CHANGE_CANCELLED') {
+            this.cameraSwitchError = 'Não foi possível restaurar esta câmara.'
+          }
+        })
+      }
+    },
+    navigateCamera (index, step) {
+      if (this.fsComponentIndex === index) {
+        this.fsQueue.push(step)
+        this.processFullscreenQueue()
         return
       }
-      const script = document.createElement('script')
-      script.src = src
-      script.defer = true
-      document.head.appendChild(script)
+      const target = this.findCamera(index, step)
+      if (target >= 0) {
+        this.goToCamera(this.webcams[target].anchor)
+      }
+    },
+    async processFullscreenQueue () {
+      const session = this.fsSession
+      if (this.processingFullscreenSession === session || this.cameraDisposed) return
+      this.processingFullscreenSession = session
+      const componentIndex = this.fsComponentIndex
+      try {
+        while (this.fsQueue.length && session === this.fsSession && this.fsComponentIndex >= 0 && !this.cameraDisposed) {
+          const target = this.findCamera(this.fsCameraIndex, this.fsQueue.shift(), true)
+          if (target < 0) continue
+          const camera = this.webcams[target]
+          const video = this.videoAt(componentIndex)
+          if (!video) break
+          try {
+            await video.changeCameraSource(camera.src, camera.type, { play: video.getPlaybackIntent() })
+            if (session !== this.fsSession || this.cameraDisposed) break
+            this.fsCameraIndex = target
+            this.cameraSwitchError = ''
+          } catch (error) {
+            if (session !== this.fsSession || this.cameraDisposed) break
+            // The player rolls back transactionally; the committed identity
+            // stays on the previous feed. Drop queued retries after a failure.
+            this.fsQueue = []
+            if (error.code !== 'SOURCE_CHANGE_CANCELLED') this.cameraSwitchError = 'Não foi possível mudar de câmara. A câmara anterior foi restaurada.'
+          }
+        }
+      } finally {
+        if (this.processingFullscreenSession === session) this.processingFullscreenSession = null
+        if (!this.cameraDisposed && session === this.fsSession && this.fsQueue.length && this.fsComponentIndex >= 0) this.processFullscreenQueue()
+      }
+    },
+    async captureImage (index) {
+      this.captureError = ''
+      try {
+        const video = this.videoAt(index)
+        if (!video || video.sourceChanging) return
+        const camera = this.displayedCamera(index)
+        const blob = await video.captureFrame()
+        if (!blob) throw new Error('No frame available')
+        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+          try {
+            await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })])
+            return
+          } catch (error) {
+            // Clipboard requires HTTPS and browser permission; offer a download instead.
+          }
+        }
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = camera.anchor + '.png'
+        link.click()
+        setTimeout(() => URL.revokeObjectURL(url), 1000)
+      } catch (error) {
+        this.captureError = 'Não foi possível capturar a imagem desta câmara.'
+      }
+    },
+    async loadWeatherWidget () {
+      this.weatherWidgetError = false
+      try {
+        await loadWeatherWidget()
+      } catch (error) {
+        this.weatherWidgetError = true
+      }
     }
   },
   beforeMount () {
@@ -286,12 +362,33 @@ export default {
     this.isMobile()
   },
   mounted () {
-    if (this.showWeather) {
-      this.loadWeatherWidget()
-    }
+    window.addEventListener('resize', this.isMobile)
+    window.addEventListener('scrollend', this.onNavigationEnd)
+    window.addEventListener('wheel', this.onNavigationInput, { passive: true })
+    window.addEventListener('touchstart', this.onNavigationInput, { passive: true })
+    window.addEventListener('keydown', this.onNavigationInput)
+  },
+  beforeDestroy () {
+    this.cameraDisposed = true
+    this.cancelNavigation()
+    window.removeEventListener('resize', this.isMobile)
+    window.removeEventListener('scrollend', this.onNavigationEnd)
+    window.removeEventListener('wheel', this.onNavigationInput)
+    window.removeEventListener('touchstart', this.onNavigationInput)
+    window.removeEventListener('keydown', this.onNavigationInput)
+    const video = this.videoAt(this.fsComponentIndex)
+    if (video) video.cancelSourceChange({ rollback: false })
+    this.fsSession += 1
+    this.fsQueue = []
+    this.fsComponentIndex = -1
+    this.fsCameraIndex = -1
   },
   watch: {
-    $route (to, from) {
+    showWeather: {
+      immediate: true,
+      handler (visible) {
+        if (visible) this.loadWeatherWidget()
+      }
     }
   },
   computed: {
@@ -302,8 +399,20 @@ export default {
   data () {
     return {
       showDialog: false,
+      weatherWidgetError: false,
+      captureError: '',
+      cameraSwitchError: '',
+      fsComponentIndex: -1,
+      fsCameraIndex: -1,
+      fsSession: 0,
+      fsQueue: [],
+      processingFullscreenSession: null,
+      activeCameraIndex: -1,
+      navigationTarget: -1,
+      cameraDisposed: false,
       key: 0,
       drawer: false,
+      expandedItem: null,
       mobile: true,
       videoOptions: {
         controls: true,
@@ -318,89 +427,15 @@ export default {
 
 <style lang="sass">
 
-.q-page-container > div
-  padding-top:60px
+.camera-page .camera-sections
+  padding-top: 16px
   h4
     margin: 10px
-  .tideschart
-    iframe
-      height:600px
-      width: 100%
-  .title
-    .q-fab
-      display: block
-      position: relative
-      z-index: 1
-      margin-left:100px
-    .q-btn__wrapper
-      position: absolute
-      background: green
-      top: 120px
-  @media (min-width: 1080px) and (max-width: 1366px)
-    .title
-      .q-fab
-        display: block
-        position: relative
-        z-index: 1
-        margin-left:50px
-      .q-btn__wrapper
-        position: absolute
-        background: green
-        top: 50px
-        transform: scale(0.9)
-  @media (max-width: 768px)
-    .section
-.q-page-sticky
+.camera-page .q-page-sticky
+  z-index: 3100
   .q-btn
     background: #ffa000
-.sidebar
-  .align
-    position: fixed
-    bottom: 30px
-  p
-    font-size: 15px
-    margin-bottom:0px
-    color: gray
-  .q-item__section--avatar
-    min-width: 40px
-    padding: 0px
-    img
-      margin:0px
-  .q-expansion-item__container
-    a
-      border-radius: 6px
-  .text-h6
-    font-size: 18px
-    line-height: 0.7rem
-  .btn_active
-    font-size: 25px
-    background: #ffa000
-    border-radius: 50px
-    font-weight: 600
-    .q-item__label
-      line-height: 1.4rem !important
-    a
-      padding: 8px 0px
-    img
-      padding-left: 10px
-  @media (min-width: 1080px) and (max-width: 1366px)
-    .q-item--dense
-      min-height: 13px
-    .text-h6
-      font-size: 15px
-    .q-item__section--side > .q-icon
-      font-size: 20px
-  .q-card__section
-    padding-left: 56px
-  @media (max-width: 768px)
-    .q-item
-      min-height: 25px
-      padding: 0px 5px 0px 10px
-      .text-h6
-        font-size: 14px
-        line-height: 0.7rem
-      .q-icon
-        font-size: 20px
-      .btn_active
-        font-size: 18px
-  </style>
+.camera-page .sidebar
+  .q-drawer
+    top: var(--camera-header-clearance, 0px)
+</style>
