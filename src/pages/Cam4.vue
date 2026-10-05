@@ -47,11 +47,12 @@ limpar erros
           location="Caparica"
           latitude="38.6175"
           longitude="-9.191389"
+          density="detailed"
           layout="auto"
           lang="pt"
-          theme="light"
+          theme="dark"
           data-source="live"
-          max-days="3"
+          max-days="4"
         ></bestweather-forecast>
       </div>
       <div class="camera-sections">

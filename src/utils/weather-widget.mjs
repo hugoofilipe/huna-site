@@ -1,4 +1,4 @@
-export const WEATHER_WIDGET_SRC = 'https://widget.bestweather.org/v0.2.0/bestweather-forecast.js'
+export const WEATHER_WIDGET_SRC = 'https://widget.bestweather.org/v0.3.0/bestweather-forecast.js'
 
 let pending
 
