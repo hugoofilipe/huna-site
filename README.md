@@ -2,6 +2,22 @@
 This is the source code of HUNA website using docker, vuejs, quasar, yarn, node, PWA, workblox, sitemap
 **We still serve this version with pwa mode using service worker, but we are working on a new version using only SPA mode, and another with SSR mode**
 
+## From idea to release
+
+![HUNA development and release journey: idea, development, validation, merge, version and tag, build and publish, and release](public/images/huna-development-to-release.svg)
+
+The diagram shows an illustrative path for taking a change from an idea to the live site. The animation is not a live deployment-status display.
+
+1. **Idea:** Define the change and the result you expect.
+2. **Develop:** Work locally with Vue and Quasar, using SPA or PWA mode. Preserve the project's existing integrations.
+3. **Validate:** Run `npm test` for component regressions. Browser checks are optional and cover the camera UI.
+4. **Merged:** Integrate the validated source change. A merge by itself does not make the change live.
+5. **Version & tag:** Update the footer version, then commit and push the release tag.
+6. **Build & publish:** Run `npm run build` to build the PWA and publish its files to `deploy_dev`.
+7. **Released:** Pull `deploy_dev` in cPanel to make the release live at [2021.huna.pt](https://2021.huna.pt).
+
+This is a guide to the documented workflow, not a mandatory review or merge gate. See [Generate the animated development / release journey](#generate-the-animated-development--release-journey) for how to regenerate the image.
+
 # repo github
 - https://github.com/hugoofilipe/huna-site
 
@@ -24,6 +40,45 @@ This is the source code of HUNA website using docker, vuejs, quasar, yarn, node,
 - This remains a selective camera-UI port, not a full `release1` merge/rebase. Unrelated release1 features and deployment changes are not included.
 - To preview from another device: `NODE_OPTIONS=--openssl-legacy-provider yarn quasar dev -m spa --hostname 0.0.0.0 --port 8093`.
 - Optional browser regression checks: start that preview, then run `npm run test:browser` with Playwright available and `ffmpeg` on PATH. Alternatively set `PLAYWRIGHT_MODULE` to an existing Playwright installation. `BASE_URL` defaults to `http://localhost:8093`; `CAMERA_FIXTURE_DIR` can point to existing generated HLS fixtures. The checks use local test streams, not production camera data, and exercise the real weather-script integration. They require network access to the widget provider. Native fullscreen-exit events are covered; headless OS/browser Escape shortcuts and physical-device access require manual verification.
+
+## Generate the animated development / release journey
+
+Requires **Python 3.6+**, available as `python3` (Linux/macOS). No extra Python
+packages, browser, or running dev server are needed to generate the SVG.
+
+From the repository root, run:
+
+```sh
+npm run generate:journey
+# Or, without npm:
+python3 scripts/generate_journey.py
+```
+
+This creates or regenerates `public/images/huna-development-to-release.svg`.
+The output location is relative to the script, not your current directory.
+Open that file in a browser to see its 21-second looping animation. It supports
+light/dark themes and shows a static final state when reduced motion is enabled.
+It is an illustrative workflow, not a live deployment-status display.
+
+The content is maintained in `scripts/generate_journey.py`; edit the `stages`
+list to update stage labels, captions, and status messages, then rerun the command.
+The generator does not automatically extract workflow changes from the README.
+Keep the seven-stage layout in mind when editing the text.
+
+Quasar serves the generated asset at `/images/huna-development-to-release.svg`
+and includes it in the next normal build. To embed it in a Vue template:
+
+```html
+<img
+  src="/images/huna-development-to-release.svg"
+  alt="HUNA journey from idea through development, validation, merge, and release"
+  style="display: block; width: 100%; height: auto;"
+/>
+```
+
+Generation is local only: it does not build, merge, tag, push, or deploy anything.
+**Do not use `npm run build` just to generate the image**: that command also
+publishes the PWA build to `deploy_dev`.
 
 # Versions
 - yarn: 1.22.19

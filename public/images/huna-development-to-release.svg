@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 380" width="1120" height="380" role="img" aria-labelledby="title desc">
+<title id="title">HUNA — from idea to merged code to release</title>
+<desc id="desc">Define an idea, develop locally with Vue and Quasar, validate with component tests and optional browser checks, integrate the source change, update the footer version and push a Git tag, build the PWA and publish its files to deploy_dev, then pull that branch in cPanel to release on 2021.huna.pt. The repository does not document a mandatory review or merge gate. This is an illustrative process animation, not live deployment status.</desc>
+<style>
+:root{--bg:#f6f8f7;--ink:#14201c;--muted:#52645c;--rail:#c9d4d0;--people:#0e7490;--people-bg:#e0f4f8;--agents:#15803d;--agents-bg:#e3f5e8;--gates:#be123c;--gates-bg:#fbe7ec;--state:#6d28d9;--state-bg:#efe8fd}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1513;--ink:#e6efec;--muted:#a4b7af;--rail:#35463f;--people:#5fd0e6;--people-bg:#0f2a31;--agents:#5cd48a;--agents-bg:#10291a;--gates:#f2779a;--gates-bg:#33141e;--state:#b39cf5;--state-bg:#211a38}}
+.bg{fill:var(--bg)}
+text{font-family:ui-sans-serif,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--ink)}
+.h{font-size:22px;font-weight:700}.t{font-size:15px;font-weight:600}
+.c{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;fill:var(--muted)}
+.k{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;font-weight:600;letter-spacing:.07em;fill:var(--muted)}
+.s{font-size:14px;font-weight:600;opacity:0}.st6{opacity:1}
+.node rect{stroke-width:2}.people rect{fill:var(--people-bg);stroke:var(--people)}.agents rect{fill:var(--agents-bg);stroke:var(--agents)}.gates rect{fill:var(--gates-bg);stroke:var(--gates)}.state rect{fill:var(--state-bg);stroke:var(--state)}
+.rail{stroke:var(--rail);stroke-width:3;stroke-linecap:round}.phase{fill:none;stroke:var(--rail);stroke-width:1.5;stroke-dasharray:4 5}
+.dot{fill:var(--state);transform:translateX(936px)}.chip{fill:var(--state-bg);stroke:var(--state);stroke-width:1.5}
+@media(prefers-reduced-motion:no-preference){
+.dot{animation:travel 21s linear infinite}
+.n0{animation:lit0 21s linear infinite}.st0{opacity:0;animation:status0 21s step-end infinite}
+@keyframes lit0{0%,97%{opacity:1}100%{opacity:.5}}
+@keyframes status0{0%{opacity:1}14.2857%,100%{opacity:0}}
+.n1{animation:lit1 21s linear infinite}.st1{opacity:0;animation:status1 21s step-end infinite}
+@keyframes lit1{0%,13.7857%{opacity:.5}15.2857%,97%{opacity:1}100%{opacity:.5}}
+@keyframes status1{0%{opacity:0}14.2857%{opacity:1}28.5714%,100%{opacity:0}}
+.n2{animation:lit2 21s linear infinite}.st2{opacity:0;animation:status2 21s step-end infinite}
+@keyframes lit2{0%,28.0714%{opacity:.5}29.5714%,97%{opacity:1}100%{opacity:.5}}
+@keyframes status2{0%{opacity:0}28.5714%{opacity:1}42.8571%,100%{opacity:0}}
+.n3{animation:lit3 21s linear infinite}.st3{opacity:0;animation:status3 21s step-end infinite}
+@keyframes lit3{0%,42.3571%{opacity:.5}43.8571%,97%{opacity:1}100%{opacity:.5}}
+@keyframes status3{0%{opacity:0}42.8571%{opacity:1}57.1429%,100%{opacity:0}}
+.n4{animation:lit4 21s linear infinite}.st4{opacity:0;animation:status4 21s step-end infinite}
+@keyframes lit4{0%,56.6429%{opacity:.5}58.1429%,97%{opacity:1}100%{opacity:.5}}
+@keyframes status4{0%{opacity:0}57.1429%{opacity:1}71.4286%,100%{opacity:0}}
+.n5{animation:lit5 21s linear infinite}.st5{opacity:0;animation:status5 21s step-end infinite}
+@keyframes lit5{0%,70.9286%{opacity:.5}72.4286%,97%{opacity:1}100%{opacity:.5}}
+@keyframes status5{0%{opacity:0}71.4286%{opacity:1}85.7143%,100%{opacity:0}}
+.n6{animation:lit6 21s linear infinite}.st6{opacity:0;animation:status6 21s step-end infinite}
+@keyframes lit6{0%,85.2143%{opacity:.5}86.7143%,97%{opacity:1}100%{opacity:.5}}
+@keyframes status6{0%{opacity:0}85.7143%{opacity:1}100%{opacity:0}}
+@keyframes travel{0.0000%,8.0000%{transform:translateX(0px);opacity:1}14.2857%,22.2857%{transform:translateX(156px);opacity:1}28.5714%,36.5714%{transform:translateX(312px);opacity:1}42.8571%,50.8571%{transform:translateX(468px);opacity:1}57.1429%,65.1429%{transform:translateX(624px);opacity:1}71.4286%,79.4286%{transform:translateX(780px);opacity:1}85.7143%,93.7143%{transform:translateX(936px);opacity:1}98%{transform:translateX(936px);opacity:1}100%{transform:translateX(936px);opacity:0}}}
+@media(prefers-reduced-motion:reduce){.dot{transform:translateX(936px)}.s{opacity:0}.st6{opacity:1}}</style>
+
+<rect class="bg" width="1120" height="380" rx="14"/>
+<text class="h" x="28" y="44">HUNA · From an idea to a live release</text>
+<text class="c" x="28" y="68">Vue + Quasar · validate the source, publish the PWA, then deploy the website.</text>
+<rect class="phase" x="20" y="101" width="612" height="108" rx="12"/>
+<rect class="phase" x="644" y="101" width="456" height="108" rx="12"/>
+<text class="k" x="30" y="94">DEVELOPMENT · SOURCE CODE</text>
+<text class="k" x="654" y="94">RELEASE · BUILT WEBSITE</text>
+
+<line class="rail" x1="164" y1="157" x2="184" y2="157"/>
+<line class="rail" x1="320" y1="157" x2="340" y2="157"/>
+<line class="rail" x1="476" y1="157" x2="496" y2="157"/>
+<line class="rail" x1="632" y1="157" x2="652" y2="157"/>
+<line class="rail" x1="788" y1="157" x2="808" y2="157"/>
+<line class="rail" x1="944" y1="157" x2="964" y2="157"/>
+<g class="node people n0">
+<rect x="28" y="125" width="136" height="64" rx="10"/>
+<text class="t" x="96" y="152" text-anchor="middle">Idea</text>
+<text class="c" x="96" y="173" text-anchor="middle">scope the change</text>
+</g>
+<g class="node agents n1">
+<rect x="184" y="125" width="136" height="64" rx="10"/>
+<text class="t" x="252" y="152" text-anchor="middle">Develop</text>
+<text class="c" x="252" y="173" text-anchor="middle">Vue · Quasar</text>
+</g>
+<g class="node gates n2">
+<rect x="340" y="125" width="136" height="64" rx="10"/>
+<text class="t" x="408" y="152" text-anchor="middle">Validate</text>
+<text class="c" x="408" y="173" text-anchor="middle">npm test</text>
+</g>
+<g class="node people n3">
+<rect x="496" y="125" width="136" height="64" rx="10"/>
+<text class="t" x="564" y="152" text-anchor="middle">Merged</text>
+<text class="c" x="564" y="173" text-anchor="middle">source integrated</text>
+</g>
+<g class="node state n4">
+<rect x="652" y="125" width="136" height="64" rx="10"/>
+<text class="t" x="720" y="152" text-anchor="middle">Version &amp; tag</text>
+<text class="c" x="720" y="173" text-anchor="middle">footer · Git tag</text>
+</g>
+<g class="node agents n5">
+<rect x="808" y="125" width="136" height="64" rx="10"/>
+<text class="t" x="876" y="152" text-anchor="middle">Build &amp; publish</text>
+<text class="c" x="876" y="173" text-anchor="middle">PWA → deploy_dev</text>
+</g>
+<g class="node people n6">
+<rect x="964" y="125" width="136" height="64" rx="10"/>
+<text class="t" x="1032" y="152" text-anchor="middle">Released</text>
+<text class="c" x="1032" y="173" text-anchor="middle">cPanel pull</text>
+</g>
+<circle class="dot" cx="96" cy="114" r="5"/>
+<text class="c" x="28" y="230">Merge ≠ release. The built files travel through deploy_dev before the cPanel pull.</text>
+<rect class="chip" x="28" y="250" width="1064" height="48" rx="24"/>
+<text class="k" x="48" y="278">WHAT HAPPENS</text>
+<text class="s st0" x="178" y="279" aria-hidden="true">Define the change and the expected result.</text>
+<text class="s st1" x="178" y="279" aria-hidden="true">Work locally in SPA or PWA mode; preserve existing integrations.</text>
+<text class="s st2" x="178" y="279" aria-hidden="true">Run component regressions; optional browser checks cover the camera UI.</text>
+<text class="s st3" x="178" y="279" aria-hidden="true">Integrate the validated change. Merged code is not yet a live release.</text>
+<text class="s st4" x="178" y="279" aria-hidden="true">Update the footer version, then commit and push the release tag.</text>
+<text class="s st5" x="178" y="279" aria-hidden="true">npm run build creates the PWA and pushes its files to deploy_dev.</text>
+<text class="s st6" x="178" y="279" aria-hidden="true">Pull deploy_dev in cPanel to make the release live on 2021.huna.pt.</text>
+<text class="c" x="28" y="332">Source: README.md · package.json · scripts/build_deploy.sh</text>
+<text class="c" x="28" y="353">Illustrative workflow, not live status · no mandatory PR / merge gate documented · production: 2021.huna.pt</text>
+</svg>
