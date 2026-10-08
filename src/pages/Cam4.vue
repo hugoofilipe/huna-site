@@ -16,7 +16,6 @@ criar top ten de captures
 criar pagina apos login para mostrar "cam" e "campeonato Padel";
 evocar o formulario de contacto
 notificaoes como o atalho para desktop, guardar bookmark, banner de publicidade, etc...
-Corrigir scroll vuejs add space before section when jump by anchor
 user online para uma api
 Rating das ondas para uma api - https://quasar.dev/vue-components/rating
 Criar vários tipo de user (admin, cam, etc...)
@@ -32,7 +31,7 @@ limpar erros
       :webcams="webcams"
       :mobile="mobile"
       :expanded-item="expandedItem"
-      @go-to-camera="goToCamera"
+      @go-to-camera="goToCamera($event)"
       @update:expanded-item="expandedItem = $event"
     />
     <q-page-container>
@@ -71,6 +70,7 @@ limpar erros
           @previous-camera="navigateCamera($event, -1)"
           @next-camera="navigateCamera($event, 1)"
           @fullscreen-change="onFullscreenChange"
+          @playback-intent="cancelDeepLink"
           ref="webcamItems"
         />
       </div>
@@ -115,6 +115,11 @@ import axios from 'axios'
 import { loadWeatherWidget } from 'src/utils/weather-widget.mjs'
 import { findCamera } from 'src/utils/camera-navigation.mjs'
 import { copyText } from 'src/utils/clipboard.mjs'
+import { isCaparicaPath, cameraAnchorFromHash } from 'src/utils/camera-route.mjs'
+
+const DEEP_LINK_READY_FRAMES = 10
+const POSITION_CORRECTION_MS = 5000
+const POSITION_TOLERANCE = 2
 
 export default {
   name: 'Cam4',
@@ -129,8 +134,11 @@ export default {
     async getLinks () {
       try {
         const response = await axios.get(this.url_links)
+        if (this.cameraDisposed) return
         this.webcams = response.data
+        this.webcamsLoaded = true
         console.log(this.webcams)
+        this.resumePendingDeepLink()
       } catch (error) {
         console.log('[foo] Something is wrong with urllinks.json file: ', error)
       }
@@ -208,26 +216,140 @@ export default {
     findCamera (index, step, fullscreen = false) {
       return findCamera(this.webcams, index, step, fullscreen)
     },
-    goToCamera (anchor) {
+    goToCamera (anchor, deepLink = null) {
       const index = this.webcams.findIndex(camera => camera.anchor === anchor)
       if (index < 0 || this.cameraDisposed) return
-      this.cancelNavigation()
-      this.navigationTarget = index
+      // Any navigation that is not the deep-link request itself supersedes it.
+      if (!deepLink) this.cancelDeepLink()
+      const token = ++this.navigationToken
+      this.armNavigationGuard(index)
       // Explicit selection always plays the requested camera, including a
       // paused/reselected card, even when the previous card is still visible.
       this.selectCamera(index)
-      this._navigationTimer = setTimeout(this.cancelNavigation, 2000)
       if (this.mobile) this.drawer = false
       this.$nextTick(() => {
-        if (this.cameraDisposed || this.navigationTarget !== index) return
+        if (this.cameraDisposed || this.navigationToken !== token || this.navigationTarget !== index) return
+        if (deepLink && !this.isCurrentDeepLink(deepLink)) return
         const element = document.getElementById(anchor)
         if (element) {
           // Scrolling upward can reveal the header before arrival. Reserve its
           // measured full height; landscape with no toolbar measures zero.
           const top = window.pageYOffset + element.getBoundingClientRect().top - this.cameraLayout.height
           window.scrollTo({ top, behavior: 'smooth' })
+          if (deepLink) this.startPositionCorrection(deepLink, index, this.clampScroll(top))
         }
       })
+    },
+    armNavigationGuard (index) {
+      this.cancelNavigation()
+      this.navigationTarget = index
+      this._navigationTimer = setTimeout(this.cancelNavigation, 2000)
+    },
+    clampScroll (requested) {
+      const maximum = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+      return Math.max(0, Math.min(requested, maximum))
+    },
+    cameraDestination (element) {
+      return this.clampScroll(window.pageYOffset + element.getBoundingClientRect().top - this.cameraLayout.height)
+    },
+    requestDeepLink () {
+      this.cancelDeepLink()
+      const anchor = cameraAnchorFromHash(this.$route.hash)
+      if (!anchor) return
+      this.pendingDeepLink = { id: this.deepLinkId, anchor, started: false, frame: null }
+      this.resumePendingDeepLink()
+    },
+    isCurrentDeepLink (request) {
+      return !this.cameraDisposed && !!request && request.id === this.deepLinkId
+    },
+    cancelDeepLink () {
+      this.deepLinkId += 1
+      const request = this.pendingDeepLink
+      if (request && request.frame !== null) window.cancelAnimationFrame(request.frame)
+      this.pendingDeepLink = null
+      this.stopPositionCorrection()
+    },
+    resumePendingDeepLink () {
+      const request = this.pendingDeepLink
+      if (!this.webcamsLoaded || !this.isCurrentDeepLink(request) || request.started) return
+      if (!this.webcams.some(camera => camera.anchor === request.anchor)) {
+        this.pendingDeepLink = null
+        return
+      }
+      // A hash change never disturbs fullscreen; it stays pending until the
+      // fullscreen exit and source restoration have finished.
+      if (this.fsComponentIndex >= 0 || this.fsRestoring) return
+      request.started = true
+      this.$nextTick(() => this.completeDeepLink(request, 0))
+    },
+    completeDeepLink (request, attempt) {
+      if (!this.isCurrentDeepLink(request)) return
+      request.frame = null
+      if (this.fsComponentIndex >= 0 || this.fsRestoring) {
+        request.started = false
+        return
+      }
+      const index = this.webcams.findIndex(camera => camera.anchor === request.anchor)
+      if (index < 0) {
+        this.pendingDeepLink = null
+        return
+      }
+      if (!this.isCameraRendered(index) && attempt < DEEP_LINK_READY_FRAMES) {
+        request.frame = window.requestAnimationFrame(() => this.completeDeepLink(request, attempt + 1))
+        return
+      }
+      this.pendingDeepLink = null
+      this.goToCamera(request.anchor, request)
+    },
+    isCameraRendered (index) {
+      const item = this.$refs.webcamItems && this.$refs.webcamItems[index]
+      return !!item && !!document.getElementById(this.webcams[index].anchor) &&
+        (this.webcams[index].type === 'previsoes' || !!item.$refs.video)
+    },
+    startPositionCorrection (request, index, destination) {
+      this.stopPositionCorrection()
+      const state = { request, index, destination, frame: null, timer: null, observer: null, unwatch: null }
+      const check = () => {
+        state.frame = null
+        this.correctPosition(state)
+      }
+      const schedule = () => {
+        if (state.frame === null) state.frame = window.requestAnimationFrame(check)
+      }
+      if (typeof ResizeObserver !== 'undefined') {
+        state.observer = new ResizeObserver(schedule)
+        const watched = [document.documentElement, this.$el && this.$el.querySelector && this.$el.querySelector('.weather-widget'), document.getElementById(this.webcams[index].anchor)]
+        for (const element of watched) if (element) state.observer.observe(element)
+      }
+      state.unwatch = this.$watch(() => this.cameraLayout.height, schedule)
+      state.timer = setTimeout(() => this.stopPositionCorrection(state), POSITION_CORRECTION_MS)
+      this._correction = state
+    },
+    correctPosition (state) {
+      if (this._correction !== state) return
+      if (!this.isCurrentDeepLink(state.request)) return this.stopPositionCorrection(state)
+      const camera = this.webcams[state.index]
+      const element = camera && document.getElementById(camera.anchor)
+      if (!element) return
+      const destination = this.cameraDestination(element)
+      if (Math.abs(destination - state.destination) < POSITION_TOLERANCE) return
+      state.destination = destination
+      // Reposition only: no selection or playback change, and the guard keeps
+      // passive scroll handling from reselecting cameras on the way.
+      this.armNavigationGuard(state.index)
+      window.scrollTo({ top: destination, behavior: 'auto' })
+    },
+    stopPositionCorrection (state = this._correction) {
+      if (!state) return
+      if (this._correction === state) this._correction = null
+      clearTimeout(state.timer)
+      if (state.frame !== null) window.cancelAnimationFrame(state.frame)
+      if (state.observer) state.observer.disconnect()
+      if (state.unwatch) state.unwatch()
+      state.frame = null
+      state.timer = null
+      state.observer = null
+      state.unwatch = null
     },
     cancelNavigation () {
       clearTimeout(this._navigationTimer)
@@ -237,13 +359,11 @@ export default {
       const camera = this.webcams[this.navigationTarget]
       const element = camera && document.getElementById(camera.anchor)
       if (!element) return
-      const requested = window.pageYOffset + element.getBoundingClientRect().top - this.cameraLayout.height
-      const maximum = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
-      const destination = Math.max(0, Math.min(requested, maximum))
-      if (Math.abs(window.pageYOffset - destination) < 2) this.cancelNavigation()
+      if (Math.abs(window.pageYOffset - this.cameraDestination(element)) < POSITION_TOLERANCE) this.cancelNavigation()
     },
     onNavigationInput (event) {
       if (event.type !== 'keydown' || ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
+        this.cancelDeepLink()
         this.cancelNavigation()
       }
     },
@@ -261,8 +381,10 @@ export default {
       const playback = video.getPlaybackIntent()
       this.fsSession += 1
       this.fsQueue = []
+      this.fsRestoring = false
       this.cancelNavigation()
       if (isFullscreen) {
+        this.stopPositionCorrection()
         video.cancelSourceChange()
         this.fsComponentIndex = index
         this.fsCameraIndex = index
@@ -275,10 +397,15 @@ export default {
         // user's current pause/play intent, not the incidental loading pause.
         const camera = this.webcams[index]
         const session = this.fsSession
+        this.fsRestoring = true
         Promise.resolve(video.restoreSource(camera.src, camera.type, { play: playback })).catch(error => {
           if (!this.cameraDisposed && session === this.fsSession && error.code !== 'SOURCE_CHANGE_CANCELLED') {
             this.cameraSwitchError = 'Não foi possível restaurar esta câmara.'
           }
+        }).then(() => {
+          if (this.cameraDisposed || session !== this.fsSession || !this.fsRestoring) return
+          this.fsRestoring = false
+          this.resumePendingDeepLink()
         })
       }
     },
@@ -358,6 +485,9 @@ export default {
       }
     }
   },
+  created () {
+    this.requestDeepLink()
+  },
   beforeMount () {
     this.getLinks()
     this.isMobile()
@@ -371,6 +501,7 @@ export default {
   },
   beforeDestroy () {
     this.cameraDisposed = true
+    this.cancelDeepLink()
     this.cancelNavigation()
     window.removeEventListener('resize', this.isMobile)
     window.removeEventListener('scrollend', this.onNavigationEnd)
@@ -385,6 +516,9 @@ export default {
     this.fsCameraIndex = -1
   },
   watch: {
+    $route (to, from) {
+      if (to.path !== from.path || to.hash !== from.hash) this.requestDeepLink()
+    },
     showWeather: {
       immediate: true,
       handler (visible) {
@@ -394,7 +528,7 @@ export default {
   },
   computed: {
     showWeather () {
-      return this.$route.path === '/caparica'
+      return isCaparicaPath(this.$route.path)
     }
   },
   data () {
@@ -410,6 +544,11 @@ export default {
       processingFullscreenSession: null,
       activeCameraIndex: -1,
       navigationTarget: -1,
+      navigationToken: 0,
+      deepLinkId: 0,
+      pendingDeepLink: null,
+      webcamsLoaded: false,
+      fsRestoring: false,
       cameraDisposed: false,
       key: 0,
       drawer: false,
