@@ -4,6 +4,7 @@ import VueCarousel from 'vue-carousel'
 import Carousel3d from 'vue-carousel-3d'
 import VueMeta from 'vue-meta'
 import routes from './routes'
+import { scrollBehavior } from 'src/utils/camera-route.mjs'
 import VueGtag from 'vue-gtag'
 import VueCookies from 'vue-cookies'
 import VueScrollActive from 'vue-scrollactive'
@@ -33,13 +34,7 @@ Vue.$cookies.config('60d')
 export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({
     // scrollBehavior: () => ({ x: 0, y: 0 }),
-    scrollBehavior: function (to, from, savedPosition) {
-      if (to.hash) {
-        return { selector: to.hash }
-      } else {
-        return { x: 0, y: 0 }
-      }
-    },
+    scrollBehavior,
     // Leave these as they are and change in quasar.conf.js instead!
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath

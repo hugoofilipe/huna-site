@@ -18,6 +18,7 @@
 import MainMenu from 'components/MainMenu.vue'
 import Login from 'components/Login.vue'
 import { observeHeaderClearance } from 'src/utils/header-clearance.mjs'
+import { isCameraPath } from 'src/utils/camera-route.mjs'
 // import footerMain from 'src/components/Footer.vue'
 
 export default {
@@ -49,7 +50,7 @@ export default {
       return this.userIsLoggedIn
     },
     isCameraPage () {
-      return this.$route.path === '/cam' || this.$route.path === '/caparica'
+      return isCameraPath(this.$route.path)
     }
   },
   methods: {

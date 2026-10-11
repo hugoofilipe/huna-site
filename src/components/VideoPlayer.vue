@@ -4,8 +4,8 @@
       <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered"></video>
       <div class="custom-controls q-pa-md q-gutter-sm row flex justify-center align-center">
         <q-btn v-if="isFullscreen && computedHasPrevious" @click="$emit('previous-camera')" icon="skip_previous" label="Anterior" aria-label="Anterior" unelevated class="icon-only-mobile fullscreen-nav-btn" />
-        <q-btn @click="togglePlay" :label="isPlaying ? 'pause' : 'play'" :aria-label="isPlaying ? 'Pausar' : 'Reproduzir'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile" />
-        <q-btn @click="restart()" icon="replay" label="restart" aria-label="Reiniciar" unelevated class="icon-only-mobile" />
+        <q-btn @click="$emit('playback-intent'); togglePlay()" :label="isPlaying ? 'pause' : 'play'" :aria-label="isPlaying ? 'Pausar' : 'Reproduzir'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile" />
+        <q-btn @click="$emit('playback-intent'); restart()" icon="replay" label="restart" aria-label="Reiniciar" unelevated class="icon-only-mobile" />
         <q-btn v-if="showFullscreenButton" @click="toggleFullscreen" :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" :aria-label="isFullscreen ? 'Sair de ecrã inteiro' : 'Ecrã inteiro'" flat dense />
         <q-btn :disable="sourceChanging" align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" icon="link" @click="copyURL()">
           <q-tooltip class="bg-accent">Copiar link</q-tooltip>

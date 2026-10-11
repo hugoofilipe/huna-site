@@ -22,10 +22,11 @@
       ref="video"
       @fullscreen-change="$emit('fullscreen-change', { index, isFullscreen: $event.isFullscreen })"
       @capture-request="$emit('capture-image', index)"
+      @playback-intent="$emit('playback-intent')"
       @previous-camera="$emit('previous-camera', index)"
       @next-camera="$emit('next-camera', index)"
     />
-    <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type" />
+    <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type" @playback-intent="$emit('playback-intent')" />
 
     <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'windguru'" class="section q-pa-md">
       <iframe scrolling="no" seamless="seamless" style="border: none; width: 100%; overflow: hidden; height: 823px;" src="https://www.windguru.cz/widget-fcst-iframe.php?s=48963&amp;m=3&amp;mw=84&amp;uid=wg_fwdg_48963_3_1616953874460&amp;wj=kmh&amp;tj=c&amp;waj=m&amp;odh=0&amp;doh=24&amp;fhours=240&amp;hrsm=1&amp;vt=forecasts&amp;lng=pt&amp;ts=2&amp;p=WINDSPD,GUST,MWINDSPD,SMER,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR,TMP,TMPE,WCHILL,FLHGT,CDC,TCDC,APCP1s,SLP,RH,RATING&amp;hostname=huna.pt&amp;url=https%3A%2F%2Fhuna.pt%2Fcam%2F"></iframe>

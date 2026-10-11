@@ -7,10 +7,10 @@
     />
 
     <div class="q-pa-md q-gutter-sm row item.centers ">
-      <q-btn @click="handleClick('playVideo')">Play</q-btn>
+      <q-btn @click="$emit('playback-intent'); handleClick('playVideo')">Play</q-btn>
       <!-- <button @click="handleClick('stopVideo')">Stop</button> -->
-      <q-btn @click="handleClick('pauseVideo')">Pause</q-btn>
-      <q-btn @click="restart">Restart</q-btn>
+      <q-btn @click="$emit('playback-intent'); handleClick('pauseVideo')">Pause</q-btn>
+      <q-btn @click="$emit('playback-intent'); restart()">Restart</q-btn>
       <q-btn  align="around" class="btn-fixed-width" label="Copiar link" icon="link"  @click="showDialog = true; copyURL(anchor)">
         <q-tooltip class="bg-accent">Copiar link</q-tooltip>
       </q-btn>
