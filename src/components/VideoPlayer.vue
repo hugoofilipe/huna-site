@@ -7,11 +7,11 @@
         <q-btn @click="$emit('playback-intent'); togglePlay()" :label="isPlaying ? 'pause' : 'play'" :aria-label="isPlaying ? 'Pausar' : 'Reproduzir'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile" />
         <q-btn @click="$emit('playback-intent'); restart()" icon="replay" label="restart" aria-label="Reiniciar" unelevated class="icon-only-mobile" />
         <q-btn v-if="showFullscreenButton" @click="toggleFullscreen" :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" :aria-label="isFullscreen ? 'Sair de ecrã inteiro' : 'Ecrã inteiro'" flat dense />
-        <q-btn :disable="sourceChanging" align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" icon="link" @click="copyURL()">
+        <q-btn :disable="sourceChanging" align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" aria-label="Copiar link" icon="link" @click="copyURL()">
           <q-tooltip class="bg-accent">Copiar link</q-tooltip>
         </q-btn>
-        <socialSharing v-if="!sourceChanging" :anchor="displayedAnchor" :title="displayedTitle" position="bottom" class="icon-only-mobile" />
-        <q-btn v-if="captureEnabled && (isFullscreen || $q.platform.is.mobile)" :disable="sourceChanging" icon="camera_alt" size="md" @click.stop.prevent="requestCapture" title="Capturar imagem" aria-label="Capturar imagem" />
+        <socialSharing v-if="!sourceChanging" :anchor="displayedAnchor" :title="displayedTitle" :path="$route.path" position="bottom" class="icon-only-mobile" />
+        <q-btn v-if="captureEnabled" :disable="sourceChanging" icon="camera_alt" size="md" @click.stop.prevent="requestCapture" title="Capturar imagem" aria-label="Capturar imagem" />
         <q-btn v-if="isFullscreen && hasNext" @click="$emit('next-camera')" icon="skip_next" label="Próximo" aria-label="Próximo" unelevated class="icon-only-mobile fullscreen-nav-btn" />
       </div>
     </div>

@@ -1,7 +1,7 @@
 <template>
   <ShareNetwork
       network="whatsapp"
-      :url="'www.huna.pt/cam#' + anchor"
+      :url="'www.huna.pt' + path + '#' + anchor"
       :title="'Câmara da praia ' + title"
       description="Atenção: Apenas deverás partilhar esta página com surfistas e pseudo-surfistas, que saibam partilhar ondas e momentos especiais. Não te esqueças, a amizade é o mais importante de tudo."
       name="Whatsapp"
@@ -9,7 +9,7 @@
       style="text-decoration: none;"
     >
     <q-btn v-if="position === 'top'" push round color="white" size="xl" icon="whatsapp"/>
-    <q-btn v-else-if="position === 'bottom'" align="around" text-color="black" class="btn-fixed-width social-btn" label="whatsapp" icon="whatsapp">
+    <q-btn v-else-if="position === 'bottom'" align="around" text-color="black" class="btn-fixed-width social-btn" label="whatsapp" aria-label="Partilhar no WhatsApp" icon="whatsapp">
     </q-btn>
   </ShareNetwork>
 </template>
@@ -24,7 +24,8 @@ export default {
   props: {
     anchor: [String],
     title: [String],
-    position: [String]
+    position: [String],
+    path: { type: String, default: '/cam' }
   }
 }
 </script>

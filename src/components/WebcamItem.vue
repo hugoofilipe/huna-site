@@ -4,8 +4,6 @@
       <h4 class="text-weight-medium">{{ beach.title }}</h4>
       <q-btn icon="link" @click="$emit('copy-url', beach.anchor)" name="copy-link" aria-label="Copiar link" flat round size="small" style="color: #ffa000;" />
     </div>
-    <q-btn v-if="!mobile && beach.type === 'application/x-mpegURL'" round icon="camera_alt" class="capture-button" size="md" @click="$emit('capture-image', index)" title="Capturar imagem" aria-label="Capturar imagem" />
-
     <video-player
       v-if="beach.type === 'application/x-mpegURL'"
       :options="videoOptions"
@@ -26,7 +24,7 @@
       @previous-camera="$emit('previous-camera', index)"
       @next-camera="$emit('next-camera', index)"
     />
-    <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type" @playback-intent="$emit('playback-intent')" />
+    <video-youtube v-else-if="beach.type === 'video/youtube'" :src="beach.src" ref="video" :anchor="beach.anchor" :type="beach.type" :title="beach.title" camera-controls @playback-intent="$emit('playback-intent')" />
 
     <div v-else-if="beach.type === 'previsoes' && beach.anchor === 'windguru'" class="section q-pa-md">
       <iframe scrolling="no" seamless="seamless" style="border: none; width: 100%; overflow: hidden; height: 823px;" src="https://www.windguru.cz/widget-fcst-iframe.php?s=48963&amp;m=3&amp;mw=84&amp;uid=wg_fwdg_48963_3_1616953874460&amp;wj=kmh&amp;tj=c&amp;waj=m&amp;odh=0&amp;doh=24&amp;fhours=240&amp;hrsm=1&amp;vt=forecasts&amp;lng=pt&amp;ts=2&amp;p=WINDSPD,GUST,MWINDSPD,SMER,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR,TMP,TMPE,WCHILL,FLHGT,CDC,TCDC,APCP1s,SLP,RH,RATING&amp;hostname=huna.pt&amp;url=https%3A%2F%2Fhuna.pt%2Fcam%2F"></iframe>
@@ -76,12 +74,6 @@ export default {
   h4
     overflow-wrap: anywhere
     max-width: calc(100% - 50px)
-.capture-button
-  position: absolute
-  top: 100px
-  right: 60px
-  z-index: 20
-  background: #ffa000
 .tideschart
   iframe
     height: 600px

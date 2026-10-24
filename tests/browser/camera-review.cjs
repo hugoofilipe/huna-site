@@ -16,6 +16,7 @@ if (!fs.existsSync(path.join(fixture, 'playlist.m3u8'))) {
 
 const cameraList = withForecast => {
   const cameras = [0, 1, 2, 3, 4, 5].map(index => ({ anchor: 'review-camera-' + index, title: 'Review camera ' + index, type: 'application/x-mpegURL', src: base + '/__review_fixture/' + index + '/playlist.m3u8' }))
+  cameras.push({ anchor: 'review-youtube', title: 'Review YouTube', type: 'video/youtube', src: 'https://www.youtube.com/watch?v=TcMBFSGVi1c' })
   return withForecast ? [...cameras, { anchor: 'tide', title: 'Tide', type: 'previsoes', src: '' }] : cameras
 }
 
@@ -103,6 +104,10 @@ async function run (browser, viewport, mobile) {
     if (download instanceof Error) throw download
     assert.equal(download.suggestedFilename(), 'review-camera-2.png')
     assert.equal(await download.failure(), null)
+    const png = fs.readFileSync(await download.path())
+    assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a')
+    assert.equal(png.readUInt32BE(16), 160, 'captured the video frame width')
+    assert.equal(png.readUInt32BE(20), 90, 'captured the video frame height')
     await card(1).getByRole('button', { name: 'Pausar', exact: true }).click()
     await exit(1)
     await page.waitForFunction(() => document.querySelector('#review-camera-1 .video-js').player.currentSrc().includes('/1/') && document.querySelector('#review-camera-1 video').paused)
@@ -163,6 +168,35 @@ async function run (browser, viewport, mobile) {
     console.log('PASS browser review', viewport, mobile ? 'mobile' : 'desktop')
   } finally {
     await context.close()
+  }
+}
+
+async function captureMenus (browser, viewport, mobile) {
+  for (const route of ['/cam', '/caparica']) {
+    const context = await createContext(browser, viewport, mobile, { mockWeather: route === '/caparica' ? { height: 80, delay: 0 } : null })
+    const page = await context.newPage()
+    try {
+      await page.goto(base + route)
+      const hls = page.locator('#review-camera-0')
+      const youtube = page.locator('#review-youtube')
+      for (const card of [hls, youtube]) {
+        const capture = card.locator('.custom-controls').getByRole('button', { name: 'Capturar imagem', exact: true })
+        assert.equal(await capture.count(), 1, 'one bottom-menu capture control')
+        await capture.scrollIntoViewIfNeeded()
+        assert.equal(await capture.isVisible(), true, 'capture visible on ' + route)
+      }
+      assert.equal(await hls.locator('.title').getByRole('button', { name: 'Capturar imagem' }).count(), 0)
+      const capture = youtube.locator('.custom-controls').getByRole('button', { name: 'Capturar imagem', exact: true })
+      await capture.focus()
+      await page.keyboard.press('Enter')
+      await page.getByText('Não é possível capturar uma imagem deste vídeo do YouTube porque está incorporado de outro site.').waitFor()
+      await page.getByRole('button', { name: 'Entendi' }).click()
+      await youtube.locator('.custom-controls').getByRole('button', { name: 'Copiar link' }).click()
+      await page.getByText('Link copiado com sucesso', { exact: true }).waitFor()
+      await page.getByRole('button', { name: 'Eu entendi' }).click()
+      await page.screenshot({ path: path.join(artifacts, 'capture-' + route.slice(1) + '-' + viewport.width + '.png') })
+      console.log('PASS capture menus', route, mobile ? 'mobile' : 'desktop')
+    } finally { await context.close() }
   }
 }
 
@@ -277,6 +311,8 @@ async function deepLinks (browser, viewport, mobile) {
   try {
     await run(browser, { width: 1280, height: 720 }, false)
     await run(browser, { width: 390, height: 844 }, true)
+    await captureMenus(browser, { width: 1280, height: 720 }, false)
+    await captureMenus(browser, { width: 390, height: 844 }, true)
     await deepLinks(browser, { width: 1280, height: 720 }, false)
     await deepLinks(browser, { width: 390, height: 844 }, true)
     console.log('Artifacts:', artifacts)

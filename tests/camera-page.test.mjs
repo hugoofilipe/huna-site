@@ -29,6 +29,7 @@ function fixture ({ queued = false, types = [] } = {}) {
     requestAnimationFrame: fn => { const id = {}; frames.set(id, fn); return id },
     cancelAnimationFrame: id => frames.delete(id)
   }
+  const navigator = {}
   class ResizeObserver {
     constructor (callback) { this.callback = callback; this.observed = []; this.disconnected = false; observers.push(this) }
     observe (element) { this.observed.push(element) }
@@ -37,7 +38,7 @@ function fixture ({ queued = false, types = [] } = {}) {
   const options = loadComponent('src/pages/Cam4.vue', {
     WebcamItem: {}, WebcamSidebar: {}, axios: { get: () => new Promise((resolve, reject) => requests.push({ resolve, reject })) },
     findCamera, loadWeatherWidget: async () => {}, copyText: async () => {}, isCaparicaPath, cameraAnchorFromHash,
-    document, window, ResizeObserver, navigator: {}, URL: { createObjectURL: () => 'blob:frame', revokeObjectURL () {} },
+    document, window, ResizeObserver, navigator, URL: { createObjectURL: () => 'blob:frame', revokeObjectURL () {} },
     setTimeout: (fn, delay) => { const id = {}; timers.set(id, fn); timerDelays.set(id, delay); return id }, clearTimeout: id => timers.delete(id)
   })
   const videos = cameras.map(camera => ({
@@ -74,7 +75,7 @@ function fixture ({ queued = false, types = [] } = {}) {
   }
   const settle = () => new Promise(resolve => setImmediate(resolve))
   return {
-    page, videos, cameras, timers, timerDelays, rects, scrolls, downloads, options, window, frames, ticks, watchers, observers, requests,
+    page, videos, cameras, timers, timerDelays, rects, scrolls, downloads, options, window, navigator, frames, ticks, watchers, observers, requests,
     flushTicks, flushFrames, setHeaderHeight, navigate, loading, settle
   }
 }
@@ -240,6 +241,26 @@ test('capture download keeps the frame identity even if navigation changes while
   resolve({ type: 'image/png' })
   await capture
   assert.deepEqual(downloads, ['camera-1.png'])
+})
+
+test('HLS capture writes PNG to clipboard first and downloads only if writing fails or is unavailable', async () => {
+  for (const outcome of ['success', 'failure', 'unavailable']) {
+    const { page, videos, downloads, window, navigator } = fixture()
+    const blob = { type: 'image/png' }
+    videos[0].captureFrame = async () => blob
+    const writes = []
+    window.ClipboardItem = class { constructor (data) { this.data = data } }
+    navigator.clipboard = { write: async items => {
+      writes.push(items)
+      if (outcome === 'failure') throw new Error('permission denied')
+    } }
+    if (outcome === 'unavailable') delete window.ClipboardItem
+    await page.captureImage(0)
+    assert.equal(writes.length, outcome === 'unavailable' ? 0 : 1)
+    if (writes.length) assert.equal(writes[0][0].data['image/png'], blob)
+    assert.deepEqual(downloads, outcome === 'success' ? [] : ['camera-0.png'])
+    assert.equal(page.captureError, '')
+  }
 })
 
 test('actual page/player roundtrip keeps source, identity, and play/pause aligned after switch failure and exit', async () => {
@@ -667,5 +688,5 @@ test('camera components expose narrowly scoped playback-intent wiring', async ()
   assert.match(read('src/pages/Cam4.vue'), /@go-to-camera="goToCamera\(\$event\)"/)
   assert.equal(read('src/components/WebcamItem.vue').match(/@playback-intent="\$emit\('playback-intent'\)"/g).length, 2)
   assert.match(read('src/components/VideoPlayer.vue'), /\$emit\('playback-intent'\); togglePlay\(\)/)
-  assert.equal(read('src/components/VideoYoutube.vue').match(/\$emit\('playback-intent'\)/g).length, 3)
+  assert.equal(read('src/components/VideoYoutube.vue').match(/\$emit\('playback-intent'\)/g).length, 6)
 })
