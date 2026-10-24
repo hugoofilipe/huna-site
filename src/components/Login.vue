@@ -88,6 +88,8 @@ body
     user-select: none
 
   input
+    // iOS Safari zooms the viewport on focus when an input is below 16px.
+    font-size: 16px
     border-radius: 3rem
     border: none
     padding: 10px
@@ -104,6 +106,9 @@ body
 
   input:active
     box-shadow: 0px 0px 8px -5px #000000
+
+  input:focus
+    outline: 2px solid #00704A
 
   #done
     background: lightgreen

@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="main-video-player">
-      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered"></video>
-      <div class="custom-controls q-pa-md q-gutter-sm row flex justify-center align-center">
+      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" playsinline webkit-playsinline></video>
+      <div class="custom-controls q-pa-md row flex justify-center align-center">
         <q-btn v-if="isFullscreen && computedHasPrevious" @click="$emit('previous-camera')" icon="skip_previous" label="Anterior" aria-label="Anterior" unelevated class="icon-only-mobile fullscreen-nav-btn" />
         <q-btn @click="$emit('playback-intent'); togglePlay()" :label="isPlaying ? 'pause' : 'play'" :aria-label="isPlaying ? 'Pausar' : 'Reproduzir'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile" />
         <q-btn @click="$emit('playback-intent'); restart()" icon="replay" label="restart" aria-label="Reiniciar" unelevated class="icon-only-mobile" />
-        <q-btn v-if="showFullscreenButton" @click="toggleFullscreen" :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" :aria-label="isFullscreen ? 'Sair de ecrã inteiro' : 'Ecrã inteiro'" flat dense />
+        <q-btn v-if="showFullscreenButton && fullscreenMode !== 'none'" @click="toggleFullscreen" :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" :aria-label="isFullscreen ? 'Sair de ecrã inteiro' : 'Ecrã inteiro'" flat dense />
         <q-btn :disable="sourceChanging" align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" aria-label="Copiar link" icon="link" @click="copyURL()">
           <q-tooltip class="bg-accent">Copiar link</q-tooltip>
         </q-btn>
@@ -14,6 +14,8 @@
         <q-btn v-if="captureEnabled" :disable="sourceChanging" icon="camera_alt" size="md" @click.stop.prevent="requestCapture" title="Capturar imagem" aria-label="Capturar imagem" />
         <q-btn v-if="isFullscreen && hasNext" @click="$emit('next-camera')" icon="skip_next" label="Próximo" aria-label="Próximo" unelevated class="icon-only-mobile fullscreen-nav-btn" />
       </div>
+      <div v-if="playbackError" role="alert" class="q-pa-sm">{{ playbackError }}</div>
+      <div v-if="fullscreenError" role="alert" class="q-pa-sm">{{ fullscreenError }}</div>
     </div>
 
     <q-dialog v-model="showDialog">
@@ -80,7 +82,7 @@ export default {
     getPlaybackIntent () {
       return this.sourceChanging ? this._sourcePlayIntent : !!(this.player && !this.player.paused())
     },
-    async play () {
+    async play (userInitiated = false) {
       const player = this.player
       if (!player || this._destroying) return
       if (this.sourceChanging) {
@@ -89,9 +91,11 @@ export default {
       }
       try {
         await player.play()
+        this.playbackError = ''
       } catch (e) {
         if (!this._destroying && this.player === player) {
           this.isPlaying = !player.paused()
+          if (userInitiated) this.playbackError = 'Não foi possível reproduzir esta câmara. Tenta novamente.'
           console.warn('Playback failed', e)
         }
       }
@@ -107,7 +111,7 @@ export default {
     },
     togglePlay () {
       if (this.getPlaybackIntent()) this.pause()
-      else this.play()
+      else this.play(true)
     },
     toProxy (orig) {
       if (!orig || typeof orig !== 'string') return orig
@@ -233,7 +237,7 @@ export default {
         await copyText(this.copiedUrl)
         this.showDialog = true
       } catch ($e) {
-        alert('Cannot copy')
+        alert('Não foi possível copiar o link.')
       }
     },
     requestCapture () {
@@ -258,18 +262,34 @@ export default {
     fullscreenElement () {
       return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
     },
+    nativeVideo () {
+      const tech = this.player && this.player.tech && this.player.tech()
+      return (tech && tech.el()) || this.$refs.videoPlayer
+    },
     async toggleFullscreen () {
       const wrapper = this.$el.querySelector('.main-video-player')
       if (!wrapper) return
+      this.fullscreenError = ''
       try {
-        if (this.fullscreenElement() === wrapper) {
+        if (this.fullscreenMode === 'native') {
+          const video = this.nativeVideo()
+          if (video && video.webkitSupportsFullscreen) {
+            // iPhone native video fullscreen cannot render our HTML navigation.
+            // Use OS playback controls there; keep camera selection inline.
+            video.controls = true
+            video.webkitEnterFullscreen()
+          } else throw new Error('native fullscreen unavailable')
+        } else if (this.fullscreenElement() === wrapper) {
           const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen
           if (exit) await exit.call(document)
         } else {
           const request = wrapper.requestFullscreen || wrapper.webkitRequestFullscreen || wrapper.mozRequestFullScreen || wrapper.msRequestFullscreen
           if (request) await request.call(wrapper)
+          else throw new Error('fullscreen unavailable')
         }
       } catch (e) {
+        if (this.fullscreenMode === 'native' && this.nativeVideo()) this.nativeVideo().controls = false
+        this.fullscreenError = 'Não foi possível abrir o ecrã inteiro. Podes continuar a ver o vídeo aqui.'
         console.warn('toggleFullscreen failed', e)
       }
     },
@@ -295,6 +315,9 @@ export default {
     return {
       player: null,
       showDialog: false,
+      playbackError: '',
+      fullscreenError: '',
+      fullscreenMode: 'none',
       copiedUrl: '',
       proxiedSrc: '',
       isFullscreen: false,
@@ -310,6 +333,15 @@ export default {
       fluid: true
     })
     this.player = videojs(this.$refs.videoPlayer, playerOpts)
+    const wrapper = this.$el.querySelector('.main-video-player')
+    const video = this.nativeVideo()
+    this.fullscreenMode = wrapper && (wrapper.requestFullscreen || wrapper.webkitRequestFullscreen || wrapper.mozRequestFullScreen || wrapper.msRequestFullscreen)
+      ? 'wrapper'
+      : video && video.webkitSupportsFullscreen && video.webkitEnterFullscreen ? 'native' : 'none'
+    if (video && video.addEventListener) {
+      this._onNativeFsEnd = () => { video.controls = false }
+      video.addEventListener('webkitendfullscreen', this._onNativeFsEnd)
+    }
     this.player.on('play', () => { this.isPlaying = true })
     this.player.on('pause', () => { this.isPlaying = false })
     this.player.on('ended', () => { this.isPlaying = false })
@@ -353,6 +385,8 @@ export default {
     for (const event of ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange']) {
       document.removeEventListener(event, this._onFs)
     }
+    const video = this.nativeVideo()
+    if (video && this._onNativeFsEnd) video.removeEventListener('webkitendfullscreen', this._onNativeFsEnd)
     if (this.player) {
       this.player.el().removeEventListener('dblclick', this._onDoubleClick, true)
       this.player.dispose()
@@ -392,6 +426,8 @@ export default {
   button, .q-btn
     white-space: nowrap
     flex: 0 0 auto
+    min-width: 44px
+    min-height: 44px
 
 @media (max-width: 640px)
   .custom-controls::-webkit-scrollbar
@@ -403,15 +439,14 @@ export default {
     position: relative
     bottom: -5px
   .custom-controls button, .custom-controls .q-btn .q-btn__wrapper
-    padding: 3px 6px
-    font-size: 10px
+    font-size: 12px
   .custom-controls .icon-only-mobile .q-icon,
   .custom-controls .social-btn .q-icon
     font-size: 18px !important
 
 @media (max-width: 950px)
   .is-fullscreen .video-js .vjs-tech
-    height: 100vh
+    height: 100%
   .custom-controls .icon-only-mobile .q-btn__content > span:not(.q-icon),
   .custom-controls .icon-only-mobile .q-btn__content > .q-btn__label,
   .custom-controls .icon-only-mobile .btn__label,
@@ -424,8 +459,9 @@ export default {
 
 .main-video-player.is-fullscreen .custom-controls
   position: absolute
-  bottom: 18px
+  bottom: max(18px, env(safe-area-inset-bottom))
   padding: 8px 12px
+  flex-wrap: wrap
 
 .main-video-player.is-fullscreen
   background: black

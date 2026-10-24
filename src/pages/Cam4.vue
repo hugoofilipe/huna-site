@@ -70,7 +70,7 @@ limpar erros
           :has-previous="hasCamera(index, -1)"
           :has-next="hasCamera(index, 1)"
           :displayed-camera="displayedCamera(index)"
-          @copy-url="showDialog = true; copyURL($event)"
+          @copy-url="copyURL($event)"
           @capture-image="captureImage"
           @previous-camera="navigateCamera($event, -1)"
           @next-camera="navigateCamera($event, 1)"
@@ -170,9 +170,9 @@ export default {
       try {
         this.copiedUrl = window.location.origin + this.$route.path + '#' + anchor
         await copyText(this.copiedUrl)
-        // this.toolbar = true
+        this.showDialog = true
       } catch ($e) {
-        alert('Cannot copy')
+        alert('Não foi possível copiar o link.')
       }
     },
     scrollHandler () {
