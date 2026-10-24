@@ -6,7 +6,18 @@
         max-width="100%"
     />
 
-    <div class="q-pa-md q-gutter-sm row item.centers ">
+    <!-- Camera-page controls match the HLS bottom menu; legacy consumers keep their existing controls. -->
+    <div v-if="cameraControls" class="custom-controls youtube-controls q-pa-md q-gutter-sm row flex justify-center align-center">
+      <q-btn @click="$emit('playback-intent'); handleClick('playVideo')" icon="play_arrow" label="play" aria-label="Reproduzir" unelevated class="icon-only-mobile" />
+      <q-btn @click="$emit('playback-intent'); handleClick('pauseVideo')" icon="pause" label="pause" aria-label="Pausar" unelevated class="icon-only-mobile" />
+      <q-btn @click="$emit('playback-intent'); restart()" icon="replay" label="restart" aria-label="Reiniciar" unelevated class="icon-only-mobile" />
+      <q-btn align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" aria-label="Copiar link" icon="link" @click="copyCameraURL">
+        <q-tooltip class="bg-accent">Copiar link</q-tooltip>
+      </q-btn>
+      <socialSharing :anchor="anchor" :title="title || anchor" :path="$route.path" position="bottom" class="icon-only-mobile" />
+      <q-btn icon="camera_alt" size="md" @click="showCaptureLimit = true" title="Capturar imagem" aria-label="Capturar imagem" />
+    </div>
+    <div v-else class="q-pa-md q-gutter-sm row item.centers ">
       <q-btn @click="$emit('playback-intent'); handleClick('playVideo')">Play</q-btn>
       <!-- <button @click="handleClick('stopVideo')">Stop</button> -->
       <q-btn @click="$emit('playback-intent'); handleClick('pauseVideo')">Pause</q-btn>
@@ -34,15 +45,27 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="showCaptureLimit" aria-label="Capturar imagem">
+      <q-card class="bg-white text-black q-pa-md" role="alertdialog" aria-labelledby="youtube-capture-title" aria-describedby="youtube-capture-message">
+        <q-card-section>
+          <div id="youtube-capture-title" class="text-h6">Capturar imagem</div>
+          <p id="youtube-capture-message">Não é possível capturar uma imagem deste vídeo do YouTube porque está incorporado de outro site.</p>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Entendi" color="black" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script>
 import { LazyYoutube } from 'vue-lazytube'
 import socialSharing from 'components/SocialSharing.vue'
+import { copyText } from 'src/utils/clipboard.mjs'
 
 export default {
-  name: 'VideoPlayer',
+  name: 'VideoYoutube',
   components: {
     LazyYoutube,
     socialSharing
@@ -56,7 +79,9 @@ export default {
     },
     src: [Number, String],
     type: [Number, String],
-    anchor: [Number, String]
+    anchor: [Number, String],
+    title: [String],
+    cameraControls: { type: Boolean, default: false }
   },
   methods: {
     play () {
@@ -75,6 +100,14 @@ export default {
     handleClick (event) {
       this.$refs.lazyVideo[event]()
     },
+    async copyCameraURL () {
+      try {
+        await copyText(window.location.origin + this.$route.path + '#' + this.anchor)
+        this.showDialog = true
+      } catch (e) {
+        alert('Cannot copy')
+      }
+    },
     async copyURL (anchor) {
       try {
         this.copiedUrl = 'www.huna.pt/cam#' + anchor
@@ -89,6 +122,7 @@ export default {
     return {
       player: null,
       showDialog: false,
+      showCaptureLimit: false,
       copiedUrl: ''
     }
   },
@@ -107,9 +141,20 @@ export default {
 
 <style lang="sass">
 .main-video-youtube
+  position: relative
+
+  .youtube-controls
+    position: absolute
+    bottom: -20px
 
   .q-btn
     background: #ffa5001c
+  .youtube-controls .q-btn
+    background: #ffa000
+@media (max-width: 640px)
+  .main-video-youtube .youtube-controls
+    position: relative
+    bottom: -5px
 .q-toolbar__title.ellipsis
   white-space: break-spaces
 
