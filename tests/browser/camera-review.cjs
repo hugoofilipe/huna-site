@@ -141,13 +141,14 @@ async function run (browser, viewport, mobile) {
     await page.evaluate(() => scrollTo(0, document.body.scrollHeight - innerHeight))
     await page.waitForFunction(() => document.querySelector('.camera-page').__vue__.$parent.cameraLayout.clearance === 0)
     await page.getByRole('button', { name: 'Abrir menu de câmaras', exact: true }).click()
-    await page.waitForFunction(() => Math.abs(document.querySelector('.sidebar .q-drawer').getBoundingClientRect().top) < 1)
+    await page.waitForFunction(() => Math.abs(document.querySelector('.sidebar .q-drawer').getBoundingClientRect().top - document.querySelector('.camera-page').__vue__.$parent.cameraLayout.clearance) < 1)
     await page.getByRole('button', { name: 'Fechar menu de câmaras', exact: true }).click()
 
     await page.setViewportSize({ width: 844, height: 390 })
-    await page.waitForFunction(() => document.querySelector('.camera-page').__vue__.$parent.cameraLayout.height === 0)
+    // Landscape keeps a compact toolbar now; a revealed header is measured.
+    await page.waitForFunction(() => document.querySelector('.camera-page').__vue__.$parent.cameraLayout.height > 0)
     await page.getByRole('button', { name: 'Abrir menu de câmaras', exact: true }).click()
-    await page.waitForFunction(() => Math.abs(document.querySelector('.sidebar .q-drawer').getBoundingClientRect().top) < 1)
+    await page.waitForFunction(() => Math.abs(document.querySelector('.sidebar .q-drawer').getBoundingClientRect().top - document.querySelector('.camera-page').__vue__.$parent.cameraLayout.clearance) < 1)
     await page.getByRole('button', { name: 'Fechar menu de câmaras', exact: true }).click()
     await page.setViewportSize({ width: 390, height: 400 })
     await page.evaluate(() => scrollTo(0, 0))

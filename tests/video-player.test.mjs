@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import compiler from 'vue-template-compiler'
 import { loadComponent } from './helpers/load-component.mjs'
 
-function fixture ({ playing = false, captureEnabled = false } = {}) {
+function fixture ({ playing = false, captureEnabled = false, wrapperFullscreen = true, nativeFullscreen = false, mobileAgent = false, screenOrientation = null } = {}) {
   const listeners = new Map()
   const timers = new Map()
   const copied = []
@@ -54,13 +54,22 @@ function fixture ({ playing = false, captureEnabled = false } = {}) {
     classList: { toggle () {} },
     requestFullscreen: async () => { document.fullscreenElement = wrapper }
   }
+  if (!wrapperFullscreen) delete wrapper.requestFullscreen
+  const nativeListeners = new Map()
+  const video = {
+    controls: false,
+    webkitSupportsFullscreen: nativeFullscreen,
+    webkitEnterFullscreen () { this.entered = true },
+    addEventListener: (name, fn) => nativeListeners.set(name, fn),
+    removeEventListener: name => nativeListeners.delete(name)
+  }
   const options = loadComponent('src/components/VideoPlayer.vue', {
     videojs: () => player,
     copyText: async value => copied.push(value),
     window: { location: { protocol: 'https:', origin: 'https://huna.pt' } },
     document,
-    navigator: { userAgent: 'desktop' },
-    screen: {},
+    navigator: { userAgent: mobileAgent ? 'iPhone' : 'desktop' },
+    screen: screenOrientation ? { orientation: screenOrientation } : {},
     setTimeout: fn => { const id = ++timerId; timers.set(id, fn); return id },
     clearTimeout: id => timers.delete(id)
   })
@@ -72,7 +81,7 @@ function fixture ({ playing = false, captureEnabled = false } = {}) {
     displayedCamera: null,
     captureEnabled,
     options: {},
-    $refs: { videoPlayer: {} },
+    $refs: { videoPlayer: video },
     $el: { querySelector: () => wrapper },
     $route: { path: '/cams' },
     $emit: (...args) => emitted.push(args)
@@ -93,6 +102,8 @@ function fixture ({ playing = false, captureEnabled = false } = {}) {
     emitted,
     domListeners,
     elementListeners,
+    nativeListeners,
+    video,
     document,
     expire () { for (const [id, fn] of [...timers]) { timers.delete(id); fn() } },
     destroy () { options.beforeDestroy.call(component) }
@@ -326,6 +337,61 @@ test('native fullscreen exit events (including Escape) emit the same restoration
     assert.deepEqual(f.emitted.map(event => event[1].isFullscreen), [true, false])
     assert.equal(f.player.paused(), false)
   }
+})
+
+test('fullscreen capability uses native iPhone video controls or stays inline when unavailable', async () => {
+  const native = fixture({ wrapperFullscreen: false, nativeFullscreen: true, playing: true })
+  assert.equal(native.component.fullscreenMode, 'native')
+  await native.component.toggleFullscreen()
+  assert.equal(native.video.entered, true)
+  assert.equal(native.video.controls, true)
+  assert.deepEqual(native.emitted, [], 'native fullscreen does not expose HTML camera navigation')
+  native.nativeListeners.get('webkitendfullscreen')()
+  assert.equal(native.video.controls, false)
+  assert.equal(native.player.paused(), false)
+  native.destroy()
+  assert.equal(native.nativeListeners.size, 0)
+
+  const inline = fixture({ wrapperFullscreen: false })
+  assert.equal(inline.component.fullscreenMode, 'none')
+  await inline.component.toggleFullscreen()
+  assert.equal(inline.video.entered, undefined)
+  inline.destroy()
+})
+
+test('native fullscreen rejection restores inline controls; denied user playback has honest feedback', async () => {
+  const f = fixture({ wrapperFullscreen: false, nativeFullscreen: true })
+  f.video.webkitEnterFullscreen = () => { throw new Error('denied') }
+  const originalWarn = console.warn
+  console.warn = () => {}
+  try {
+    await f.component.toggleFullscreen()
+    assert.equal(f.video.controls, false)
+    assert.match(f.component.fullscreenError, /Não foi possível abrir/)
+    f.player.play = () => Promise.reject(new Error('gesture denied'))
+    await f.component.play(true)
+    assert.match(f.component.playbackError, /Não foi possível reproduzir/)
+    f.player.play = () => Promise.resolve()
+    await f.component.play(true)
+    assert.equal(f.component.playbackError, '')
+  } finally {
+    console.warn = originalWarn
+    f.destroy()
+  }
+})
+
+test('rejected orientation lock does not interrupt fullscreen exit and cleanup', async () => {
+  let unlocked = 0
+  const f = fixture({ mobileAgent: true, screenOrientation: { lock: () => Promise.reject(new Error('denied')), unlock: () => { unlocked++ } } })
+  await f.component.toggleFullscreen()
+  f.component._onFs()
+  await Promise.resolve()
+  await f.component.toggleFullscreen()
+  f.component._onFs()
+  assert.equal(unlocked, 1)
+  assert.deepEqual(f.emitted.map(event => event[1].isFullscreen), [true, false])
+  f.destroy()
+  assert.equal(f.domListeners.size, 0)
 })
 
 test('displayed identity drives copy/share; capability and loading gate capture', async () => {

@@ -1,7 +1,7 @@
 <template>
     <div>
         <q-header class=" bg-black"  elevated reveal>
-            <q-toolbar class="lt-md q-my-sm menu_mobile orientation-portrait">
+            <q-toolbar class="lt-md q-my-sm menu_mobile">
               <q-btn
                   flat
                   dense
@@ -169,6 +169,14 @@
   .menu_mobile
     span
       font-size: 20px
+  // Keep navigation available after rotation without using half the short viewport.
+  @media (orientation: landscape) and (max-height: 500px)
+    .menu_mobile
+      margin-top: 0
+      margin-bottom: 0
+      .q-avatar
+        width: 48px !important
+        height: 48px !important
   .menu_drawer
     font-size: 1.5rem
     font-weight: 400
