@@ -12,7 +12,8 @@
     "test:browser:iphone": "node tests/browser/iphone-layout.cjs",
     "test:browser:cache": "node tests/browser/camera-cache.cjs",
     "generate:journey": "python3 scripts/generate_journey.py",
-    "build": "sh ./scripts/build_deploy.sh"
+    "build": "sh ./scripts/build_deploy.sh",
+    "build:local": "sh ./scripts/build_pwa.sh"
   },
   "dependencies": {
     "@quasar/extras": "^1.12.2",

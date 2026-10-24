@@ -81,6 +81,12 @@ Generation is local only: it does not build, merge, tag, push, or deploy anythin
 **Do not use `npm run build` just to generate the image**: that command also
 publishes the PWA build to `deploy_dev`.
 
+## Build without deploying
+
+Run `npm run build:local` to build the PWA into `dist/pwa` without committing,
+pushing, or deploying. This also works in a Git worktree with dependencies installed.
+`npm run build` still builds and publishes to `deploy_dev`.
+
 # Versions
 - yarn: 1.22.19
 - node: v12.22.9
