@@ -35,6 +35,11 @@ limpar erros
       @update:expanded-item="expandedItem = $event"
     />
     <q-page-container>
+      <div v-if="linksLoading" class="q-pa-md" role="status">A carregar câmaras…</div>
+      <div v-if="linksError" class="q-pa-md" role="alert">
+        {{ linksError }}
+        <q-btn flat no-caps label="Tentar novamente" :disable="linksLoading" @click="getLinks" />
+      </div>
       <div v-if="captureError" class="q-pa-md" role="alert">{{ captureError }}</div>
       <div v-if="cameraSwitchError" class="q-pa-md" role="alert">{{ cameraSwitchError }}</div>
       <div v-if="showWeather" class="weather-widget q-pa-md">
@@ -111,7 +116,7 @@ limpar erros
 <script>
 import WebcamItem from 'components/WebcamItem.vue'
 import WebcamSidebar from 'components/WebcamSidebar.vue'
-import axios from 'axios'
+import { loadCameraLinks } from 'src/utils/camera-links.mjs'
 import { loadWeatherWidget } from 'src/utils/weather-widget.mjs'
 import { findCamera } from 'src/utils/camera-navigation.mjs'
 import { copyText } from 'src/utils/clipboard.mjs'
@@ -132,15 +137,26 @@ export default {
   },
   methods: {
     async getLinks () {
+      // This is mount/retry only: never replace index-based playback state in a loaded page.
+      if (this.cameraDisposed || this.webcamsLoaded) return
+      if (this._linksRequest) this._linksRequest.abort()
+      const request = new AbortController()
+      this._linksRequest = request
+      this.linksLoading = true
+      this.linksError = ''
       try {
-        const response = await axios.get(this.url_links)
-        if (this.cameraDisposed) return
-        this.webcams = response.data
+        const cameras = await loadCameraLinks(this.url_links, { signal: request.signal })
+        if (this.cameraDisposed || this._linksRequest !== request) return
+        this.webcams = cameras
         this.webcamsLoaded = true
-        console.log(this.webcams)
         this.resumePendingDeepLink()
       } catch (error) {
-        console.log('[foo] Something is wrong with urllinks.json file: ', error)
+        if (!this.cameraDisposed && this._linksRequest === request) this.linksError = 'Não foi possível carregar as câmaras. Tenta novamente.'
+      } finally {
+        if (!this.cameraDisposed && this._linksRequest === request) {
+          this.linksLoading = false
+          this._linksRequest = null
+        }
       }
     },
     iconSelect (type) {
@@ -501,6 +517,7 @@ export default {
   },
   beforeDestroy () {
     this.cameraDisposed = true
+    if (this._linksRequest) this._linksRequest.abort()
     this.cancelDeepLink()
     this.cancelNavigation()
     window.removeEventListener('resize', this.isMobile)
@@ -548,6 +565,8 @@ export default {
       deepLinkId: 0,
       pendingDeepLink: null,
       webcamsLoaded: false,
+      linksLoading: false,
+      linksError: '',
       fsRestoring: false,
       cameraDisposed: false,
       key: 0,

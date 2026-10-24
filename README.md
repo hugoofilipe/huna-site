@@ -96,7 +96,11 @@ publishes the PWA build to `deploy_dev`.
 - Não esqueçer que vai para ao 2021.huna.pt
 
 # Update url webcam links list
-- https://api.huna.pt/links3.json 
+- The runtime source for `/cam` and `/caparica` is **https://api.huna.pt/urllinks.json**, loaded by `src/pages/Cam4.vue`. `links3.json` is not this page's source.
+- The root `urllinks.json` in this repository is a **backup only**. Editing it or deploying frontend assets does not publish API-data updates. The API operator must update the file actually served by the API host and verify a known changed field there.
+- A camera-page mount/reload requests the current list with `fetch(..., { cache: 'no-store' })`, with a 15-second deadline and structure validation. A failed request shows an error and **Tentar novamente**; no offline/stale-list fallback is supplied.
+- An already-open camera page retains its loaded list until remount/reload. There is deliberately no polling, tab-resume refresh, or automatic replacement during playback/fullscreen. Hash navigation does not reload the list.
+- Frontend fixes still need an approved PWA release through the workflow above. Do not clear users' storage as the update procedure. See [camera-list freshness operations and validation](docs/camera-link-freshness.md) for external HTTP policies, safe local tests, and the release checklist.
 
 # Task's to do..
 - Create docker contanier with node, vue and quasar
