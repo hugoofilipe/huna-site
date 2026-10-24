@@ -116,7 +116,8 @@ module.exports = function (/* ctx */) {
       // ],
 
       // Quasar plugins
-      plugins: ['Meta']
+      // Keep dialog portals inside the active fullscreen camera wrapper.
+      plugins: ['Meta', 'AppFullscreen']
     },
 
     // animations: 'all', // --- includes all animations
