@@ -1,6 +1,6 @@
 {
   "name": "Huna",
-  "version": "1.3.1",
+  "version": "1.3.3",
   "description": "huna website",
   "productName": "Huna Digital",
   "author": "hugo filipe",
@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue ./",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node tests/browser/camera-review.cjs",
+    "test:browser:cache": "node tests/browser/camera-cache.cjs",
     "generate:journey": "python3 scripts/generate_journey.py",
     "build": "sh ./scripts/build_deploy.sh"
   },

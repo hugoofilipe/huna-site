@@ -9,14 +9,16 @@ register(process.env.SERVICE_WORKER_FILE, {
   // to ServiceWorkerContainer.register()
   // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#Parameter
 
-  // registrationOptions: { scope: './' },
+  // Check the worker over the network, independently of the app's asset cache.
+  registrationOptions: { updateViaCache: 'none' },
 
   ready (/* registration */) {
     // console.log('Service worker is active.')
   },
 
-  registered (/* registration */) {
-    // console.log('Service worker has been registered.')
+  registered (registration) {
+    // One check per page load; never reload a page or interrupt camera playback.
+    registration.update().catch(() => { /* Offline: retain the installed asset worker. */ })
   },
 
   cached (/* registration */) {
@@ -37,14 +39,5 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   error (/* err */) {
     // console.error('Error during service worker registration:', err)
-  },
-  forceSWupdate () {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function (registrations) {
-        for (const registration of registrations) {
-          registration.update()
-        }
-      })
-    }
   }
 })

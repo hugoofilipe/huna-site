@@ -36,7 +36,8 @@ function fixture ({ queued = false, types = [] } = {}) {
     disconnect () { this.disconnected = true }
   }
   const options = loadComponent('src/pages/Cam4.vue', {
-    WebcamItem: {}, WebcamSidebar: {}, axios: { get: () => new Promise((resolve, reject) => requests.push({ resolve, reject })) },
+    WebcamItem: {}, WebcamSidebar: {}, AbortController,
+    loadCameraLinks: (url, options) => new Promise((resolve, reject) => requests.push({ url, options, resolve: response => resolve(response.data), reject })),
     findCamera, loadWeatherWidget: async () => {}, copyText: async () => {}, isCaparicaPath, cameraAnchorFromHash,
     document, window, ResizeObserver, navigator, URL: { createObjectURL: () => 'blob:frame', revokeObjectURL () {} },
     setTimeout: (fn, delay) => { const id = {}; timers.set(id, fn); timerDelays.set(id, delay); return id }, clearTimeout: id => timers.delete(id)
@@ -513,6 +514,61 @@ test('destruction before data arrives discards the response', async () => {
   await load
   assert.equal(page.webcams.length, 0)
   assert.equal(page.webcamsLoaded, false)
+  assert.equal(requests[0].options.signal.aborted, true)
+})
+
+test('initial failure exposes retry, then fresh data resumes the original deep link', async () => {
+  const { page, cameras, requests, load, flushTicks, videos } = await deepLink('#camera-1')
+  assert.equal(page.linksLoading, true)
+  assert.equal(requests[0].url, page.url_links)
+  requests[0].reject(new Error('Offline'))
+  await load
+  assert.equal(page.linksLoading, false)
+  assert.ok(page.linksError)
+  assert.equal(page.webcamsLoaded, false)
+  assert.equal(page.webcams.length, 0)
+  const retry = page.getLinks()
+  assert.equal(page.linksError, '')
+  const fresh = cameras.map(camera => ({ ...camera, src: camera.src + '-B' }))
+  requests[1].resolve({ data: fresh })
+  await retry
+  flushTicks()
+  assert.equal(page.linksLoading, false)
+  assert.equal(page.linksError, '')
+  assert.equal(page.webcams[1].src, 'feed-1-B')
+  assert.equal(videos[1].playCalls, 1)
+  await page.getLinks()
+  assert.equal(requests.length, 2, 'a loaded page is not refreshed during playback')
+})
+
+test('superseded camera loads cannot commit data, errors or loading state', async () => {
+  for (const lateFailure of [false, true]) {
+    const { page, cameras, requests, load, flushTicks } = await deepLink('#camera-1')
+    const retry = page.getLinks()
+    assert.equal(requests[0].options.signal.aborted, true)
+    if (lateFailure) requests[0].reject(new Error('Old failure'))
+    else requests[0].resolve({ data: cameras })
+    await load
+    assert.equal(page.webcams.length, 0)
+    assert.equal(page.linksLoading, true)
+    assert.equal(page.linksError, '')
+    requests[1].resolve({ data: cameras.map(camera => ({ ...camera, title: 'Fresh B' })) })
+    await retry
+    flushTicks()
+    assert.equal(page.webcams[0].title, 'Fresh B')
+  }
+})
+
+test('destruction ignores late errors and makes further retries inert', async () => {
+  const { page, options, requests, load } = await deepLink('#camera-1')
+  options.beforeDestroy.call(page)
+  const state = { loading: page.linksLoading, error: page.linksError }
+  requests[0].reject(new Error('Late failure'))
+  await load
+  assert.equal(page.linksLoading, state.loading)
+  assert.equal(page.linksError, state.error)
+  await page.getLinks()
+  assert.equal(requests.length, 1)
 })
 
 test('intentional camera navigation cancels a pending deep link', async () => {
