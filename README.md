@@ -86,7 +86,7 @@ publishes the PWA build to `deploy_dev`.
 - node: v12.22.9
 - quasar: 2.4.3
 - npm: 8.5.11
-- huna-site: 0.0.1
+- huna-site: 1.3.3
 
 # Deploy in prod
 - versionar (alterar em footer.vue)
