@@ -1,7 +1,7 @@
 <template>
   <span>
-    <q-btn v-if="position === 'top'" push round color="white" size="xl" icon="whatsapp" aria-label="Partilhar no WhatsApp" @click="prepareShare" />
-    <q-btn v-else-if="position === 'bottom'" align="around" text-color="black" class="btn-fixed-width social-btn" label="whatsapp" aria-label="Partilhar no WhatsApp" icon="whatsapp" @click="prepareShare" />
+    <q-btn v-if="position === 'top'" push round color="white" size="xl" icon="fab fa-whatsapp" aria-label="Partilhar no WhatsApp" @click="prepareShare" />
+    <q-btn v-else-if="position === 'bottom'" align="around" text-color="black" class="btn-fixed-width social-btn" label="whatsapp" aria-label="Partilhar no WhatsApp" icon="fab fa-whatsapp" @click="prepareShare" />
     <q-dialog v-model="showDialog" :persistent="sharing" @hide="clearShare">
       <q-card class="bg-white text-black q-pa-md" style="width: 480px; max-width: 90vw;">
         <q-card-section>

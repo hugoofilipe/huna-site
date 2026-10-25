@@ -150,11 +150,13 @@ test('share dialog compiles, removes the old warning and uses the displayed HLS 
   const social = compiler.parseComponent(readFileSync(new URL('../src/components/SocialSharing.vue', import.meta.url), 'utf8'))
   assert.deepEqual(compiler.compile(social.template.content).errors, [])
   assert.ok(!social.template.content.includes('Atenção'))
+  assert.equal((social.template.content.match(/icon="fab fa-whatsapp"/g) || []).length, 2, 'both WhatsApp buttons use the available brand icon')
   const player = readFileSync(new URL('../src/components/VideoPlayer.vue', import.meta.url), 'utf8')
   assert.match(player, /:capture-frame="captureEnabled \? captureFrame : null"/)
   assert.match(player, /:anchor="displayedAnchor" :title="displayedTitle"/)
   assert.match(player, /crossorigin="anonymous"/)
   const config = readFileSync(new URL('../quasar.conf.js', import.meta.url), 'utf8')
+  assert.ok(config.includes("'fontawesome-v5'"), 'WhatsApp brand font is loaded')
   assert.match(config, /plugins: \['Meta', 'AppFullscreen'\]/, 'Quasar must place the share dialog inside the fullscreen element')
 })
 
