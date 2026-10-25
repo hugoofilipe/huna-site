@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="main-video-player">
-      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" playsinline webkit-playsinline></video>
+      <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" crossorigin="anonymous" playsinline webkit-playsinline></video>
       <div class="custom-controls q-pa-md row flex justify-center align-center">
         <q-btn v-if="isFullscreen && computedHasPrevious" @click="$emit('previous-camera')" icon="skip_previous" label="Anterior" aria-label="Anterior" unelevated class="icon-only-mobile fullscreen-nav-btn" />
         <q-btn @click="$emit('playback-intent'); togglePlay()" :label="isPlaying ? 'pause' : 'play'" :aria-label="isPlaying ? 'Pausar' : 'Reproduzir'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile" />
@@ -10,7 +10,7 @@
         <q-btn :disable="sourceChanging" align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" aria-label="Copiar link" icon="link" @click="copyURL()">
           <q-tooltip class="bg-accent">Copiar link</q-tooltip>
         </q-btn>
-        <socialSharing v-if="!sourceChanging" :anchor="displayedAnchor" :title="displayedTitle" :path="$route.path" position="bottom" class="icon-only-mobile" />
+        <socialSharing v-if="!sourceChanging" :anchor="displayedAnchor" :title="displayedTitle" :path="$route.path" :capture-frame="captureEnabled ? captureFrame : null" position="bottom" class="icon-only-mobile" />
         <q-btn v-if="captureEnabled" :disable="sourceChanging" icon="camera_alt" size="md" @click.stop.prevent="requestCapture" title="Capturar imagem" aria-label="Capturar imagem" />
         <q-btn v-if="isFullscreen && hasNext" @click="$emit('next-camera')" icon="skip_next" label="Próximo" aria-label="Próximo" unelevated class="icon-only-mobile fullscreen-nav-btn" />
       </div>
@@ -248,10 +248,10 @@ export default {
       try {
         const tech = this.player && this.player.tech()
         const htmlVideo = (tech && tech.el()) || this.$refs.videoPlayer
-        if (!htmlVideo) return null
+        if (!htmlVideo || htmlVideo.readyState < 2 || !htmlVideo.videoWidth || !htmlVideo.videoHeight) return null
         const canvas = document.createElement('canvas')
-        canvas.width = htmlVideo.videoWidth || htmlVideo.clientWidth || 640
-        canvas.height = htmlVideo.videoHeight || htmlVideo.clientHeight || 360
+        canvas.width = htmlVideo.videoWidth
+        canvas.height = htmlVideo.videoHeight
         canvas.getContext('2d').drawImage(htmlVideo, 0, 0, canvas.width, canvas.height)
         return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
       } catch (e) {

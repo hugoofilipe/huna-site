@@ -14,7 +14,7 @@
       <q-btn align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" aria-label="Copiar link" icon="link" @click="copyCameraURL">
         <q-tooltip class="bg-accent">Copiar link</q-tooltip>
       </q-btn>
-      <socialSharing :anchor="anchor" :title="title || anchor" :path="$route.path" position="bottom" class="icon-only-mobile" />
+      <socialSharing :anchor="anchor" :title="title || anchor" :path="$route.path" capture-unavailable-message="Não é possível capturar uma imagem deste vídeo do YouTube porque está incorporado de outro site." position="bottom" class="icon-only-mobile" />
       <q-btn icon="camera_alt" size="md" @click="showCaptureLimit = true" title="Capturar imagem" aria-label="Capturar imagem" />
     </div>
     <div v-else class="q-pa-md q-gutter-sm row item.centers ">
