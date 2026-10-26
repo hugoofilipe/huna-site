@@ -4,7 +4,7 @@ import { findCamera } from '../src/utils/camera-navigation.mjs'
 import { isCaparicaPath, cameraAnchorFromHash } from '../src/utils/camera-route.mjs'
 import { loadComponent } from './helpers/load-component.mjs'
 
-function fixture ({ queued = false, types = [] } = {}) {
+function fixture ({ queued = false, types = [], adPopup = false } = {}) {
   const cameras = [0, 1, 2, 3, 4].slice(0, Math.max(3, types.length)).map(index => ({
     anchor: 'camera-' + index, title: 'Camera ' + index, src: 'feed-' + index, type: types[index] || 'application/x-mpegURL'
   }))
@@ -25,7 +25,7 @@ function fixture ({ queued = false, types = [] } = {}) {
     createElement: () => ({ click () { downloads.push(this.download) } })
   }
   const window = {
-    innerHeight: 500, pageYOffset: 20, scrollTo: value => scrolls.push(value), removeEventListener () {},
+    innerHeight: 500, pageYOffset: 20, scrollTo: value => scrolls.push(value), addEventListener () {}, removeEventListener () {},
     requestAnimationFrame: fn => { const id = {}; frames.set(id, fn); return id },
     cancelAnimationFrame: id => frames.delete(id)
   }
@@ -36,7 +36,7 @@ function fixture ({ queued = false, types = [] } = {}) {
     disconnect () { this.disconnected = true }
   }
   const options = loadComponent('src/pages/Cam4.vue', {
-    WebcamItem: {}, WebcamSidebar: {}, AbortController,
+    WebcamItem: {}, WebcamSidebar: {}, AbortController, features: { realEstateAdPopup: adPopup },
     loadCameraLinks: (url, options) => new Promise((resolve, reject) => requests.push({ url, options, resolve: response => resolve(response.data), reject })),
     findCamera, loadWeatherWidget: async () => {}, copyText: async () => {}, isCaparicaPath, cameraAnchorFromHash,
     document, window, ResizeObserver, navigator, URL: { createObjectURL: () => 'blob:frame', revokeObjectURL () {} },
@@ -745,4 +745,72 @@ test('camera components expose narrowly scoped playback-intent wiring', async ()
   assert.equal(read('src/components/WebcamItem.vue').match(/@playback-intent="\$emit\('playback-intent'\)"/g).length, 2)
   assert.match(read('src/components/VideoPlayer.vue'), /\$emit\('playback-intent'\); togglePlay\(\)/)
   assert.equal(read('src/components/VideoYoutube.vue').match(/\$emit\('playback-intent'\)/g).length, 6)
+})
+
+const adTimer = ({ timers, timerDelays }) => [...timers.keys()].filter(id => timerDelays.get(id) === 10000)
+
+test('the real-estate popup stays off unless its switch is a literal true', () => {
+  for (const value of [false, 'true', 'false', 1, null, undefined]) {
+    const context = fixture({ adPopup: value })
+    assert.equal(context.page.realEstateAdPopup, false, String(value))
+    context.options.mounted.call(context.page)
+    assert.equal(adTimer(context).length, 0, String(value))
+    context.page.onFullscreenChange({ index: 0, isFullscreen: true })
+    context.page.onFullscreenChange({ index: 0, isFullscreen: false })
+    assert.equal(context.page.showAdDialog, false, String(value))
+  }
+  assert.equal(fixture({ adPopup: true }).page.realEstateAdPopup, true)
+})
+
+test('an enabled real-estate popup opens 10 seconds after the page mounts', () => {
+  const context = fixture({ adPopup: true })
+  context.options.mounted.call(context.page)
+  const [timer, ...others] = adTimer(context)
+  assert.ok(timer)
+  assert.equal(others.length, 0)
+  assert.equal(context.page.showAdDialog, false)
+  context.timers.get(timer)()
+  assert.equal(context.page.showAdDialog, true)
+  assert.equal(context.page._adTimer, null)
+})
+
+test('the real-estate popup waits for a fullscreen camera to end instead of covering it', () => {
+  const context = fixture({ adPopup: true })
+  const { page } = context
+  context.options.mounted.call(page)
+  page.onFullscreenChange({ index: 0, isFullscreen: true })
+  context.timers.get(adTimer(context)[0])()
+  assert.equal(page.showAdDialog, false)
+  assert.equal(page.adPopupPending, true)
+  page.onFullscreenChange({ index: 0, isFullscreen: false })
+  assert.equal(page.showAdDialog, true)
+  assert.equal(page.adPopupPending, false)
+})
+
+test('leaving fullscreen opens nothing when the popup is not waiting', () => {
+  const { page, options } = fixture({ adPopup: true })
+  options.mounted.call(page)
+  page.onFullscreenChange({ index: 0, isFullscreen: true })
+  page.onFullscreenChange({ index: 0, isFullscreen: false })
+  assert.equal(page.showAdDialog, false)
+})
+
+test('destroying the page cancels the real-estate popup, even after a late callback', () => {
+  const context = fixture({ adPopup: true })
+  const { page, options } = context
+  options.mounted.call(page)
+  const [timer] = adTimer(context)
+  options.beforeDestroy.call(page)
+  assert.equal(context.timers.has(timer), false)
+  page.openAdPopup()
+  assert.equal(page.showAdDialog, false)
+  assert.equal(page.adPopupPending, false)
+})
+
+test('the page mounts the popup only behind its switch, using the shared feature config', async () => {
+  const { readFileSync } = await import('node:fs')
+  const source = readFileSync(new URL('../src/pages/Cam4.vue', import.meta.url), 'utf8')
+  assert.match(source, /<ad-dialog v-if="realEstateAdPopup" v-model="showAdDialog" :mobile="mobile" \/>/)
+  assert.match(source, /import \{ features \} from 'src\/config\/features\.mjs'/)
+  assert.match(source, /realEstateAdPopup: features\.realEstateAdPopup === true/)
 })
