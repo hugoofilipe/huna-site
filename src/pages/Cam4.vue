@@ -97,6 +97,8 @@ limpar erros
         </q-card>
       </q-dialog>
 
+      <ad-dialog v-if="realEstateAdPopup" v-model="showAdDialog" :mobile="mobile" />
+
       <q-page-sticky position="bottom-right" :offset="[4, 12]">
         <div class="q-mini-drawer-hide">
           <q-btn
@@ -114,8 +116,10 @@ limpar erros
 </template>
 
 <script>
+import AdDialog from 'components/AdDialog.vue'
 import WebcamItem from 'components/WebcamItem.vue'
 import WebcamSidebar from 'components/WebcamSidebar.vue'
+import { features } from 'src/config/features.mjs'
 import { loadCameraLinks } from 'src/utils/camera-links.mjs'
 import { loadWeatherWidget } from 'src/utils/weather-widget.mjs'
 import { findCamera } from 'src/utils/camera-navigation.mjs'
@@ -125,10 +129,12 @@ import { isCaparicaPath, cameraAnchorFromHash } from 'src/utils/camera-route.mjs
 const DEEP_LINK_READY_FRAMES = 10
 const POSITION_CORRECTION_MS = 5000
 const POSITION_TOLERANCE = 2
+const AD_POPUP_DELAY_MS = 10000
 
 export default {
   name: 'Cam4',
   components: {
+    AdDialog,
     WebcamItem,
     WebcamSidebar
   },
@@ -423,6 +429,10 @@ export default {
           this.fsRestoring = false
           this.resumePendingDeepLink()
         })
+        if (this.adPopupPending) {
+          this.adPopupPending = false
+          this.showAdDialog = true
+        }
       }
     },
     navigateCamera (index, step) {
@@ -499,6 +509,16 @@ export default {
       } catch (error) {
         this.weatherWidgetError = true
       }
+    },
+    openAdPopup () {
+      this._adTimer = null
+      if (this.cameraDisposed) return
+      // Never cover a camera in fullscreen: onFullscreenChange shows it afterwards.
+      if (this.fsComponentIndex >= 0) {
+        this.adPopupPending = true
+        return
+      }
+      this.showAdDialog = true
     }
   },
   created () {
@@ -514,9 +534,11 @@ export default {
     window.addEventListener('wheel', this.onNavigationInput, { passive: true })
     window.addEventListener('touchstart', this.onNavigationInput, { passive: true })
     window.addEventListener('keydown', this.onNavigationInput)
+    if (this.realEstateAdPopup) this._adTimer = setTimeout(this.openAdPopup, AD_POPUP_DELAY_MS)
   },
   beforeDestroy () {
     this.cameraDisposed = true
+    clearTimeout(this._adTimer)
     if (this._linksRequest) this._linksRequest.abort()
     this.cancelDeepLink()
     this.cancelNavigation()
@@ -551,6 +573,9 @@ export default {
   data () {
     return {
       showDialog: false,
+      realEstateAdPopup: features.realEstateAdPopup === true,
+      showAdDialog: false,
+      adPopupPending: false,
       weatherWidgetError: false,
       captureError: '',
       cameraSwitchError: '',
