@@ -45,8 +45,16 @@ export default {
     }
   },
   computed: {
+    dialogActive () {
+      return this.showDialog || this.preparing || this.sharing
+    },
     whatsappUrl () {
       return 'https://wa.me/?text=' + encodeURIComponent(this.shareText)
+    }
+  },
+  watch: {
+    dialogActive (active) {
+      this.$emit('dialog-activity', active)
     }
   },
   methods: {
@@ -107,6 +115,7 @@ export default {
   },
   beforeDestroy () {
     this.clearShare()
+    this.$emit('dialog-activity', false)
   }
 }
 </script>

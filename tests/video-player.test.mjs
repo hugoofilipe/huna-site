@@ -4,13 +4,16 @@ import { readFileSync } from 'node:fs'
 import compiler from 'vue-template-compiler'
 import { loadComponent } from './helpers/load-component.mjs'
 
-function fixture ({ playing = false, captureEnabled = false, wrapperFullscreen = true, nativeFullscreen = false, mobileAgent = false, screenOrientation = null } = {}) {
+function fixture ({ playing = false, captureEnabled = false, fullscreenControlsAutoHide = false, wrapperFullscreen = true, nativeFullscreen = false, mobileAgent = false, screenOrientation = null } = {}) {
   const listeners = new Map()
   const timers = new Map()
   const copied = []
   const emitted = []
   const domListeners = new Map()
   const elementListeners = new Map()
+  const wrapperListeners = new Map()
+  const windowListeners = new Map()
+  const delays = new Map()
   let timerId = 0
   const player = {
     source: null,
@@ -18,6 +21,7 @@ function fixture ({ playing = false, captureEnabled = false, wrapperFullscreen =
     sourceCalls: [],
     playCalls: 0,
     loadCalls: 0,
+    pauseCalls: 0,
     disposed: false,
     on (name, fn) {
       if (!listeners.has(name)) listeners.set(name, new Set())
@@ -29,7 +33,7 @@ function fixture ({ playing = false, captureEnabled = false, wrapperFullscreen =
     currentSource () { return this.source },
     load () { this.loadCalls++ },
     paused () { return this.pausedState },
-    pause () { this.pausedState = true; this.emit('pause') },
+    pause () { this.pauseCalls++; this.pausedState = true; this.emit('pause') },
     play () {
       this.playCalls++
       this.pausedState = false
@@ -51,26 +55,42 @@ function fixture ({ playing = false, captureEnabled = false, wrapperFullscreen =
     exitFullscreen: async () => { document.fullscreenElement = null }
   }
   const wrapper = {
+    focus () {
+      document.activeElement = wrapper
+      wrapperListeners.get('focusin')?.()
+    },
+    addEventListener: (name, fn) => wrapperListeners.set(name, fn),
+    removeEventListener: name => wrapperListeners.delete(name),
+    contains: target => [wrapper, video, controls, button, dialog].includes(target),
+    closest: () => null,
     classList: { toggle () {} },
     requestFullscreen: async () => { document.fullscreenElement = wrapper }
   }
   if (!wrapperFullscreen) delete wrapper.requestFullscreen
   const nativeListeners = new Map()
   const video = {
+    closest: () => null,
     controls: false,
     webkitSupportsFullscreen: nativeFullscreen,
     webkitEnterFullscreen () { this.entered = true },
     addEventListener: (name, fn) => nativeListeners.set(name, fn),
     removeEventListener: name => nativeListeners.delete(name)
   }
+  const button = { closest: () => controls }
+  const dialog = { closest: () => dialog }
+  const controls = { contains: target => target === button, closest: () => controls }
   const options = loadComponent('src/components/VideoPlayer.vue', {
     videojs: () => player,
     copyText: async value => copied.push(value),
-    window: { location: { protocol: 'https:', origin: 'https://huna.pt' } },
+    window: {
+      location: { protocol: 'https:', origin: 'https://huna.pt' },
+      addEventListener: (name, fn) => windowListeners.set(name, fn),
+      removeEventListener: name => windowListeners.delete(name)
+    },
     document,
     navigator: { userAgent: mobileAgent ? 'iPhone' : 'desktop' },
     screen: screenOrientation ? { orientation: screenOrientation } : {},
-    setTimeout: fn => { const id = ++timerId; timers.set(id, fn); return id },
+    setTimeout: (fn, delay) => { const id = ++timerId; timers.set(id, fn); delays.set(id, delay); return id },
     clearTimeout: id => timers.delete(id)
   })
   const component = {
@@ -80,11 +100,13 @@ function fixture ({ playing = false, captureEnabled = false, wrapperFullscreen =
     anchor: 'original',
     displayedCamera: null,
     captureEnabled,
+    fullscreenControlsAutoHide,
     options: {},
-    $refs: { videoPlayer: video },
+    $refs: { videoPlayer: video, controls },
     $el: { querySelector: () => wrapper },
     $route: { path: '/cams' },
-    $emit: (...args) => emitted.push(args)
+    $emit: (...args) => emitted.push(args),
+    $nextTick: fn => Promise.resolve().then(fn)
   }
   for (const [name, fn] of Object.entries(options.methods)) component[name] = fn.bind(component)
   for (const [name, fn] of Object.entries(options.computed)) {
@@ -103,12 +125,266 @@ function fixture ({ playing = false, captureEnabled = false, wrapperFullscreen =
     domListeners,
     elementListeners,
     nativeListeners,
+    wrapperListeners,
+    windowListeners,
+    wrapper,
+    controls,
+    button,
+    dialog,
+    delays,
     video,
     document,
     expire () { for (const [id, fn] of [...timers]) { timers.delete(id); fn() } },
     destroy () { options.beforeDestroy.call(component) }
   }
 }
+
+async function enterControls (f) {
+  await f.component.toggleFullscreen()
+  f.component._onFs()
+}
+
+function touch (f, name, { target = f.video, x = 50, y = 50, touches, cancelable = true } = {}) {
+  const point = { identifier: 1, clientX: x, clientY: y }
+  const event = { target, touches: touches || (name === 'touchend' || name === 'touchcancel' ? [] : [point]), changedTouches: [point], cancelable, preventDefault () { this.prevented = true } }
+  f.wrapperListeners.get(name)(event)
+  return event
+}
+
+test('opt-in wrapper entry schedules exactly 2000ms; visibility never changes media state', async () => {
+  const f = fixture({ fullscreenControlsAutoHide: true, playing: true })
+  const c = f.component
+  assert.equal(c.fullscreenControlsActive, false)
+  assert.equal(f.timers.size, 0)
+  const media = () => [f.player.sourceCalls.length, f.player.loadCalls, f.player.playCalls, f.player.pauseCalls]
+  const before = media()
+  await enterControls(f)
+  assert.equal(c.fullscreenControlsVisible, true)
+  assert.equal(f.delays.get(c._controlsHideTimer), 2000)
+  f.expire()
+  assert.equal(c.fullscreenControlsVisible, false)
+  f.wrapperListeners.get('mousemove')({})
+  assert.equal(c.fullscreenControlsVisible, true)
+  const timer = c._controlsHideTimer
+  f.wrapperListeners.get('mousemove')({})
+  assert.notEqual(c._controlsHideTimer, timer)
+  assert.equal(f.timers.has(timer), false)
+  f.expire()
+  assert.equal(c.fullscreenControlsVisible, false)
+  assert.deepEqual(media(), before)
+  f.destroy()
+})
+
+test('surface touch toggles once, refreshes delay, and ignores compatibility mouse events', async () => {
+  const f = fixture({ fullscreenControlsAutoHide: true })
+  await enterControls(f)
+  f.document.activeElement = f.button
+  touch(f, 'touchstart')
+  assert.equal(f.timers.size, 0)
+  const end = touch(f, 'touchend')
+  assert.equal(end.prevented, true)
+  assert.equal(f.document.activeElement, f.wrapper, 'explicit surface gesture moves focus out of toolbar')
+  assert.equal(f.component.fullscreenControlsVisible, false)
+  for (const name of ['mousemove', 'mousedown']) f.wrapperListeners.get(name)({})
+  assert.equal(f.component.fullscreenControlsVisible, false)
+  assert.equal(f.wrapperListeners.has('click'), false, 'no click handler can toggle twice')
+  touch(f, 'touchstart')
+  touch(f, 'touchend')
+  assert.equal(f.component.fullscreenControlsVisible, true)
+  assert.equal(f.delays.get(f.component._controlsHideTimer), 2000)
+  f.expire()
+  assert.equal(f.component.fullscreenControlsVisible, false)
+  f.wrapperListeners.get('mousemove')({ sourceCapabilities: { firesTouchEvents: true } })
+  assert.equal(f.component.fullscreenControlsVisible, false)
+  f.destroy()
+})
+
+test('drags, cancelled/multitouch gestures, toolbar and dialog taps never toggle', async () => {
+  const f = fixture({ fullscreenControlsAutoHide: true })
+  await enterControls(f)
+  touch(f, 'touchstart')
+  touch(f, 'touchmove', { x: 80 })
+  touch(f, 'touchend')
+  assert.equal(f.component.fullscreenControlsVisible, true)
+  touch(f, 'touchstart')
+  touch(f, 'touchend', { x: 80 })
+  assert.equal(f.component.fullscreenControlsVisible, true, 'reject displaced end without move event')
+  touch(f, 'touchstart')
+  touch(f, 'touchcancel')
+  assert.equal(f.component.fullscreenControlsVisible, true)
+  touch(f, 'touchstart', { touches: [{ identifier: 1 }, { identifier: 2 }] })
+  touch(f, 'touchend')
+  assert.equal(f.component.fullscreenControlsVisible, true)
+  for (const target of [f.button, f.controls, f.dialog]) {
+    touch(f, 'touchstart', { target })
+    touch(f, 'touchend', { target })
+    assert.equal(f.component.fullscreenControlsVisible, true)
+  }
+  f.destroy()
+})
+
+test('focus, held interactions and dialogs suspend hiding and resume with a fresh delay', async () => {
+  const f = fixture({ fullscreenControlsAutoHide: true })
+  const c = f.component
+  await enterControls(f)
+  f.document.activeElement = f.button
+  f.expire()
+  assert.equal(c.fullscreenControlsVisible, true, 'timeout never blurs focused controls')
+  f.wrapperListeners.get('focusin')()
+  assert.equal(f.timers.size, 0)
+  f.document.activeElement = f.wrapper
+  f.wrapperListeners.get('focusout')()
+  await Promise.resolve()
+  assert.equal(f.delays.get(c._controlsHideTimer), 2000)
+  f.wrapperListeners.get('mousedown')({})
+  assert.equal(f.timers.size, 0)
+  f.domListeners.get('mouseup')({})
+  assert.equal(f.timers.size, 1)
+  c.onSharingDialogActivity(true)
+  assert.equal(f.timers.size, 0)
+  c.onSharingDialogActivity(false)
+  assert.equal(f.timers.size, 1)
+  c.showDialog = true
+  f.options.watch.showDialog.call(c)
+  assert.equal(f.timers.size, 0)
+  c.showDialog = false
+  f.options.watch.showDialog.call(c)
+  assert.equal(f.timers.size, 1)
+  f.expire()
+  assert.equal(c.fullscreenControlsVisible, false)
+  f.wrapperListeners.get('keydown')({ key: 'Tab' })
+  assert.equal(c.fullscreenControlsVisible, true)
+  f.destroy()
+})
+
+test('async copying and its dialog protect controls until close', async () => {
+  const f = fixture({ fullscreenControlsAutoHide: true })
+  await enterControls(f)
+  const pending = f.component.copyURL()
+  assert.equal(f.component.copyingLink, true)
+  assert.equal(f.timers.size, 0)
+  await pending
+  assert.equal(f.component.showDialog, true)
+  assert.equal(f.timers.size, 0)
+  f.component.showDialog = false
+  f.options.watch.showDialog.call(f.component)
+  assert.equal(f.timers.size, 1)
+  f.destroy()
+})
+
+test('toolbar touch retains restart and play/pause actions without a surface toggle', async () => {
+  const f = fixture({ fullscreenControlsAutoHide: true })
+  await enterControls(f)
+  const sources = f.player.sourceCalls.length
+  const loads = f.player.loadCalls
+  touch(f, 'touchstart', { target: f.button })
+  touch(f, 'touchend', { target: f.button })
+  f.component.restart()
+  assert.equal(f.component.fullscreenControlsVisible, true)
+  assert.equal(f.player.sourceCalls.length, sources + 1)
+  assert.equal(f.player.loadCalls, loads + 1)
+  assert.equal(f.player.currentSource().src, f.component.src)
+  assert.equal(f.player.paused(), false)
+  f.component.togglePlay()
+  assert.equal(f.player.paused(), true)
+  f.component.togglePlay()
+  assert.equal(f.player.paused(), false)
+  assert.equal(f.player.sourceCalls.length, sources + 1, 'play/pause do not reload')
+  assert.equal(f.component.fullscreenControlsVisible, true)
+  f.destroy()
+})
+
+test('exit, opt-out and destroy remove listeners/timers; re-entry and instances are independent', async () => {
+  const first = fixture({ fullscreenControlsAutoHide: true })
+  const second = fixture({ fullscreenControlsAutoHide: true })
+  await enterControls(first)
+  await enterControls(second)
+  first.expire()
+  assert.equal(first.component.fullscreenControlsVisible, false)
+  assert.equal(second.component.fullscreenControlsVisible, true)
+  await first.component.toggleFullscreen()
+  first.component._onFs()
+  assert.equal(first.component.fullscreenControlsVisible, true)
+  assert.equal(first.wrapperListeners.size, 0)
+  assert.equal(first.windowListeners.size, 0)
+  assert.equal(first.domListeners.has('mouseup'), false)
+  await enterControls(first)
+  assert.equal(first.timers.size, 1)
+  first.component.fullscreenControlsAutoHide = false
+  first.options.watch.fullscreenControlsAutoHide.call(first.component)
+  assert.equal(first.timers.size, 0)
+  assert.equal(first.wrapperListeners.size, 0)
+  assert.equal(first.component.fullscreenControlsVisible, true)
+  first.component.fullscreenControlsAutoHide = true
+  first.options.watch.fullscreenControlsAutoHide.call(first.component)
+  first.wrapperListeners.get('focusout')()
+  first.destroy()
+  await Promise.resolve()
+  second.destroy()
+  for (const f of [first, second]) {
+    assert.equal(f.timers.size, 0)
+    assert.equal(f.wrapperListeners.size, 0)
+    assert.equal(f.windowListeners.size, 0)
+    assert.equal(f.domListeners.size, 0)
+  }
+})
+
+test('default-off fullscreen and opted-in native fullscreen leave visibility and input unchanged', async () => {
+  const ordinary = fixture()
+  assert.equal(ordinary.options.props.fullscreenControlsAutoHide.default, false)
+  await enterControls(ordinary)
+  assert.equal(ordinary.wrapperListeners.size, 0)
+  assert.equal(ordinary.timers.size, 0)
+  const native = fixture({ fullscreenControlsAutoHide: true, wrapperFullscreen: false, nativeFullscreen: true })
+  await native.component.toggleFullscreen()
+  assert.equal(native.video.controls, true)
+  assert.equal(native.component.fullscreenControlsActive, false)
+  assert.equal(native.wrapperListeners.size, 0)
+  assert.equal(native.timers.size, 0)
+  ordinary.destroy()
+  native.destroy()
+})
+
+test('compiled toolbar hides without unmounting and fullscreen surface offers keyboard recovery', () => {
+  const source = readFileSync(new URL('../src/components/VideoPlayer.vue', import.meta.url), 'utf8')
+  const parsed = compiler.compile(compiler.parseComponent(source).template.content)
+  assert.deepEqual(parsed.errors, [])
+  const walk = node => [node, ...(node.children || []).flatMap(walk)]
+  const nodes = walk(parsed.ast)
+  const toolbar = nodes.find(node => node.attrsMap?.ref === 'controls')
+  assert.equal(toolbar.if, undefined)
+  assert.equal(toolbar.attrsMap['v-show'], undefined)
+  assert.match(toolbar.attrsMap[':aria-hidden'], /fullscreenControlsActive && !fullscreenControlsVisible/)
+  assert.equal(nodes.find(node => node.attrsMap?.class === 'main-video-player').attrsMap[':tabindex'], 'fullscreenControlsActive ? 0 : null')
+  assert.equal(nodes.find(node => node.tag === 'q-dialog').parent.attrsMap.class, 'main-video-player', 'copy dialog belongs to fullscreen portal target')
+  assert.match(source, /\.main-video-player \.custom-controls\.fullscreen-controls-hidden\s+visibility: hidden\s+pointer-events: none/)
+})
+
+test('Caparica uses Quasar wrapper ownership for dialogs and clears it after external exit', async () => {
+  const f = fixture({ fullscreenControlsAutoHide: true })
+  let requests = 0
+  const fullscreen = {
+    activeEl: null,
+    async request (element) {
+      requests++
+      await element.requestFullscreen()
+      this.activeEl = element
+    }
+  }
+  f.component.$q = { fullscreen }
+  await enterControls(f)
+  assert.equal(requests, 1)
+  assert.equal(fullscreen.activeEl, f.wrapper)
+  await f.document.exitFullscreen()
+  f.component._onFs()
+  assert.equal(fullscreen.activeEl, null)
+  f.component.fullscreenControlsAutoHide = false
+  await enterControls(f)
+  assert.equal(requests, 1, 'default-off wrapper request remains unchanged')
+  fullscreen.activeEl = f.wrapper
+  f.destroy()
+  assert.equal(fullscreen.activeEl, null, 'destruction releases owned portal target')
+})
 
 test('exact supported Surfline host/path only; no fallback or lost query', () => {
   const { component: c } = fixture()

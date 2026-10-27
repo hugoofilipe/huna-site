@@ -46,6 +46,131 @@ async function createContext (browser, viewport, mobile, { authenticated = true,
   return context
 }
 
+async function revealControls (page, index) {
+  const wrapper = page.locator('#review-camera-' + index + ' .main-video-player')
+  if (await wrapper.evaluate(element => document.fullscreenElement === element && element.tabIndex === 0)) {
+    await wrapper.focus()
+    await page.keyboard.press('Shift')
+  }
+}
+
+async function toolbarVisibility (browser, viewport, mobile) {
+  const context = await createContext(browser, viewport, mobile, { mockWeather: { height: 80, delay: 0 } })
+  const page = await context.newPage()
+  const errors = []
+  page.on('pageerror', error => errors.push(error.message))
+  const wrapper = page.locator('#review-camera-0 .main-video-player')
+  const toolbar = wrapper.locator('.custom-controls')
+  const button = name => toolbar.getByRole('button', { name, exact: true })
+  const idle = async () => {
+    await wrapper.focus() // Deliberately move out of the entry button's protected focus.
+    await toolbar.waitFor({ state: 'hidden' })
+  }
+  try {
+    await page.goto(base + '/caparica')
+    if (mobile) await button('Ecrã inteiro').tap()
+    else await button('Ecrã inteiro').click()
+    await page.waitForFunction(() => !!document.fullscreenElement)
+    assert.equal(await toolbar.isVisible(), true, 'entry shows toolbar')
+    const surface = await wrapper.evaluate(element => {
+      const rect = element.getBoundingClientRect()
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 3 }
+    })
+    if (mobile) {
+      await page.touchscreen.tap(surface.x, surface.y)
+      await toolbar.waitFor({ state: 'hidden' })
+      assert.equal(await wrapper.evaluate(element => document.activeElement === element), true, 'surface tap leaves protected button focus')
+      await page.touchscreen.tap(surface.x, surface.y)
+      await toolbar.waitFor({ state: 'visible' })
+    }
+    await idle()
+    const hiddenButtonPoint = await toolbar.locator('button').first().evaluate(element => {
+      const rect = element.getBoundingClientRect()
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+    })
+    assert.equal(await page.evaluate(point => !!document.elementFromPoint(point.x, point.y)?.closest('.custom-controls'), hiddenButtonPoint), false, 'hidden toolbar does not intercept taps')
+    if (mobile) {
+      await page.touchscreen.tap(surface.x, surface.y)
+      await toolbar.waitFor({ state: 'visible' })
+      assert.equal(await toolbar.isVisible(), true, 'one touch reveals')
+      await page.waitForTimeout(250)
+      assert.equal(await toolbar.isVisible(), true, 'compatibility events do not toggle twice')
+      await page.touchscreen.tap(surface.x, surface.y)
+      await toolbar.waitFor({ state: 'hidden' })
+      assert.equal(await toolbar.isVisible(), false, 'next touch hides')
+      await page.touchscreen.tap(surface.x, surface.y)
+      await toolbar.waitFor({ state: 'visible' })
+      assert.equal(await toolbar.isVisible(), true, 'next touch reveals with fresh delay')
+      await button('Reiniciar').tap()
+      assert.equal(await toolbar.isVisible(), true, 'touch toolbar action does not toggle visibility')
+    } else {
+      await page.mouse.move(surface.x, surface.y)
+      await toolbar.waitFor({ state: 'visible' })
+      assert.equal(await toolbar.isVisible(), true, 'mouse recovery')
+      await page.waitForTimeout(1100)
+      await page.mouse.move(surface.x + 20, surface.y)
+      await page.waitForTimeout(1100)
+      assert.equal(await toolbar.isVisible(), true, 'movement restarts delay')
+      await page.mouse.down()
+      await page.waitForTimeout(2200)
+      assert.equal(await toolbar.isVisible(), true, 'held interaction protects controls')
+      await page.mouse.up()
+    }
+    await idle()
+    await page.keyboard.press('Tab')
+    await toolbar.waitFor({ state: 'visible' })
+    assert.equal(await toolbar.isVisible(), true, 'keyboard reveals hidden controls')
+    assert.equal(await toolbar.evaluate(element => element.contains(document.activeElement)), true, 'keyboard reaches toolbar')
+    await page.waitForTimeout(2200)
+    assert.equal(await toolbar.isVisible(), true, 'focused control is never hidden')
+    assert.equal(await toolbar.evaluate(element => element.contains(document.activeElement)), true, 'focus retained')
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => {} } })
+    })
+    await button('Copiar link').click()
+    await page.getByText('Link copiado com sucesso', { exact: true }).waitFor()
+    await page.waitForTimeout(2200)
+    assert.equal(await toolbar.isVisible(), true, 'copy dialog protects controls')
+    await page.getByRole('button', { name: 'Eu entendi', exact: true }).click()
+    await page.locator('.q-dialog').waitFor({ state: 'detached' })
+    await revealControls(page, 0)
+    await button('Partilhar no WhatsApp').click()
+    await page.getByRole('button', { name: 'Cancelar', exact: true }).waitFor()
+    await page.waitForTimeout(2200)
+    assert.equal(await toolbar.isVisible(), true, 'sharing dialog protects controls')
+    await page.getByRole('button', { name: 'Cancelar', exact: true }).click()
+    await page.locator('.q-dialog').waitFor({ state: 'detached' })
+    await idle()
+    await revealControls(page, 0)
+    await button('Sair de ecrã inteiro').click()
+    await page.waitForFunction(() => !document.fullscreenElement)
+    assert.equal(await toolbar.isVisible(), true, 'exit restores inline toolbar')
+    await button('Ecrã inteiro').click()
+    await page.waitForFunction(() => !!document.fullscreenElement)
+    assert.equal(await toolbar.isVisible(), true, 'fresh re-entry')
+    await idle()
+    await page.evaluate(() => { document.querySelector('#q-app').__vue__.$router.push('/cam') })
+    await page.waitForFunction(() => location.pathname === '/cam')
+    await toolbar.waitFor({ state: 'visible' })
+    assert.equal(await wrapper.evaluate(element => document.fullscreenElement === element && !element.hasAttribute('tabindex')), true, 'route reuse removes opt-in while fullscreen')
+    await wrapper.locator('video').focus()
+    await page.waitForTimeout(2300)
+    assert.equal(await toolbar.isVisible(), true, '/cam remains visible beyond timeout without button focus')
+    await page.evaluate(() => document.exitFullscreen())
+    await page.waitForFunction(() => !document.fullscreenElement)
+    assert.deepEqual(errors, [])
+    console.log('PASS fullscreen toolbar', mobile ? 'touch emulation' : 'desktop')
+  } catch (error) {
+    console.error('Toolbar failure state:', await wrapper.evaluate(element => {
+      const player = element.parentElement.__vue__
+      const rect = element.getBoundingClientRect()
+      return { rect: rect.toJSON(), visible: player.fullscreenControlsVisible, active: player.fullscreenControlsActive, ignoreMouseUntil: player._ignoreControlsMouseUntil, now: Date.now(), focus: document.activeElement.outerHTML.slice(0, 160), hit: document.elementFromPoint(rect.width / 2, rect.height / 3)?.outerHTML.slice(0, 200) }
+    }))
+    await page.screenshot({ path: path.join(artifacts, 'toolbar-failure-' + (mobile ? 'touch' : 'desktop') + '.png') })
+    throw error
+  } finally { await context.close() }
+}
+
 async function run (browser, viewport, mobile) {
   const context = await createContext(browser, viewport, mobile)
   const page = await context.newPage()
@@ -62,6 +187,7 @@ async function run (browser, viewport, mobile) {
     await page.waitForFunction(() => !!document.fullscreenElement)
   }
   const exit = async index => {
+    await revealControls(page, index)
     await card(index).getByRole('button', { name: 'Sair de ecrã inteiro', exact: true }).click()
     await page.waitForFunction(() => !document.fullscreenElement)
   }
@@ -91,6 +217,7 @@ async function run (browser, viewport, mobile) {
     await page.waitForFunction(() => !document.querySelector('#review-camera-1 video').paused)
 
     await enter(1)
+    await revealControls(page, 1)
     await card(1).getByRole('button', { name: 'Próximo', exact: true }).click()
     await page.waitForFunction(() => document.querySelector('.camera-page').__vue__.$parent.fsCameraIndex === 2)
     await page.waitForFunction(() => document.querySelector('#review-camera-1 video').currentTime > .1)
@@ -99,6 +226,7 @@ async function run (browser, viewport, mobile) {
     assert.ok(identity.title.includes('Review camera 2'))
     await page.evaluate(() => { Object.defineProperty(window, 'ClipboardItem', { configurable: true, value: undefined }) })
     const downloadPromise = page.waitForEvent('download').catch(error => error)
+    await revealControls(page, 1)
     await card(1).locator('.custom-controls').getByRole('button', { name: 'Capturar imagem', exact: true }).click()
     const download = await downloadPromise
     if (download instanceof Error) throw download
@@ -108,6 +236,7 @@ async function run (browser, viewport, mobile) {
     assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a')
     assert.equal(png.readUInt32BE(16), 160, 'captured the video frame width')
     assert.equal(png.readUInt32BE(20), 90, 'captured the video frame height')
+    await revealControls(page, 1)
     await card(1).getByRole('button', { name: 'Pausar', exact: true }).click()
     await exit(1)
     await page.waitForFunction(() => document.querySelector('#review-camera-1 .video-js').player.currentSrc().includes('/1/') && document.querySelector('#review-camera-1 video').paused)
@@ -117,6 +246,7 @@ async function run (browser, viewport, mobile) {
     await exit(1)
     await page.waitForFunction(() => !document.querySelector('#review-camera-1 video').paused)
     await enter(1)
+    await revealControls(page, 1)
     await card(1).getByRole('button', { name: 'Próximo', exact: true }).click()
     await page.waitForFunction(() => document.querySelector('.camera-page').__vue__.$parent.fsCameraIndex === 2)
     await page.keyboard.press('Escape')
@@ -131,6 +261,7 @@ async function run (browser, viewport, mobile) {
 
     await context.route('**/__review_fixture/2/playlist.m3u8', route => route.abort())
     await enter(1)
+    await revealControls(page, 1)
     await card(1).getByRole('button', { name: 'Próximo', exact: true }).click()
     await page.waitForFunction(() => !!document.querySelector('.camera-page').__vue__.$parent.cameraSwitchError)
     assert.equal((await root()).displayed, 1)
@@ -310,6 +441,9 @@ async function deepLinks (browser, viewport, mobile) {
 ;(async () => {
   const browser = await chromium.launch()
   try {
+    await toolbarVisibility(browser, { width: 1280, height: 720 }, false)
+    await toolbarVisibility(browser, { width: 390, height: 844 }, true)
+    if (process.env.CAMERA_REVIEW_ONLY === 'toolbar') return
     await run(browser, { width: 1280, height: 720 }, false)
     await run(browser, { width: 390, height: 844 }, true)
     await captureMenus(browser, { width: 1280, height: 720 }, false)

@@ -16,6 +16,7 @@
       :has-next="hasNext"
       :index="index"
       :displayed-camera="displayedCamera || beach"
+      :fullscreen-controls-auto-hide="fullscreenControlsAutoHide"
       capture-enabled
       ref="video"
       @fullscreen-change="$emit('fullscreen-change', { index, isFullscreen: $event.isFullscreen })"
@@ -59,6 +60,7 @@ export default {
     beach: { type: Object, required: true },
     index: { type: Number, required: true },
     mobile: { type: Boolean, default: false },
+    fullscreenControlsAutoHide: { type: Boolean, default: false },
     videoOptions: { type: Object, default: () => ({ controls: true, muted: 'muted' }) },
     hasPrevious: { type: Boolean, default: false },
     hasNext: { type: Boolean, default: false },
