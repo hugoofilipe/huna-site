@@ -37,10 +37,12 @@ This is a guide to the documented workflow, not a mandatory review or merge gate
 ## Caparica camera interface
 - The newer camera UI comes from `release1`; the weather widget was originally added on the older `master` UI. Keep both integrations when merging or deploying.
 - `Cam4.vue` combines `WebcamItem.vue`, `WebcamSidebar.vue`, and the BestWeather widget. Fullscreen navigation, capture, and compact playback controls live in `VideoPlayer.vue`.
+- Only `/caparica` wrapper fullscreen hides the stream toolbar after inactivity and supports tap-to-toggle/mouse/keyboard recovery. `FULLSCREEN_CONTROLS_HIDE_DELAY_MS` near the imports in `src/components/VideoPlayer.vue` sets the 2000 ms delay; focused controls, held interactions, and copy/share dialogs suspend hiding. Inline, `/cam`, and YouTube controls are unchanged. iPhone native-video fullscreen keeps OS-managed controls and timing (no custom timeout); physical-device verification is still required.
 - Run regression tests with Node.js 18+: `npm test`. They execute the actual Vue component scripts with a controlled player/DOM, covering explicit camera selection, fullscreen playback/identity, cancellation, errors/timeouts, shared capture capability, clipboard, widget loading, and dynamic header clearance.
 - This remains a selective camera-UI port, not a full `release1` merge/rebase. Unrelated release1 features and deployment changes are not included.
 - To preview from another device: `NODE_OPTIONS=--openssl-legacy-provider yarn quasar dev -m spa --hostname 0.0.0.0 --port 8093`.
 - Optional browser regression checks: start that preview, then run `npm run test:browser` with Playwright available and `ffmpeg` on PATH. Alternatively set `PLAYWRIGHT_MODULE` to an existing Playwright installation. `BASE_URL` defaults to `http://localhost:8093`; `CAMERA_FIXTURE_DIR` can point to existing generated HLS fixtures. The checks use local test streams, not production camera data, and exercise the real weather-script integration. They require network access to the widget provider. Native fullscreen-exit events are covered; headless OS/browser Escape shortcuts and physical-device access require manual verification.
+- For isolated fullscreen toolbar checks without the external weather widget, use `CAMERA_REVIEW_ONLY=toolbar npm run test:browser`. This covers desktop and touch emulation with a deterministic widget stub, not physical iPhone/Android behavior.
 
 ## Generate the animated development / release journey
 
@@ -92,7 +94,7 @@ pushing, or deploying. This also works in a Git worktree with dependencies insta
 - node: v12.22.9
 - quasar: 2.4.3
 - npm: 8.5.11
-- huna-site: 1.3.5
+- huna-site: 1.3.6
 
 # Deploy in prod
 - versionar (alterar em footer.vue)

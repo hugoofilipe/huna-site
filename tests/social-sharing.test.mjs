@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import compiler from 'vue-template-compiler'
+import Vue from 'vue'
 import { loadComponent } from './helpers/load-component.mjs'
 
 function fixture ({ captureFrame = async () => new Blob(['frame'], { type: 'image/png' }), navigator = {} } = {}) {
@@ -23,7 +24,8 @@ function fixture ({ captureFrame = async () => new Blob(['frame'], { type: 'imag
   const component = {
     ...options.data(),
     anchor: 'praia-sul', title: 'Praia Sul', path: '/caparica', captureFrame,
-    captureUnavailableMessage: options.props.captureUnavailableMessage.default
+    captureUnavailableMessage: options.props.captureUnavailableMessage.default,
+    $emit () {}
   }
   for (const [name, fn] of Object.entries(options.methods)) component[name] = fn.bind(component)
   for (const [name, fn] of Object.entries(options.computed)) Object.defineProperty(component, name, { get: fn.bind(component) })
@@ -45,6 +47,38 @@ test('preview prepares title, anchored HTTPS link and PNG without opening a shar
   assert.equal(shared[0].text, c.shareText)
   assert.equal(shared[0].files[0], c.file)
   assert.equal(c.showDialog, false)
+})
+
+test('additive dialog activity covers async capture, dialog and native sharing through close/destruction', async () => {
+  let finishCapture
+  let finishShare
+  const f = fixture({
+    captureFrame: () => new Promise(resolve => { finishCapture = resolve }),
+    navigator: { share: () => new Promise(resolve => { finishShare = resolve }) }
+  })
+  const c = new Vue({ ...f.options, propsData: { anchor: 'praia', title: 'Praia', path: '/caparica', captureFrame: f.component.captureFrame } })
+  const states = []
+  c.$on('dialog-activity', active => states.push(active))
+  const preparing = c.prepareShare()
+  await Vue.nextTick()
+  assert.deepEqual(states, [true])
+  finishCapture(new Blob(['frame']))
+  await preparing
+  await Vue.nextTick()
+  assert.equal(c.dialogActive, true)
+  const sharing = c.shareImage()
+  c.showDialog = false
+  await Vue.nextTick()
+  assert.equal(c.dialogActive, true, 'native flow protects even if the dialog closes')
+  assert.deepEqual(states, [true])
+  finishShare()
+  await sharing
+  await Vue.nextTick()
+  assert.deepEqual(states, [true, false])
+  c.showDialog = true
+  await Vue.nextTick()
+  c.$destroy()
+  assert.deepEqual(states, [true, false, true, false])
 })
 
 test('share payload retains the identity captured before asynchronous preparation', async () => {

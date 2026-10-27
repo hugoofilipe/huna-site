@@ -70,6 +70,7 @@ limpar erros
           :has-previous="hasCamera(index, -1)"
           :has-next="hasCamera(index, 1)"
           :displayed-camera="displayedCamera(index)"
+          :fullscreen-controls-auto-hide="fullscreenControlsAutoHide"
           @copy-url="copyURL($event)"
           @capture-image="captureImage"
           @previous-camera="navigateCamera($event, -1)"
@@ -544,6 +545,9 @@ export default {
     }
   },
   computed: {
+    fullscreenControlsAutoHide () {
+      return isCaparicaPath(this.$route.path)
+    },
     showWeather () {
       return isCaparicaPath(this.$route.path)
     }

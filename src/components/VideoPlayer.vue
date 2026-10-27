@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="main-video-player">
+    <div class="main-video-player" :tabindex="fullscreenControlsActive ? 0 : null" :aria-label="fullscreenControlsActive ? 'Vídeo em ecrã inteiro' : null">
       <video ref="videoPlayer" class="video-js vjs-fluid vjs-default-skin vjs-big-play-centered" crossorigin="anonymous" playsinline webkit-playsinline></video>
-      <div class="custom-controls q-pa-md row flex justify-center align-center">
+      <div ref="controls" class="custom-controls q-pa-md row flex justify-center align-center" :class="{ 'fullscreen-controls-hidden': fullscreenControlsActive && !fullscreenControlsVisible }" :aria-hidden="fullscreenControlsActive && !fullscreenControlsVisible ? 'true' : null">
         <q-btn v-if="isFullscreen && computedHasPrevious" @click="$emit('previous-camera')" icon="skip_previous" label="Anterior" aria-label="Anterior" unelevated class="icon-only-mobile fullscreen-nav-btn" />
         <q-btn @click="$emit('playback-intent'); togglePlay()" :label="isPlaying ? 'pause' : 'play'" :aria-label="isPlaying ? 'Pausar' : 'Reproduzir'" :icon="isPlaying ? 'pause' : 'play_arrow'" unelevated class="icon-only-mobile" />
         <q-btn @click="$emit('playback-intent'); restart()" icon="replay" label="restart" aria-label="Reiniciar" unelevated class="icon-only-mobile" />
@@ -10,15 +10,14 @@
         <q-btn :disable="sourceChanging" align="around" class="btn-fixed-width icon-only-mobile" label="Copiar link" aria-label="Copiar link" icon="link" @click="copyURL()">
           <q-tooltip class="bg-accent">Copiar link</q-tooltip>
         </q-btn>
-        <socialSharing v-if="!sourceChanging" :anchor="displayedAnchor" :title="displayedTitle" :path="$route.path" :capture-frame="captureEnabled ? captureFrame : null" position="bottom" class="icon-only-mobile" />
+        <socialSharing v-if="!sourceChanging" :anchor="displayedAnchor" :title="displayedTitle" :path="$route.path" :capture-frame="captureEnabled ? captureFrame : null" position="bottom" class="icon-only-mobile" @dialog-activity="onSharingDialogActivity" />
         <q-btn v-if="captureEnabled" :disable="sourceChanging" icon="camera_alt" size="md" @click.stop.prevent="requestCapture" title="Capturar imagem" aria-label="Capturar imagem" />
         <q-btn v-if="isFullscreen && hasNext" @click="$emit('next-camera')" icon="skip_next" label="Próximo" aria-label="Próximo" unelevated class="icon-only-mobile fullscreen-nav-btn" />
       </div>
       <div v-if="playbackError" role="alert" class="q-pa-sm">{{ playbackError }}</div>
       <div v-if="fullscreenError" role="alert" class="q-pa-sm">{{ fullscreenError }}</div>
-    </div>
 
-    <q-dialog v-model="showDialog">
+      <q-dialog v-model="showDialog">
         <q-card class="bg-white text-black q-pa-md" style="width: 700px; max-width: 80vw;">
           <q-toolbar class="row items-center">
             <q-avatar size=70px style="height: auto;">
@@ -34,6 +33,7 @@
             </q-card-actions>
         </q-card>
       </q-dialog>
+    </div>
   </div>
 </template>
 
@@ -42,6 +42,8 @@ import 'video.js/dist/video-js.css'
 import videojs from 'video.js'
 import socialSharing from 'components/SocialSharing.vue'
 import { copyText } from 'src/utils/clipboard.mjs'
+
+const FULLSCREEN_CONTROLS_HIDE_DELAY_MS = 2000
 
 export default {
   name: 'VideoPlayer',
@@ -61,6 +63,7 @@ export default {
     displayedCamera: { type: Object, default: null },
     captureEnabled: { type: Boolean, default: false },
     showFullscreenButton: { type: Boolean, default: true },
+    fullscreenControlsAutoHide: { type: Boolean, default: false },
     userAgent: [String],
     referer: [String],
     hasPrevious: { type: Boolean, default: false },
@@ -68,6 +71,9 @@ export default {
     index: { type: Number }
   },
   computed: {
+    fullscreenControlsActive () {
+      return this.fullscreenControlsAutoHide && this.isFullscreen && this.fullscreenMode === 'wrapper'
+    },
     displayedAnchor () {
       return this.displayedCamera ? this.displayedCamera.anchor : this.anchor
     },
@@ -79,6 +85,105 @@ export default {
     }
   },
   methods: {
+    releaseFullscreenPortal (wrapper) {
+      if (this.$q && this.$q.fullscreen && this.$q.fullscreen.activeEl === wrapper) this.$q.fullscreen.activeEl = null
+    },
+    clearControlsTimer () {
+      clearTimeout(this._controlsHideTimer)
+      this._controlsHideTimer = null
+    },
+    controlsProtected () {
+      return this.showDialog || this.copyingLink || this.sharingDialogActive || this._controlsMouseHeld || !!this._controlsTouch ||
+        !!(this.$refs.controls && this.$refs.controls.contains(document.activeElement))
+    },
+    scheduleControlsHide () {
+      this.clearControlsTimer()
+      if (!this.fullscreenControlsActive || this._destroying || !this.fullscreenControlsVisible || this.controlsProtected()) return
+      this._controlsHideTimer = setTimeout(() => {
+        this._controlsHideTimer = null
+        if (this.fullscreenControlsActive && !this._destroying && !this.controlsProtected()) this.fullscreenControlsVisible = false
+      }, FULLSCREEN_CONTROLS_HIDE_DELAY_MS)
+    },
+    revealFullscreenControls () {
+      if (!this.fullscreenControlsActive || this._destroying) return
+      this.fullscreenControlsVisible = true
+      this.scheduleControlsHide()
+    },
+    onSharingDialogActivity (active) {
+      this.sharingDialogActive = active
+      this.revealFullscreenControls()
+    },
+    syncFullscreenControls () {
+      this.clearControlsTimer()
+      if (this._removeControlsListeners) this._removeControlsListeners()
+      this._removeControlsListeners = null
+      this._controlsTouch = null
+      this._controlsMouseHeld = false
+      this._ignoreControlsMouseUntil = 0
+      this.fullscreenControlsVisible = true
+      if (!this.fullscreenControlsActive || this._destroying) return
+      const wrapper = this.$el.querySelector('.main-video-player')
+      const bindings = []
+      const listen = (target, name, handler, capture = true) => {
+        // video.js can swallow the first mousemove after its own idle state.
+        target.addEventListener(name, handler, capture)
+        bindings.push(() => target.removeEventListener(name, handler, capture))
+      }
+      const isSurface = target => wrapper.contains(target) && !target.closest('.custom-controls, .q-dialog, .q-menu, button, a, input, select, textarea')
+      const ignoreMouse = event => Date.now() < this._ignoreControlsMouseUntil || (event.sourceCapabilities && event.sourceCapabilities.firesTouchEvents)
+      listen(wrapper, 'touchstart', event => {
+        this._ignoreControlsMouseUntil = Date.now() + 800
+        const touch = event.touches[0]
+        this._controlsTouch = touch ? { id: touch.identifier, x: touch.clientX, y: touch.clientY, tap: event.touches.length === 1 && isSurface(event.target) } : null
+        this.clearControlsTimer()
+      })
+      listen(wrapper, 'touchmove', event => {
+        const gesture = this._controlsTouch
+        if (!gesture) return
+        const touch = Array.from(event.touches).find(touch => touch.identifier === gesture.id)
+        if (!touch || event.touches.length !== 1 || Math.abs(touch.clientX - gesture.x) > 10 || Math.abs(touch.clientY - gesture.y) > 10) gesture.tap = false
+      })
+      listen(wrapper, 'touchend', event => {
+        this._ignoreControlsMouseUntil = Date.now() + 800
+        const gesture = this._controlsTouch
+        const touch = gesture && Array.from(event.changedTouches).find(touch => touch.identifier === gesture.id)
+        if (event.touches.length) {
+          if (gesture) gesture.tap = false
+          return
+        }
+        this._controlsTouch = null
+        if (gesture && gesture.tap && touch && Math.abs(touch.clientX - gesture.x) <= 10 && Math.abs(touch.clientY - gesture.y) <= 10 && isSurface(event.target)) {
+          // Avoid compatibility focus/click after a handled surface tap.
+          if (event.cancelable) event.preventDefault()
+          const wasVisible = this.fullscreenControlsVisible
+          // A deliberate surface tap moves focus out of the toolbar; a timeout
+          // never does. Otherwise a touched button could protect it forever.
+          wrapper.focus({ preventScroll: true })
+          if (wasVisible && !this.controlsProtected()) this.fullscreenControlsVisible = false
+          else this.fullscreenControlsVisible = true
+        }
+        this.scheduleControlsHide()
+      })
+      const releaseInteraction = () => {
+        this._controlsTouch = null
+        this._controlsMouseHeld = false
+        this.scheduleControlsHide()
+      }
+      listen(wrapper, 'touchcancel', releaseInteraction)
+      listen(wrapper, 'mousemove', event => { if (!ignoreMouse(event)) this.revealFullscreenControls() })
+      listen(wrapper, 'mousedown', event => {
+        if (ignoreMouse(event)) return
+        this._controlsMouseHeld = true
+        this.revealFullscreenControls()
+      })
+      listen(document, 'mouseup', event => { if (!ignoreMouse(event)) releaseInteraction() })
+      listen(window, 'blur', releaseInteraction, false)
+      listen(wrapper, 'keydown', () => this.revealFullscreenControls())
+      listen(wrapper, 'focusin', () => this.revealFullscreenControls())
+      listen(wrapper, 'focusout', () => this.$nextTick(() => this.scheduleControlsHide()))
+      this._removeControlsListeners = () => { for (const remove of bindings) remove() }
+      this.scheduleControlsHide()
+    },
     getPlaybackIntent () {
       return this.sourceChanging ? this._sourcePlayIntent : !!(this.player && !this.player.paused())
     },
@@ -232,12 +337,17 @@ export default {
     },
     async copyURL () {
       if (this.sourceChanging) return
+      this.copyingLink = true
+      this.revealFullscreenControls()
       try {
         this.copiedUrl = window.location.origin + this.$route.path + '#' + this.displayedAnchor
         await copyText(this.copiedUrl)
         this.showDialog = true
       } catch ($e) {
         alert('Não foi possível copiar o link.')
+      } finally {
+        this.copyingLink = false
+        this.revealFullscreenControls()
       }
     },
     requestCapture () {
@@ -284,7 +394,9 @@ export default {
           if (exit) await exit.call(document)
         } else {
           const request = wrapper.requestFullscreen || wrapper.webkitRequestFullscreen || wrapper.mozRequestFullScreen || wrapper.msRequestFullscreen
-          if (request) await request.call(wrapper)
+          // Quasar needs the active wrapper to place dialog portals in fullscreen.
+          if (this.fullscreenControlsAutoHide && this.$q && this.$q.fullscreen) await this.$q.fullscreen.request(wrapper)
+          else if (request) await request.call(wrapper)
           else throw new Error('fullscreen unavailable')
         }
       } catch (e) {
@@ -315,6 +427,9 @@ export default {
     return {
       player: null,
       showDialog: false,
+      copyingLink: false,
+      sharingDialogActive: false,
+      fullscreenControlsVisible: true,
       playbackError: '',
       fullscreenError: '',
       fullscreenMode: 'none',
@@ -354,8 +469,10 @@ export default {
       const wrapper = this.$el.querySelector('.main-video-player')
       const wasFullscreen = this.isFullscreen
       this.isFullscreen = !!wrapper && this.fullscreenElement() === wrapper
+      if (!this.isFullscreen) this.releaseFullscreenPortal(wrapper)
       if (wrapper) wrapper.classList.toggle('is-fullscreen', this.isFullscreen)
       if (wasFullscreen === this.isFullscreen) return
+      this.syncFullscreenControls()
       this.$emit('fullscreen-change', { index: this.index, isFullscreen: this.isFullscreen })
       if (this.isFullscreen) this.lockOrientationIfMobile()
       else this.unlockOrientationIfLocked()
@@ -367,6 +484,12 @@ export default {
     this.setPlayerSrc(this.proxiedSrc)
   },
   watch: {
+    fullscreenControlsAutoHide () {
+      this.syncFullscreenControls()
+    },
+    showDialog () {
+      this.revealFullscreenControls()
+    },
     src (newVal) {
       clearTimeout(this._srcDebounce)
       this._srcDebounce = setTimeout(() => {
@@ -376,6 +499,8 @@ export default {
   },
   beforeDestroy () {
     this._destroying = true
+    this.syncFullscreenControls()
+    this.releaseFullscreenPortal(this.$el.querySelector('.main-video-player'))
     clearTimeout(this._srcDebounce)
     if (this._cancelSourceChange) this._cancelSourceChange(false)
     if (this.isFullscreen) {
@@ -462,6 +587,10 @@ export default {
   bottom: max(18px, env(safe-area-inset-bottom))
   padding: 8px 12px
   flex-wrap: wrap
+
+.main-video-player .custom-controls.fullscreen-controls-hidden
+  visibility: hidden
+  pointer-events: none
 
 .main-video-player.is-fullscreen
   background: black
